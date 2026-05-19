@@ -179,32 +179,35 @@ void dictionaryMenu(Word **head){
     } while(choice != 0);
 }
 
-void gameMenu(Word *head){
 
-    int choice;
+void gameMenu(Word *head) {
+
+    int gameChoice;
 
     do {
         clearScreen();
-        printf("=============== GAME CENTER ===============\n");
-        printf("1. Missing Letter Game\n");
-        printf("2. English -> Vietnamese\n");
-        printf("3. Vietnamese -> English\n");
-        printf("0. Back\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-        clearScreen();
-        switch(choice){
+        showGameMenu();
+        printf("\nChoose: ");
+        scanf("%d", &gameChoice);
+        getchar();
+        switch(gameChoice){
             case 1:
-                playMissingLetterGame(head);
-                break;
-            case 2:
                 englishToVietnameseGame(head);
                 break;
-            case 3:
+            case 2:
                 vietnameseToEnglishGame(head);
                 break;
+            case 3:
+                playMissingLetterGame(head);
+                break;
+            case 0:
+                return;
+            default:
+                printError("Invalid choice!");
+                pauseScreen();
         }
-    } while(choice != 0);
+    } while(gameChoice != 4);
+
 }
 
 int main(){
@@ -263,17 +266,37 @@ int main(){
             "🔥 Study Streak: %d days\n\n",
             studyStreak.streakDays
         );
+        printHeader("ENGLISH DICTIONARY");
+        showMiniPlayerCard();
+        printf("\n");
+        setColor(11);
+        printf("[1] ");
+        setColor(7);
+        printf("Dictionary Menu\n");
 
-        printf("===============================\n");
-        printf("     ENGLISH DICTIONARY\n");
-        printf("===============================\n");
-        printf("1. Dictionary Menu\n");
-        printf("2. Flashcard Mode\n");
-        printf("3. Game Center\n");
-        printf("4. Show Stats\n");
-        printf("5. Exit\n");
-        printf("===============================\n");
-        printf("Enter your choice: ");
+        setColor(11);
+        printf("[2] ");
+        setColor(7);
+        printf("Flashcard Mode\n");
+
+        setColor(11);
+        printf("[3] ");
+        setColor(7);
+        printf("Game Center\n");
+
+        setColor(11);
+        printf("[4] ");
+        setColor(7);
+        printf("Show Stats\n");
+
+        setColor(12);
+        printf("[5] ");
+        setColor(7);
+        printf("Exit\n");
+
+
+        printf("\nChoose: ");
+
         scanf("%d", &choice);
         clearScreen();
         switch(choice){

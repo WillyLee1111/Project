@@ -7,6 +7,7 @@
 #include "../include/utils.h"
 
 void playMissingLetterGame(Word *head){
+    dailyMission.gamesPlayed++;
     int choice = 1;
     while (choice != 2){
         clearScreen();
@@ -44,6 +45,7 @@ void playMissingLetterGame(Word *head){
 
 void englishToVietnameseGame(Word *head){
     clearScreen();
+    dailyMission.gamesPlayed++;
     Word *word = getRandomWord(head);
     if(word == NULL){
         printf("No words available.\n");
@@ -58,7 +60,7 @@ void englishToVietnameseGame(Word *head){
     getchar();
     fgets(answer, sizeof(answer), stdin);
     answer[strcspn(answer, "\n")] = '\0';
-    if(strcmp(answer, word->meaning) == 0){
+    if(strstr(answer, word->meaning) == 0){
         printf("\nCorrect!\n");
         playStats.exp += 20;
         dailyMission.gamesPlayed++;
@@ -73,6 +75,7 @@ void englishToVietnameseGame(Word *head){
 
 void vietnameseToEnglishGame(Word *head){
     clearScreen();
+    dailyMission.gamesPlayed++;
     Word *word = getRandomWord(head);
     if(word == NULL){
         printf("No words available.\n");
@@ -86,8 +89,8 @@ void vietnameseToEnglishGame(Word *head){
     printf("Your answer: ");
     getchar();
     fgets(answer, sizeof(answer), stdin);
-    answer[strcspn(answer, "\n")] = '\0';
-    if(strcmp(answer, word->word) == 0){
+    answer[strcmp(answer, "\n")] = '\0';
+    if(strcasecmp(answer, word->word) == 0){
         printf("\nCorrect!\n");
         playStats.exp += 20;
         dailyMission.gamesPlayed++;

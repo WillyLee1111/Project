@@ -10,7 +10,7 @@ abstract|trừu tượng|/ˈæb.strækt/|adjective
 academic|thuộc học thuật|/ˌæk.əˈdem.ɪk/|adjective
 accept|chấp nhận|/əkˈsept/|verb
 acceptable|có thể chấp nhận|/əkˈsep.tə.bəl/|adjective
-access|truy cập|/ˈæk.ses/|noun
+ACCESS|truy cập|/ˈæk.ses/|noun
 accident|tai nạn|/ˈæk.sɪ.dənt/|noun
 accommodation|chỗ ở|/əˌkɒm.əˈdeɪ.ʃən/|noun
 accompany|đi cùng|/əˈkʌm.pə.ni/|verb

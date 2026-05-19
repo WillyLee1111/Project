@@ -21,9 +21,13 @@ void flashcardMode(Word *head){
     printf("4. Adjective\n");
     printf("5. Adverb\n");
     printf("6. Weak Words\n");
+    printf("0. Exit\n");
     printf("Enter your choice: ");
     scanf("%d", &mode);
     getchar();
+    if (mode == 0) {
+            return;
+        }
     do {
         clearScreen();
         Word* card = NULL;
@@ -62,18 +66,32 @@ void flashcardMode(Word *head){
             pauseScreen();
             return;
         }
-        printf("===============FLASHCARD==================\n");
-        printf("Word: %s\n", card->word);
-        printf("Press Enter to flip the card...");
-        getchar();
         clearScreen();
-        printf("===============BACK OF FLASHCARD==================\n");
-        printf("Meaning: %s\n", card->meaning);
-        printf("Pronunciation: %s\n", card->pronunciation);
-        printf("Type: %s\n", card->type);
+//Front card
+        printHeader("FLASHCARD");
+
         printf("\n");
+        printf("========================================\n");
+        printf("\n");
+        setColor(14);
+        printf(">>> %s <<< \n",strupr(card->word));
+        setColor(7);
+        printf("\n");
+        printf("========================================\n");
+        printf("\nPress ENTER to flip...");
+        getchar();
+        // Back card
+        clearScreen();
+        printHeader("FLASHCARD ANSWER");
+        printf("\n");
+        printf("Meaning :%s  \n", card->meaning);
+        printf("Type    :%s   \n",card->type);
+        printf("Pronun  :%s  \n",card->pronunciation);
+        printf("\n");
+        printf("========================================\n");
+
         int review;
-        printf("=================REVIEW==================\n");
+        printf("=================REVIEW==================\n");  
         printf("1. Again\n");
         printf("2. Good\n");
         printf("3. Easy\n");

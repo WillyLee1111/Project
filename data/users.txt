@@ -2,3 +2,4 @@ Thinh|2712
 Hoang|1234
 adim|adim
 admin|admin
+Nam|1980Nam

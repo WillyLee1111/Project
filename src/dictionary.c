@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/dictionary.h"
 #include "../include/validator.h"
+#include "../include/utils.h"
 
 
 Word* createWord(
@@ -267,7 +268,7 @@ void addWord(Word** head) {
 
     Word *newWord = createWord(word, meaning, pronunciation, type);
     insertWord(head, newWord);
-    printf("Word added successfully!\n");
+    printSuccess("Word added successfully!");
 }
 
 void editWord(Word* head) {

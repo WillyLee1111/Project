@@ -35,9 +35,9 @@ void saveUserData() {
     if (file == NULL) {
         return;
     }
-    fprintf(file, "%d %d %d\n", dailyMission.wordsLearnedToday, dailyMission.flashcardsReviewed, dailyMission.gamesPlayed);
-    fprintf(file, "%s %d\n", studyStreak.lastStudyDate, studyStreak.streakDays);
-    fprintf(file, "%d %d\n", playStats.exp, playStats.level);
+    fprintf(file, "MISSON %d %d %d\n", dailyMission.wordsLearnedToday, dailyMission.flashcardsReviewed, dailyMission.gamesPlayed);
+    fprintf(file, "STREAK %s %d\n", studyStreak.lastStudyDate, studyStreak.streakDays);
+    fprintf(file, "STATS %d %d\n", playStats.level, playStats.exp);
     fclose(file);
 }
 
@@ -57,7 +57,7 @@ void loadUserData() {
         } else if (strcmp(label, "STREAK") == 0) {
             fscanf(file, "%s %d\n", studyStreak.lastStudyDate, &studyStreak.streakDays);
         } else if (strcmp(label, "STATS") == 0) {
-            fscanf(file, "%d %d\n", &playStats.exp, &playStats.level);
+            fscanf(file, "%d %d\n", &playStats.level, &playStats.exp);
         }
     }
     fclose(file);
