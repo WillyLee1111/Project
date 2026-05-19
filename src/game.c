@@ -26,9 +26,12 @@ void playMissingLetterGame(Word *head){
             word->learned = 1;
             printf("Meaning: %s\n", word->meaning);
             printf("Pronunciation: %s\n", word->pronunciation);
+            playStats.exp += 20;
+            updateLevel();
         } else {
             printf("Wrong! The correct letter was '%c'. The word is %s.\n", missingLetter, word->word);
             word->wrongCount++;
+            updateLevel();
         }
         printf("\n");
         printf("1. Play Again\n");
@@ -37,4 +40,61 @@ void playMissingLetterGame(Word *head){
         scanf("%d", &choice);
         pauseScreen();
     }
+}
+
+void englishToVietnameseGame(Word *head){
+    clearScreen();
+    Word *word = getRandomWord(head);
+    if(word == NULL){
+        printf("No words available.\n");
+        pauseScreen();
+        return;
+    }
+    char answer[100];
+    printf("=========== ENGLISH -> VIETNAMESE ===========\n\n");
+    printf("Translate this word:\n");
+    printf("%s\n\n", word->word);
+    printf("Your answer: ");
+    getchar();
+    fgets(answer, sizeof(answer), stdin);
+    answer[strcspn(answer, "\n")] = '\0';
+    if(strcmp(answer, word->meaning) == 0){
+        printf("\nCorrect!\n");
+        playStats.exp += 20;
+        dailyMission.gamesPlayed++;
+    }
+    else {
+        printf("\nWrong answer.\n");
+        printf("Correct meaning: %s\n", word->meaning);
+    }
+    pauseScreen();
+}
+
+
+void vietnameseToEnglishGame(Word *head){
+    clearScreen();
+    Word *word = getRandomWord(head);
+    if(word == NULL){
+        printf("No words available.\n");
+        pauseScreen();
+        return;
+    }
+    char answer[100];
+    printf("=========== VIETNAMESE -> ENGLISH ===========\n\n");
+    printf("Translate this meaning:\n");
+    printf("%s\n\n", word->meaning);
+    printf("Your answer: ");
+    getchar();
+    fgets(answer, sizeof(answer), stdin);
+    answer[strcspn(answer, "\n")] = '\0';
+    if(strcmp(answer, word->word) == 0){
+        printf("\nCorrect!\n");
+        playStats.exp += 20;
+        dailyMission.gamesPlayed++;
+    }
+    else {
+        printf("\nWrong answer.\n");
+        printf("Correct word: %s\n", word->word);
+    }
+    pauseScreen();
 }

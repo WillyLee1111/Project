@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/dictionary.h"
+#include "../include/validator.h"
+
 
 Word* createWord(
     char* word, 
@@ -163,7 +165,9 @@ void showStats(Word *head) {
     }
 }
 void saveProgress(Word *head) {
-    FILE *file = fopen("progress.txt", "wb");
+    char path[100];
+    sprintf(path, "data/users/%s/progress.txt", currentUser.username);
+    FILE *file = fopen(path, "w");
     if (file == NULL) {
         fprintf(stderr, "Could not open file for writing\n");
         return;
@@ -178,7 +182,9 @@ void saveProgress(Word *head) {
 
 
 void loadProgress(Word *head) {
-    FILE *file = fopen("progress.txt", "rb");
+    char path[100];
+    sprintf(path, "data/users/%s/progress.txt", currentUser.username);
+    FILE *file = fopen(path, "r");
     if (file == NULL) {
         fprintf(stderr, "Could not open file for reading\n");
         return;
@@ -242,6 +248,11 @@ void addWord(Word** head) {
     char word[50], meaning[200], pronunciation[50], type[20];
     printf("Enter the word: ");
     scanf("%s", word);
+    isDuplicateWord(*head, word);
+     if(isDuplicateWord(*head, word)) {
+        printf("Word already exists in the dictionary.\n");
+        return;
+    }
     getchar(); // Consume the newline character left by scanf
     printf("Enter the meaning: ");
     fgets(meaning, sizeof(meaning), stdin);
@@ -279,16 +290,12 @@ void editWord(Word* head) {
     printf("Enter the new type (noun/verb/adjective/adverb): ");
     fgets(type, sizeof(type), stdin);
     type[strcspn(type, "\r\n")] = '\0'; // Remove newline character
-
     strncpy(word->meaning, meaning, sizeof(word->meaning) - 1);
     word->meaning[sizeof(word->meaning) - 1] = '\0';
-    
     strncpy(word->pronunciation, pronunciation, sizeof(word->pronunciation) - 1);
     word->pronunciation[sizeof(word->pronunciation) - 1] = '\0';
-    
     strncpy(word->type, type, sizeof(word->type) - 1);
     word->type[sizeof(word->type) - 1] = '\0';
-
     printf("Word updated successfully!\n");
 }
 
@@ -326,4 +333,8 @@ void saveDictionary(Word *head) {
         temp = temp->next;
     }
     fclose(file);
+}
+
+void updateLevel (){
+    playStats.level = playStats.exp / 100 + 1;
 }

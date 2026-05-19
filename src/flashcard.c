@@ -81,6 +81,8 @@ void flashcardMode(Word *head){
         scanf("%d", &review);
         getchar();
         dailyMission.flashcardsReviewed++;
+        playStats.exp += 10;
+        updateLevel();
         if (review == 1) {
             card->wrongCount++;
             printf("\nMarked as difficult.\n");
@@ -88,6 +90,8 @@ void flashcardMode(Word *head){
         else if (review == 3) {
             card->learned = 1;
             dailyMission.wordsLearnedToday++;
+            playStats.exp += 15;
+            updateLevel();
             printf("\nMarked as learned.\n");
         }
         int nextchoice;

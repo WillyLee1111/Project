@@ -39,6 +39,7 @@ extern Streak studyStreak;
 typedef struct User {
     char username[50];
     char password[50];
+    int id;
 } User;
 
 extern User currentUser;
@@ -58,6 +59,12 @@ void deleteWord(
 void saveDictionary(
     Word *head
 );
+
+typedef struct PlayStats {
+    int exp;
+    int level;
+} PlayStats;
+extern PlayStats playStats;
 Word*getWordByType(Word *head, char *type);
 Word* getWeakWord(Word *head);
 void insertWord(Word **head, Word *newWord);
@@ -70,5 +77,6 @@ Word* getAdaptiveWord(Word *head);
 void showStats(Word *head);
 void saveProgress(Word *head);
 void loadProgress(Word *head);
+void updateLevel();
 
 #endif // DICTIONARY_H

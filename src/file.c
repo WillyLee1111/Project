@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <direct.h>
 
 #include "../include/file.h"
+#include "../include/validator.h"
 
 void loadDictionary(Word **head) {
     FILE* file = fopen("data/dictionary.txt", "r");
@@ -27,16 +29,22 @@ void loadDictionary(Word **head) {
 }
 
 void saveUserData() {
-    FILE *file = fopen("userdata.txt", "wb");
+    char path[100];
+    sprintf(path, "data/users/%s/userdata.txt", currentUser.username);
+    FILE* file = fopen(path, "w");
     if (file == NULL) {
-        return;}
+        return;
+    }
     fprintf(file, "%d %d %d\n", dailyMission.wordsLearnedToday, dailyMission.flashcardsReviewed, dailyMission.gamesPlayed);
     fprintf(file, "%s %d\n", studyStreak.lastStudyDate, studyStreak.streakDays);
+    fprintf(file, "%d %d\n", playStats.exp, playStats.level);
     fclose(file);
 }
 
 void loadUserData() {
-    FILE *file = fopen("userdata.txt", "rb");
+    char path[100];
+    sprintf(path, "data/users/%s/userdata.txt", currentUser.username);
+    FILE *file = fopen(path, "r");
     if (file == NULL) {
         return;
     }
@@ -48,6 +56,8 @@ void loadUserData() {
             fscanf(file, "%d %d %d\n", &dailyMission.wordsLearnedToday, &dailyMission.flashcardsReviewed, &dailyMission.gamesPlayed);
         } else if (strcmp(label, "STREAK") == 0) {
             fscanf(file, "%s %d\n", studyStreak.lastStudyDate, &studyStreak.streakDays);
+        } else if (strcmp(label, "STATS") == 0) {
+            fscanf(file, "%d %d\n", &playStats.exp, &playStats.level);
         }
     }
     fclose(file);
@@ -78,6 +88,8 @@ int login() {
         char storedPassword[50];
         sscanf(line, "%[^|]|%s", storedUsername, storedPassword);
         if (strcmp(username, storedUsername) == 0 && strcmp(password, storedPassword) == 0) {
+            strcpy(currentUser.username, storedUsername);
+            strcpy(currentUser.password, storedPassword);
             fclose(file);
             return 1; // Login successful
         }
@@ -90,8 +102,16 @@ int registerUser() {
     char password[50];
     printf("Choose a username: ");
     scanf("%s", username);
+    if (!isValidUsername(username)) {
+        printf("Invalid username. Must be 3-50 characters.\n");
+        return 0;
+    }
     printf("Choose a password: ");
     scanf("%s", password);
+    if (!isStrongPassword(password)) {
+        printf("Invalid password. Must be at least 6 characters long and contain uppercase, lowercase, and a digit.\n");
+        return 0;
+    }
 
     FILE *file = fopen("data/users.txt", "a");
     if (file == NULL) {
@@ -99,6 +119,9 @@ int registerUser() {
         return 0;
     }
     fprintf(file, "%s|%s\n", username, password);
+    char folderPath[100];
+    sprintf(folderPath, "data/users/%s", username);
+    mkdir(folderPath);
     fclose(file);
     return 1; // Registration successful
 }

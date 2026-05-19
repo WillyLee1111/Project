@@ -3,4 +3,6 @@
 
 #include "dictionary.h"
 void playMissingLetterGame(Word *head);
+void englishToVietnameseGame(Word *head);
+void vietnameseToEnglishGame(Word *head);
 #endif
