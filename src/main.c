@@ -9,6 +9,7 @@
 #include "../include/game.h"
 #include "../include/utils.h"
 #include "../include/file.h"
+#include "../include/ui.h"
 
 Mission dailyMission = {0,0,0};
 Streak studyStreak = {"", 0};
@@ -234,6 +235,9 @@ void gameMenu(Word *head) {
 }
 
 int main(){
+    showIntroScreen();
+    SetConsoleOutputCP(CP_UTF8);
+        clearScreen();
     srand(time(NULL));
     int option;
     printf("Welcome to the English Dictionary App!\n");
