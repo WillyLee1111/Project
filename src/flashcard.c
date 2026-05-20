@@ -14,14 +14,35 @@ void flashcardMode(Word *head){
     clearScreen();
 
     printf("===============FLASHCARD MODE==================\n");
-
-    printf("1. All Words\n");
-    printf("2. Noun\n");
-    printf("3. Verb\n");
-    printf("4. Adjective\n");
-    printf("5. Adverb\n");
-    printf("6. Weak Words\n");
-    printf("0. Exit\n");
+// noun, verb, adjective, adverb, weak words
+    setColor(11); 
+    printf("[1] ");
+    setColor(7);
+    printf("All Word\n");
+    setColor(11); 
+    printf("[2] ");
+    setColor(7);
+    printf("Noun Word\n");
+    setColor(11); 
+    printf("[3] ");
+    setColor(7);
+    printf("Verb Word\n");
+    setColor(11); 
+    printf("[4] ");
+    setColor(7);
+    printf("Adjective Word\n");
+    setColor(11); 
+    printf("[5] ");
+    setColor(7);
+    printf("Adverb Word\n");
+    setColor(11); 
+    printf("[6] ");
+    setColor(7);
+    printf("Weak Words\n");
+    setColor(12);
+    printf("[0] ");
+    setColor(7);
+    printf("Back\n");
     printf("Enter your choice: ");
     scanf("%d", &mode);
     getchar();

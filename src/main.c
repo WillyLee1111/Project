@@ -21,27 +21,50 @@ void dictionaryMenu(Word **head){
 
         clearScreen();
 
-        printf("=============== DICTIONARY MENU ===============\n");
-
-        printf("1. Show Dictionary\n");
-        printf("2. Search Word\n");
-        printf("3. Random Word\n");
-        printf("4. Add Word\n");
-        printf("5. Edit Word\n");
-        printf("6. Delete Word\n");
-        printf("0. Back\n");
+        printf("============= DICTIONARY MENU =============");
+        printf("\n");
+        printf("=============================\n");
+        setColor(11);
+        printf("[1] ");
+        setColor(7);
+        printf("Show Dictionary\n");
+        setColor(11);
+        printf("[2] ");
+        setColor(7);
+        printf("Search Word\n");
+        setColor(11);
+        printf("[3] ");
+        setColor(7);
+        printf("Random Word\n");
+        setColor(11);
+        printf("[4] ");
+        setColor(7);
+        printf("Add Word\n");
+        setColor(11);
+        printf("[5] ");
+        setColor(7);
+        printf("Edit Word\n");
+        setColor(11);
+        printf("[6] ");
+        setColor(7);
+        printf("Delete Word\n");
+        setColor(12);
+        printf("[0] ");
+        setColor(7);
+        printf("Back\n");
+        printf("=============================\n");
 
         printf("Enter your choice: ");
 
         scanf("%d", &choice);
-
+        getchar();
         clearScreen();
 
         switch(choice){
 
             case 1:
 
-                printf("=============DICTIONARY=============\n");
+                printf("============= DICTIONARY =============\n");
 
                 displayDictionary(*head);
 
@@ -55,7 +78,7 @@ void dictionaryMenu(Word **head){
 
                 Word* suggestions[20];
 
-                printf("=============SEARCH WORD=============\n");
+                printf("============= SEARCH WORD =============\n");
 
                 printf("Enter the word to search: ");
 
@@ -101,7 +124,7 @@ void dictionaryMenu(Word **head){
                         clearScreen();
 
                         printf(
-                            "=============WORD DETAIL=============\n\n"
+                            "============= WORD DETAIL =============\n\n"
                         );
 
                         printf(
@@ -145,7 +168,7 @@ void dictionaryMenu(Word **head){
 
                 if (randomWord != NULL) {
 
-                    printf("=============RANDOM WORD=============\n\n");
+                    printf("============= RANDOM WORD =============\n\n");
 
                     printf("Word          : %s\n",randomWord->word);
                     printf("Meaning       : %s\n",randomWord->meaning);
@@ -247,25 +270,10 @@ int main(){
     int choice;
     do {
         clearScreen();
-        printf("LEVEL : %d\n", playStats.level);
-        printf("EXP : %d\n", playStats.exp);
-        printf("=========== DAILY MISSION ===========\n");
-        printf(
-            "Words Learned : %d / 10\n",
-            dailyMission.wordsLearnedToday
-        );
-        printf(
-            "Flashcards Reviewed : %d / 5\n",
-            dailyMission.flashcardsReviewed
-        );
-        printf(
-            "Games Played : %d / 1\n",
-            dailyMission.gamesPlayed
-        );
-        printf(
-            "🔥 Study Streak: %d days\n\n",
-            studyStreak.streakDays
-        );
+        printf("=============== DAILY MISSION ===============\n");
+        printf("Words Learned     : %d /10\n", dailyMission.wordsLearnedToday);
+        printf("Flashcards Review   : %d /5\n", dailyMission.flashcardsReviewed);
+        printf("🔥 Study Streak     : %d days\n", studyStreak.streakDays);
         printHeader("ENGLISH DICTIONARY");
         showMiniPlayerCard();
         printf("\n");

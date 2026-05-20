@@ -137,34 +137,106 @@ void showStats(Word *head) {
     int totalWords = 0;
     int learnedWords = 0;
     int weakWords = 0;
-
     Word *temp = head;
     while (temp != NULL) {
         totalWords++;
-        if (temp->learned==1) {
+        if (temp->learned == 1) {
             learnedWords++;
         }
-        if (temp->wrongCount >= 3 && temp->learned==0) {
+        if (
+            temp->wrongCount >= 3 &&
+            temp->learned == 0
+        ) {
+
             weakWords++;
         }
         temp = temp->next;
     }
-    float learningRate = ((float)learnedWords / totalWords) * 100;
-    printf("============STAT============\n");
-    printf("Total Words: %d\n", totalWords);
-    printf("Learned Words: %d\n", learnedWords);
-    printf("Weak Words: %d\n", weakWords);
-    printf("Learning Rate: %.2f%%\n", learningRate);
+
+    float learningRate =
+        ((float)learnedWords / totalWords) * 100;
+
+    clearScreen();
+
+    printf("============== PLAYER STATISTICS ==============");
     printf("\n");
-    printf("=====MOST DIFFICULT WORDS=====\n");
+    printf("========================================\n");
+    setColor(11);
+    printf("LEVEL");
+    setColor(7);
+    printf("            : %d\n", playStats.level);
+
+    setColor(11);
+    printf("EXP");
+    setColor(7);
+    printf("              : %d\n", playStats.exp);
+
+    setColor(11);
+    printf("STREAK");
+    setColor(7);
+    printf("           : %d days\n",studyStreak.streakDays);
+
+    printf("========================================\n");
+
+    printf("\n");
+
+    setColor(14);
+    printf("DICTIONARY PROGRESS\n");
+    setColor(7);
+
+    printf("----------------------------------------\n");
+
+    printf("Total Words     : %d\n",totalWords);
+
+    printf("Learned Words   : %d\n",learnedWords);
+
+    printf("Weak Words      : %d\n",weakWords);
+
+    printf("Learning Rate   : %.2f%%\n",learningRate);
+
+    printf("----------------------------------------\n");
+
+    printf("\n");
+
+    setColor(13);
+    printf("DAILY MISSION\n");
+    setColor(7);
+
+    printf("----------------------------------------\n");
+
+    printf("Words Learned   : %d / 10\n",dailyMission.wordsLearnedToday);
+
+    printf("Flashcards      : %d / 5\n",dailyMission.flashcardsReviewed);
+
+    printf("Games Played    : %d / 1\n",dailyMission.gamesPlayed);
+
+    printf("----------------------------------------\n");
+    printf("\n");
+    setColor(12);
+    printf("MOST DIFFICULT WORDS\n");
+    setColor(7);
+    printf("----------------------------------------\n");
     temp = head;
+    int found = 0;
     while (temp != NULL) {
-        if (temp->wrongCount >= 3 && temp->learned==0) {
-            printf("Word: %s, Wrong Count: %d\n", temp->word, temp->wrongCount);
+        if (
+            temp->wrongCount >= 3 &&
+            temp->learned == 0
+        ) {
+            found = 1;
+            printf("%s  (%d wrongs)\n", temp->word,temp->wrongCount);
         }
         temp = temp->next;
     }
+    if (!found) {
+        printf("No difficult words yet!\n");
+    }
+    printf("----------------------------------------\n");
+    printf("\n");
+    pauseScreen();
 }
+
+
 void saveProgress(Word *head) {
     char path[100];
     sprintf(path, "data/users/%s/progress.txt", currentUser.username);
