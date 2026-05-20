@@ -7,4 +7,5 @@ void saveUserData();
 void loadUserData();
 int login();
 int registerUser();
+void updateStudyStreak();
 #endif // FILE_H

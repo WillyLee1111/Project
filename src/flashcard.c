@@ -127,8 +127,10 @@ void flashcardMode(Word *head){
             printf("\nMarked as difficult.\n");
         }
         else if (review == 3) {
-            card->learned = 1;
-            dailyMission.wordsLearnedToday++;
+            if( card -> learned == 0){
+                card -> learned = 1;
+                dailyMission.wordsLearnedToday++;
+            }
             playStats.exp += 15;
             updateLevel();
             printf("\nMarked as learned.\n");

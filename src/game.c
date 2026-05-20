@@ -89,8 +89,8 @@ void vietnameseToEnglishGame(Word *head){
     printf("Your answer: ");
     getchar();
     fgets(answer, sizeof(answer), stdin);
-    answer[strcmp(answer, "\n")] = '\0';
-    if(strcasecmp(answer, word->word) == 0){
+    answer[strcspn(answer, "\n")] = '\0';
+    if(_stricmp(answer, word->word) == 0){
         printf("\nCorrect!\n");
         playStats.exp += 20;
         dailyMission.gamesPlayed++;

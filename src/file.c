@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include <time.h>
 
 #include "../include/file.h"
 #include "../include/validator.h"
@@ -35,7 +36,7 @@ void saveUserData() {
     if (file == NULL) {
         return;
     }
-    fprintf(file, "MISSON %d %d %d\n", dailyMission.wordsLearnedToday, dailyMission.flashcardsReviewed, dailyMission.gamesPlayed);
+    fprintf(file, "MISSION %d %d %d\n", dailyMission.wordsLearnedToday, dailyMission.flashcardsReviewed, dailyMission.gamesPlayed);
     fprintf(file, "STREAK %s %d\n", studyStreak.lastStudyDate, studyStreak.streakDays);
     fprintf(file, "STATS %d %d\n", playStats.level, playStats.exp);
     fclose(file);
@@ -90,6 +91,7 @@ int login() {
         if (strcmp(username, storedUsername) == 0 && strcmp(password, storedPassword) == 0) {
             strcpy(currentUser.username, storedUsername);
             strcpy(currentUser.password, storedPassword);
+            updateStudyStreak();
             fclose(file);
             return 1; // Login successful
         }
@@ -124,4 +126,30 @@ int registerUser() {
     mkdir(folderPath);
     fclose(file);
     return 1; // Registration successful
+}
+
+
+void updateStudyStreak(){
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char today[20];
+    sprintf(
+        today,
+        "%04d-%02d-%02d",
+        tm.tm_year + 1900,
+        tm.tm_mon + 1,
+        tm.tm_mday
+    );
+    if(
+        strcmp(
+            studyStreak.lastStudyDate,
+            today
+        ) != 0
+    ){
+        studyStreak.streakDays++;
+        strcpy(
+            studyStreak.lastStudyDate,
+            today
+        );
+    }
 }
