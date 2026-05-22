@@ -230,7 +230,7 @@ void gameMenu(Word *head) {
                 printError("Invalid choice!");
                 pauseScreen();
         }
-    } while(gameChoice != 4);
+    } while(gameChoice != 0);
 
 }
 

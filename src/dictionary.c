@@ -114,17 +114,15 @@ Word* getRandomWord(Word *head) {
 Word* getAdaptiveWord(Word *head) {
     int useWeakWords = rand() % 100; // Randomly decide to use weak words or not
     if (useWeakWords < 70) { // 70% chance to use weak words
-        // Implementation for selecting weak words
         Word* weakWords[100];
         int count = 0;
         Word *temp = head;
         while (temp != NULL) {
-            if (temp->wrongCount >= 3 && !temp->learned == 0) {
+            if (temp->wrongCount >= 3 && temp->learned == 0) {
                 weakWords[count++] = temp;
-                count ++;
             }
             temp = temp->next;
-    }
+        }
         if (count > 0) {
             int randomIndex = rand() % count;
             return weakWords[randomIndex];
@@ -239,7 +237,7 @@ void showStats(Word *head) {
 
 void saveProgress(Word *head) {
     char path[100];
-    sprintf(path, "data/users/%s/progress.txt", currentUser.username);
+    snprintf(path, sizeof(path), "data/users/%s/progress.txt", currentUser.username);
     FILE *file = fopen(path, "w");
     if (file == NULL) {
         fprintf(stderr, "Could not open file for writing\n");
@@ -256,7 +254,7 @@ void saveProgress(Word *head) {
 
 void loadProgress(Word *head) {
     char path[100];
-    sprintf(path, "data/users/%s/progress.txt", currentUser.username);
+    snprintf(path, sizeof(path), "data/users/%s/progress.txt", currentUser.username);
     FILE *file = fopen(path, "r");
     if (file == NULL) {
         fprintf(stderr, "Could not open file for reading\n");
@@ -266,7 +264,7 @@ void loadProgress(Word *head) {
     int learned;
     int wrongCount;
     while(
-        fscanf(file, "%s %d %d", word, &learned, &wrongCount) == 3
+        fscanf(file, "%49s %d %d", word, &learned, &wrongCount) == 3
     ) {
         Word *temp = head;
         while (temp != NULL) {
@@ -304,9 +302,8 @@ Word* getWeakWord(Word *head) {
     int count = 0;
     Word *temp = head;
     while (temp != NULL) {
-        if (temp->wrongCount >= 3 && temp->learned==0) {
+        if (temp->wrongCount >= 3 && temp->learned == 0) {
             weakWords[count++] = temp;
-            count ++;
         }
         temp = temp->next;
     }
@@ -320,9 +317,8 @@ Word* getWeakWord(Word *head) {
 void addWord(Word** head) {
     char word[50], meaning[200], pronunciation[50], type[20];
     printf("Enter the word: ");
-    scanf("%s", word);
-    isDuplicateWord(*head, word);
-     if(isDuplicateWord(*head, word)) {
+    scanf("%49s", word);
+    if (isDuplicateWord(*head, word)) {
         printf("Word already exists in the dictionary.\n");
         return;
     }
@@ -336,7 +332,6 @@ void addWord(Word** head) {
     printf("Enter the type (noun/verb/adjective/adverb): ");
     fgets(type, sizeof(type), stdin);
     type[strcspn(type, "\r\n")] = '\0'; // Remove newline character
-    getchar(); // Consume the newline character left by scanf
 
     Word *newWord = createWord(word, meaning, pronunciation, type);
     insertWord(head, newWord);
@@ -346,7 +341,7 @@ void addWord(Word** head) {
 void editWord(Word* head) {
     char target[50];
     printf("Enter the word to edit: ");
-    scanf("%s", target);
+    scanf("%49s", target);
     Word* word = searchWord(head, target);
     if (word == NULL) {
         printf("Word not found.\n");

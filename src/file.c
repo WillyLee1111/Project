@@ -31,7 +31,7 @@ void loadDictionary(Word **head) {
 
 void saveUserData() {
     char path[100];
-    sprintf(path, "data/users/%s/userdata.txt", currentUser.username);
+    snprintf(path, sizeof(path), "data/users/%s/userdata.txt", currentUser.username);
     FILE* file = fopen(path, "w");
     if (file == NULL) {
         return;
@@ -44,7 +44,7 @@ void saveUserData() {
 
 void loadUserData() {
     char path[100];
-    sprintf(path, "data/users/%s/userdata.txt", currentUser.username);
+    snprintf(path, sizeof(path), "data/users/%s/userdata.txt", currentUser.username);
     FILE *file = fopen(path, "r");
     if (file == NULL) {
         return;
@@ -68,13 +68,16 @@ int login() {
     char username[50];
     char password[50];
     printf("Username: ");
-    scanf("%s", username);
+    scanf("%49s", username);
     printf("Password: ");
-    scanf("%s", password);
+    scanf("%49s", password);
 
     if(
         strcmp(username, "admin") == 0 && strcmp(password, "admin") == 0
     ) {
+        strcpy(currentUser.username, "admin");
+        strcpy(currentUser.password, "admin");
+        updateStudyStreak();
         return 1; // Admin login successful
     }
 
@@ -87,7 +90,7 @@ int login() {
     while (fgets(line, sizeof(line), file)) {
         char storedUsername[50];
         char storedPassword[50];
-        sscanf(line, "%[^|]|%s", storedUsername, storedPassword);
+        sscanf(line, "%49[^|]|%49s", storedUsername, storedPassword);
         if (strcmp(username, storedUsername) == 0 && strcmp(password, storedPassword) == 0) {
             strcpy(currentUser.username, storedUsername);
             strcpy(currentUser.password, storedPassword);
@@ -103,13 +106,13 @@ int registerUser() {
     char username[50];
     char password[50];
     printf("Choose a username: ");
-    scanf("%s", username);
+    scanf("%49s", username);
     if (!isValidUsername(username)) {
         printf("Invalid username. Must be 3-50 characters.\n");
         return 0;
     }
     printf("Choose a password: ");
-    scanf("%s", password);
+    scanf("%49s", password);
     if (!isStrongPassword(password)) {
         printf("Invalid password. Must be at least 6 characters long and contain uppercase, lowercase, and a digit.\n");
         return 0;
@@ -122,7 +125,7 @@ int registerUser() {
     }
     fprintf(file, "%s|%s\n", username, password);
     char folderPath[100];
-    sprintf(folderPath, "data/users/%s", username);
+    snprintf(folderPath, sizeof(folderPath), "data/users/%s", username);
     mkdir(folderPath);
     fclose(file);
     return 1; // Registration successful
@@ -133,13 +136,7 @@ void updateStudyStreak(){
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     char today[20];
-    sprintf(
-        today,
-        "%04d-%02d-%02d",
-        tm.tm_year + 1900,
-        tm.tm_mon + 1,
-        tm.tm_mday
-    );
+    strftime(today, sizeof(today), "%Y-%m-%d", &tm);
     if(
         strcmp(
             studyStreak.lastStudyDate,

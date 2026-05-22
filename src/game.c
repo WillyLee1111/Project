@@ -12,8 +12,14 @@ void playMissingLetterGame(Word *head){
     while (choice != 2){
         clearScreen();
         Word* word = getAdaptiveWord(head);
+        if (word == NULL) {
+            printf("No words available.\n");
+            pauseScreen();
+            return;
+        }
         char hidden[50];
         strncpy(hidden, word->word, sizeof(hidden) - 1);
+        hidden[sizeof(hidden) - 1] = '\0';
         int randomIndex = rand() % strlen(word->word);
         char missingLetter = hidden[randomIndex];
         hidden[randomIndex] = '_';
@@ -21,7 +27,7 @@ void playMissingLetterGame(Word *head){
         printf("Word: %s\n", hidden);   
         char answer[50];
         printf("Enter the missing letter: ");
-        scanf("%s", answer);
+        scanf("%49s", answer);
         if (answer[0] == missingLetter) {
             printf("Correct! The word is %s.\n", word->word);
             word->learned = 1;
@@ -60,10 +66,9 @@ void englishToVietnameseGame(Word *head){
     getchar();
     fgets(answer, sizeof(answer), stdin);
     answer[strcspn(answer, "\n")] = '\0';
-    if(strstr(answer, word->meaning) == 0){
+    if (strstr(answer, word->meaning) != NULL) {
         printf("\nCorrect!\n");
         playStats.exp += 20;
-        dailyMission.gamesPlayed++;
     }
     else {
         printf("\nWrong answer.\n");
@@ -93,7 +98,6 @@ void vietnameseToEnglishGame(Word *head){
     if(_stricmp(answer, word->word) == 0){
         printf("\nCorrect!\n");
         playStats.exp += 20;
-        dailyMission.gamesPlayed++;
     }
     else {
         printf("\nWrong answer.\n");
