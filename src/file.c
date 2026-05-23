@@ -35,7 +35,7 @@ static void ensureUserFolder(const char *username) {
     mkdir(folderPath);
 }
 
-void loadDictionary(Word **head) {
+void loadDictionary(HashTable *ht) {
     FILE* file = fopen("data/dictionary.txt", "r");
     if (file == NULL) {
         fprintf(stderr, "Could not open file\n");
@@ -51,7 +51,7 @@ void loadDictionary(Word **head) {
         
         if (word && meaning && pronunciation && type) {
             Word *newWord = createWord(word, meaning, pronunciation, type);
-            insertWord(head, newWord);
+            insertWord(ht, newWord);
         }
     }
     fclose(file);

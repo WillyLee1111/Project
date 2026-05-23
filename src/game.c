@@ -6,12 +6,12 @@
 #include "../include/dictionary.h"
 #include "../include/utils.h"
 
-void playMissingLetterGame(Word *head){
+void playMissingLetterGame(HashTable *ht){
     dailyMission.gamesPlayed++;
     int choice = 1;
     while (choice != 2){
         clearScreen();
-        Word* word = getAdaptiveWord(head);
+        Word* word = getAdaptiveWord(ht);
         if (word == NULL) {
             printf("No words available.\n");
             pauseScreen();
@@ -28,15 +28,23 @@ void playMissingLetterGame(Word *head){
         char answer[50];
         printf("Enter the missing letter: ");
         scanf("%49s", answer);
-        if (answer[0] == missingLetter) {
-            printf("Correct! The word is %s.\n", word->word);
-            word->learned = 1;
-            printf("Meaning: %s\n", word->meaning);
-            printf("Pronunciation: %s\n", word->pronunciation);
+        
+        char formedWord[50];
+        strcpy(formedWord, hidden);
+        formedWord[randomIndex] = answer[0];
+        
+        Word* foundWord = searchWord(ht, formedWord);
+        
+        if (foundWord != NULL) {
+            printf("Correct! The word is %s.\n", foundWord->word);
+            foundWord->learned = 1;
+            printf("Meaning: %s\n", foundWord->meaning);
+            printf("Pronunciation: %s\n", foundWord->pronunciation);
             playStats.exp += 20;
             updateLevel();
         } else {
-            printf("Wrong! The correct letter was '%c'. The word is %s.\n", missingLetter, word->word);
+            printf("Không có từ này trong tiếng Anh\n");
+            printf("Wrong! The correct letter was '%c'. The word we thought of was %s.\n", missingLetter, word->word);
             word->wrongCount++;
             updateLevel();
         }
@@ -49,10 +57,10 @@ void playMissingLetterGame(Word *head){
     }
 }
 
-void englishToVietnameseGame(Word *head){
+void englishToVietnameseGame(HashTable *ht){
     clearScreen();
     dailyMission.gamesPlayed++;
-    Word *word = getRandomWord(head);
+    Word *word = getRandomWord(ht);
     if(word == NULL){
         printf("No words available.\n");
         pauseScreen();
@@ -78,10 +86,10 @@ void englishToVietnameseGame(Word *head){
 }
 
 
-void vietnameseToEnglishGame(Word *head){
+void vietnameseToEnglishGame(HashTable *ht){
     clearScreen();
     dailyMission.gamesPlayed++;
-    Word *word = getRandomWord(head);
+    Word *word = getRandomWord(ht);
     if(word == NULL){
         printf("No words available.\n");
         pauseScreen();

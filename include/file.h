@@ -2,7 +2,7 @@
 #define FILE_H
 
 #include "dictionary.h"
-void loadDictionary(Word **head);
+void loadDictionary(HashTable *ht);
 void saveUserData();
 void loadUserData();
 int login();

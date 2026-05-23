@@ -61,12 +61,12 @@ data/
 
 ### Tên thuật toán chính
 - Thuật toán kiểm tra đăng nhập/đăng ký: `login()` và `registerUser()` trong `src/file.c`
-- Thuật toán quản lý danh sách liên kết từ điển: `createWord()` / `insertWord()` / `deleteWord()` trong `src/dictionary.c`
-- Thuật toán gợi ý từ theo tiền tố: `suggestWords()`
+- Cấu trúc Bảng băm (Hash Table) xử lý từ điển: `createHashTable()`, `hashFunction()`, `insertWord()`, `searchWord()` trong `src/dictionary.c`
+- Thuật toán gợi ý từ (Prefix Matching trên Bảng băm): `suggestWords()`
 - Thuật toán chọn từ thích nghi (adaptive selection): `getAdaptiveWord()`
 - Thuật toán chọn từ yếu (weak word selection): `getWeakWord()`
 - Thuật toán chọn từ theo loại: `getWordByType()`
-- Thuật toán trò chơi Missing Letter: `playMissingLetterGame()`
+- Thuật toán trò chơi Missing Letter: `playMissingLetterGame()` (Tạo từ mới và đối chiếu bằng Hash Table)
 - Thuật toán kiểm tra dịch Anh-Việt / Việt-Anh: `englishToVietnameseGame()` và `vietnameseToEnglishGame()`
 - Thuật toán cập nhật streak và EXP: `updateStudyStreak()` và `updateLevel()`
 
@@ -75,7 +75,7 @@ data/
 - Hiển thị màn hình chào mừng và yêu cầu người dùng chọn đăng nhập hoặc đăng ký.
 - Nếu chọn đăng nhập: `login()` kiểm tra tài khoản `admin/admin` hoặc tìm trong `data/users.txt`.
 - Nếu chọn đăng ký: `registerUser()` thêm tài khoản mới và tạo thư mục người dùng.
-- Sau đăng nhập, tải từ điển từ `data/dictionary.txt` và dữ liệu người dùng.
+- Sau đăng nhập, tải từ điển vào Bảng băm (Hash Table) từ `data/dictionary.txt` và dữ liệu người dùng.
 - Hiển thị menu chính với các lựa chọn:
   1. Dictionary Menu
   2. Flashcard Mode
@@ -86,30 +86,32 @@ data/
 
 ### 2. Quản lý từ điển
 `src/dictionary.c`
-- `createWord(...)`: tạo node `Word` trong danh sách liên kết đơn và sao chép an toàn chuỗi với `strncpy`.
-- `insertWord(...)`: chèn từ mới vào cuối danh sách.
-- `displayDictionary(...)`: duyệt danh sách và in toàn bộ từ.
-- `searchWord(...)`: tìm từ chính xác theo tên.
-- `suggestWords(...)`: gợi ý tối đa 20 từ bắt đầu bằng tiền tố được nhập.
-- `getRandomWord(...)`: chọn ngẫu nhiên một từ từ danh sách bằng cách đếm số node và chọn chỉ số ngẫu nhiên.
+- `createHashTable()`: Khởi tạo bảng băm với mảng buckets rỗng.
+- `hashFunction(...)`: Hàm băm (hash) để ánh xạ chuỗi từ vựng thành index.
+- `createWord(...)`: tạo node `Word` chứa thông tin chi tiết của từ.
+- `insertWord(...)`: tính mã băm và chèn từ mới vào đầu bucket (Collision resolution bằng chaining).
+- `displayDictionary(...)`: duyệt toàn bộ bảng băm và in các từ.
+- `searchWord(...)`: tra cứu từ trong bảng băm bằng `hashFunction` với tốc độ O(1).
+- `suggestWords(...)`: quét qua bảng băm để tìm tối đa 20 từ khớp với tiền tố.
+- `getRandomWord(...)`: chọn ngẫu nhiên một từ từ bảng băm.
 - `getAdaptiveWord(...)`: thuật toán chọn từ học:
   - 70% cơ hội chọn từ yếu (wrongCount >= 3 và learned == 0)
   - Nếu không có từ yếu hoặc không chọn, trả về từ ngẫu nhiên.
 - `getWeakWord(...)`: tập hợp tất cả từ yếu (wrongCount >= 3 và learned == 0), sau đó chọn ngẫu nhiên.
-- `getWordByType(...)`: lọc từ theo `type` (noun/verb/adjective/adverb) và chọn ngẫu nhiên từ kết quả.
-- `freeList(...)`: giải phóng toàn bộ danh sách liên kết.
-- `saveDictionary(...)`: ghi lại `data/dictionary.txt` với tất cả từ hiện tại.
+- `getWordByType(...)`: lọc từ theo `type` (noun/verb/adjective/adverb) và chọn ngẫu nhiên.
+- `freeHashTable(...)`: giải phóng toàn bộ vùng nhớ của Bảng băm.
+- `saveDictionary(...)`: quét toàn bộ Bảng băm và ghi lại `data/dictionary.txt`.
 - `addWord(...)`: 
-  - nhập từ bằng `scanf` và kiểm tra sao chép trùng lặp.
+  - nhập từ bằng `scanf` và kiểm tra trùng lặp bằng `searchWord()`.
   - sử dụng `fgets()` để nhận nghĩa, phát âm, và loại từ.
-  - thêm node mới vào danh sách.
-- `editWord(...)`: tìm từ, nhập lại nghĩa, phát âm và loại từ, cập nhật node hiện tại.
-- `deleteWord(...)`: tìm node theo từ, bỏ node khỏi danh sách liên kết và giải phóng bộ nhớ.
+  - thêm từ vào bảng băm.
+- `editWord(...)`: tìm từ trong bảng băm, nhập lại nghĩa, phát âm và loại từ, cập nhật thông tin.
+- `deleteWord(...)`: tìm node theo từ trong bucket, bỏ node khỏi bucket và giải phóng bộ nhớ.
 - `updateLevel()`: tính cấp độ dựa trên EXP: `level = exp / 100 + 1`.
 
 ### 3. Lưu và tải dữ liệu người dùng
 `src/file.c`
-- `loadDictionary(...)`: mở `data/dictionary.txt`, tách dòng theo `|`, tạo từ mới và chèn vào danh sách.
+- `loadDictionary(...)`: mở `data/dictionary.txt`, tách dòng theo `|`, tạo từ mới và chèn vào bảng băm.
 - `saveUserData()`:
   - ghi trạng thái mission, streak và stats vào `userdata.txt` của người dùng.
 - `loadUserData()`:
@@ -137,9 +139,9 @@ data/
   5. Adverb Word
   6. Weak Words
 - Thuật toán chọn thẻ:
-  - `mode 1`: dùng `getAdaptiveWord(head)` để chọn từ yếu ưu tiên 70%.
-  - `mode 2-5`: dùng `getWordByType(head, <type>)` để chọn ngẫu nhiên theo loại.
-  - `mode 6`: dùng `getWeakWord(head)` để chọn từ yếu.
+  - `mode 1`: dùng `getAdaptiveWord(ht)` để chọn từ yếu ưu tiên 70%.
+  - `mode 2-5`: dùng `getWordByType(ht, <type>)` để chọn ngẫu nhiên theo loại.
+  - `mode 6`: dùng `getWeakWord(ht)` để chọn từ yếu.
 - Hiển thị mặt trước thẻ (từ), đợi Enter, sau đó hiển thị nghĩa, loại và phát âm.
 - Người dùng chọn review:
   - 1. Again -> tăng `wrongCount`
@@ -151,11 +153,13 @@ data/
 ### 5. Game Center
 `src/game.c`
 - `playMissingLetterGame(...)`:
-  - chọn từ từ `getAdaptiveWord(head)`.
-  - ẩn một chữ cái ngẫu nhiên bằng dấu `_`.
-  - người chơi nhập chữ cái thiếu.
-  - nếu đúng: đánh dấu learned, cộng EXP.
-  - nếu sai: tăng `wrongCount`, hiển thị đáp án.
+  - chọn ngẫu nhiên 1 từ (ví dụ: `cut`).
+  - ẩn một chữ cái bằng dấu `_` (ví dụ: `c_t`).
+  - người chơi nhập chữ cái thiếu (ví dụ: `a`).
+  - chương trình ghép chữ cái vào tạo thành từ mới (`cat`).
+  - tra cứu từ mới này trong Bảng Băm bằng `searchWord(ht, "cat")`.
+  - nếu hợp lệ (có trong từ điển): hiển thị thông tin từ `cat`, cộng EXP.
+  - nếu không hợp lệ: báo lỗi chính xác `"Không có từ này trong tiếng Anh"`, tăng `wrongCount`.
 - `englishToVietnameseGame(...)`:
   - chọn từ ngẫu nhiên.
   - yêu cầu người chơi dịch sang tiếng Việt.
@@ -181,8 +185,7 @@ data/
 
 ### 7. Xác thực và kiểm tra dữ liệu
 `src/validator.c`
-- `isDuplicateWord(...)`: kiểm tra từ đã tồn tại trong danh sách.
-- `isValidUsername(...)`: username phải dài 3-50 ký tự và chỉ chứa chữ/ số/ gạch dưới.
+- `isValidUsername(...)`: username phải dài 3-50 ký tự.
 - `isStrongPassword(...)`: password phải >= 6 ký tự, có chữ hoa, chữ thường và chữ số.
 
 ## Các biến toàn cục chính
@@ -216,17 +219,14 @@ data/
 
 ---
 
-### 3. Cấu trúc dữ liệu Danh sách liên kết đơn
+### 3. Cấu trúc dữ liệu Bảng Băm (Hash Table)
 
-(Singly Linked List)
-
-* Lưu trữ từ điển bằng Linked List
-* Hỗ trợ:
-
-  * Insert
-  * Delete
-  * Traverse
-  * Search
+* Lưu trữ từ điển bằng cấu trúc Bảng băm (Hash Table) kết hợp mảng `buckets`.
+* Xử lý đụng độ (Collision) bằng phương pháp Chaining (Danh sách liên kết phụ).
+* Hỗ trợ thời gian tra cứu trung bình $O(1)$ cho các thao tác:
+  * Insert (Thêm từ)
+  * Delete (Xóa từ)
+  * Search (Tìm kiếm từ)
 
 ---
 

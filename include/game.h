@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include "dictionary.h"
-void playMissingLetterGame(Word *head);
-void englishToVietnameseGame(Word *head);
-void vietnameseToEnglishGame(Word *head);
+void playMissingLetterGame(HashTable *ht);
+void englishToVietnameseGame(HashTable *ht);
+void vietnameseToEnglishGame(HashTable *ht);
 #endif

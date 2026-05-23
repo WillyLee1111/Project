@@ -3,5 +3,5 @@
 
 #include "dictionary.h"
 
-void flashcardMode(Word *head);
+void flashcardMode(HashTable *ht);
 #endif // FLASHCARD_H

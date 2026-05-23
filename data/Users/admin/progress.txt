@@ -61,10 +61,10 @@ office 0 0
 joy 0 0
 air 0 0
 PARTICIPATE 0 0
-ACCIDENT 0 0
+ACCIDENT 0 1
 analysis 0 0
 all 0 0
-UNDERSTAND 0 0
+UNDERSTAND 1 0
 offer 0 0
 barely 0 0
 and 0 0
@@ -196,10 +196,10 @@ team 0 0
 tear 0 0
 quiet 0 0
 sale 0 0
-SALT 0 0
+SALT 1 0
 basket 0 0
 same 0 0
-FAILURE 0 0
+FAILURE 1 0
 admire 0 0
 sand 0 0
 captain 0 0
@@ -242,7 +242,7 @@ decade 0 0
 gentle 0 0
 value 0 0
 death 0 0
-MANAGER 0 0
+MANAGER 1 0
 wealth 0 0
 until 0 0
 universe 0 0
@@ -285,7 +285,7 @@ reality 0 0
 agent 0 0
 kiss 0 0
 reach 0 0
-JUNIOR 0 0
+JUNIOR 1 0
 react 0 0
 READY 0 0
 candidate 0 0
@@ -389,7 +389,7 @@ wake 0 0
 leader 0 0
 walk 0 0
 layer 0 0
-WALL 0 0
+WALL 1 0
 edition 0 0
 YES 0 0
 yet 0 0
@@ -461,7 +461,7 @@ ability 0 0
 amazing 0 0
 hard 0 0
 WEAPON 0 0
-SCALE 0 0
+SCALE 0 1
 hate 0 0
 education 0 0
 have 0 0
@@ -483,7 +483,7 @@ camp 0 0
 agree 0 0
 capital 0 0
 abstract 0 0
-DEBATE 0 0
+DEBATE 0 1
 queen 0 0
 yield 0 0
 keyboard 0 0
@@ -537,7 +537,7 @@ active 0 0
 ill 0 0
 vessel 0 0
 manufacture 0 0
-GARDEN 0 0
+GARDEN 1 0
 knee 0 0
 OBJECT 0 0
 jacket 0 0

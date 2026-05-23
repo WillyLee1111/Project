@@ -1,6 +1,8 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
+#define HASH_SIZE 10007
+
 typedef struct Word{
     char word[50];
     char meaning[200];
@@ -13,6 +15,13 @@ typedef struct Word{
 
     struct Word *next;
 }Word;
+
+typedef struct HashTable {
+    Word *buckets[HASH_SIZE];
+} HashTable;
+
+HashTable* createHashTable();
+unsigned int hashFunction(char* word);
 
 Word* createWord(
     char*word, 
@@ -44,39 +53,29 @@ typedef struct User {
 
 extern User currentUser;
 
-void addWord(
-    Word** head
-);
-
-void editWord(
-    Word *head
-);
-
-void deleteWord(
-    Word **head
-);
-
-void saveDictionary(
-    Word *head
-);
+void addWord(HashTable* ht);
+void editWord(HashTable* ht);
+void deleteWord(HashTable* ht);
+void saveDictionary(HashTable* ht);
 
 typedef struct PlayStats {
     int exp;
     int level;
 } PlayStats;
 extern PlayStats playStats;
-Word*getWordByType(Word *head, char *type);
-Word* getWeakWord(Word *head);
-void insertWord(Word **head, Word *newWord);
-void displayDictionary(Word *head);
-Word* searchWord(Word *head, char *target);
-int suggestWords(Word *head, char *prefix, Word *suggestions[20]);
-Word* getRandomWord(Word *head);
-void freeList(Word *head);
-Word* getAdaptiveWord(Word *head);
-void showStats(Word *head);
-void saveProgress(Word *head);
-void loadProgress(Word *head);
+
+Word* getWordByType(HashTable* ht, char *type);
+Word* getWeakWord(HashTable* ht);
+void insertWord(HashTable* ht, Word *newWord);
+void displayDictionary(HashTable* ht);
+Word* searchWord(HashTable* ht, char *target);
+int suggestWords(HashTable* ht, char *prefix, Word *suggestions[20]);
+Word* getRandomWord(HashTable* ht);
+void freeHashTable(HashTable* ht);
+Word* getAdaptiveWord(HashTable* ht);
+void showStats(HashTable* ht);
+void saveProgress(HashTable* ht);
+void loadProgress(HashTable* ht);
 void updateLevel();
 
 #endif // DICTIONARY_H

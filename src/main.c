@@ -16,7 +16,7 @@ Streak studyStreak = {"", 0};
 PlayStats playStats = {0, 0};
 User currentUser;
 
-void dictionaryMenu(Word **head){
+void dictionaryMenu(HashTable *ht){
     int choice;
     do {
 
@@ -67,7 +67,7 @@ void dictionaryMenu(Word **head){
 
                 printf("============= DICTIONARY =============\n");
 
-                displayDictionary(*head);
+                displayDictionary(ht);
 
                 pauseScreen();
 
@@ -86,7 +86,7 @@ void dictionaryMenu(Word **head){
                 scanf("%s", target);
 
                 int count = suggestWords(
-                    *head,
+                    ht,
                     target,
                     suggestions
                 );
@@ -165,7 +165,7 @@ void dictionaryMenu(Word **head){
             case 3: {
 
                 Word *randomWord =
-                    getRandomWord(*head);
+                    getRandomWord(ht);
 
                 if (randomWord != NULL) {
 
@@ -185,18 +185,18 @@ void dictionaryMenu(Word **head){
                 break;
             }
             case 4:
-                addWord(head);
-                saveDictionary(*head);
+                addWord(ht);
+                saveDictionary(ht);
                 pauseScreen();
                 break;
             case 5:
-                editWord(*head);
-                saveDictionary(*head);
+                editWord(ht);
+                saveDictionary(ht);
                 pauseScreen();
                 break;
             case 6:
-                deleteWord(head);
-                saveDictionary(*head);
+                deleteWord(ht);
+                saveDictionary(ht);
                 pauseScreen();
                 break;
         }
@@ -204,7 +204,7 @@ void dictionaryMenu(Word **head){
 }
 
 
-void gameMenu(Word *head) {
+void gameMenu(HashTable *ht) {
 
     int gameChoice;
 
@@ -216,13 +216,13 @@ void gameMenu(Word *head) {
         getchar();
         switch(gameChoice){
             case 1:
-                englishToVietnameseGame(head);
+                englishToVietnameseGame(ht);
                 break;
             case 2:
-                vietnameseToEnglishGame(head);
+                vietnameseToEnglishGame(ht);
                 break;
             case 3:
-                playMissingLetterGame(head);
+                playMissingLetterGame(ht);
                 break;
             case 0:
                 return;
@@ -267,9 +267,9 @@ int main(){
     }
 
     SetConsoleOutputCP(CP_UTF8);
-    Word *head = NULL;
-    loadDictionary(&head);
-    loadProgress(head);
+    HashTable *ht = createHashTable();
+    loadDictionary(ht);
+    loadProgress(ht);
     int choice;
     do {
         clearScreen();
@@ -312,22 +312,22 @@ int main(){
         clearScreen();
         switch(choice){
             case 1:
-                dictionaryMenu(&head);
+                dictionaryMenu(ht);
                 break;
             case 2:
-                flashcardMode(head);
+                flashcardMode(ht);
                 break;
             case 3:
-                gameMenu(head);
+                gameMenu(ht);
                 break;
             case 4:
-                showStats(head);
+                showStats(ht);
                 pauseScreen();
                 break;
             case 5:
-                saveProgress(head);
+                saveProgress(ht);
                 saveUserData();
-                saveDictionary(head);
+                saveDictionary(ht);
                 printf("Data saved successfully.\n");
                 pauseScreen();
                 break;
@@ -337,6 +337,6 @@ int main(){
                 break;
         }
     } while(choice != 5);
-    freeList(head);
+    freeHashTable(ht);
     return 0;
 }

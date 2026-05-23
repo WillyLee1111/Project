@@ -6,7 +6,7 @@
 #include "../include/dictionary.h"
 #include "../include/utils.h"
 
-void flashcardMode(Word *head){
+void flashcardMode(HashTable *ht){
 
     int mode;
     int choice = 1;
@@ -53,34 +53,34 @@ void flashcardMode(Word *head){
         clearScreen();
         Word* card = NULL;
         if (mode == 1) {
-            card = getAdaptiveWord(head);
+            card = getAdaptiveWord(ht);
         }
         else if (mode == 2) {
             card = getWordByType(
-                head,
+                ht,
                 "noun"
             );
         }
         else if (mode == 3) {
             card = getWordByType(
-                head,
+                ht,
                 "verb"
             );
         }
         else if (mode == 4) {
             card = getWordByType(
-                head,
+                ht,
                 "adjective"
             );
         }
         else if (mode == 5) {
             card = getWordByType(
-                head,
+                ht,
                 "adverb"
             );
         }
         else if (mode == 6) {
-            card = getWeakWord(head);
+            card = getWeakWord(ht);
         }
         if (card == NULL) {
             printf("No words found.\n");
