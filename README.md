@@ -200,5 +200,228 @@ data/
 
 ---
 
-## Ghi chú
-README này đã bao gồm toàn bộ thuật toán và logic chính xuất hiện trong code hiện tại của dự án. Nếu muốn, bạn có thể mở rộng thêm phần mô tả chi tiết với mỗi hàm cụ thể. 
+### Thuật toán
+ ### 1. Thuật toán xác thực tài khoản (Authentication Algorithm)
+
+* Sử dụng so sánh chuỗi để kiểm tra username/password
+* Áp dụng xác thực dữ liệu đầu vào (Input Validation)
+
+---
+
+### 2. Thuật toán kiểm tra tính hợp lệ dữ liệu (Validation Algorithm)
+
+* Kiểm tra username hợp lệ
+* Kiểm tra độ mạnh mật khẩu
+* Kiểm tra dữ liệu rỗng / ký tự đặc biệt
+
+---
+
+### 3. Cấu trúc dữ liệu Danh sách liên kết đơn
+
+(Singly Linked List)
+
+* Lưu trữ từ điển bằng Linked List
+* Hỗ trợ:
+
+  * Insert
+  * Delete
+  * Traverse
+  * Search
+
+---
+
+### 4. Thuật toán tìm kiếm tuần tự
+
+(Linear Search Algorithm)
+
+* Dùng để:
+
+  * tìm từ
+  * chỉnh sửa từ
+  * xóa từ
+  * kiểm tra từ tồn tại
+
+---
+
+### 5. Thuật toán Prefix Matching
+
+(Tiền tố chuỗi)
+
+* Dùng cho chức năng gợi ý từ
+* So khớp ký tự đầu chuỗi
+* Tương tự cơ chế autocomplete
+
+---
+
+### 6. Thuật toán Random Selection
+
+(Chọn ngẫu nhiên)
+
+* Chọn từ ngẫu nhiên
+* Chọn câu hỏi ngẫu nhiên
+* Sử dụng rand()
+
+---
+
+### 7. Thuật toán Adaptive Learning
+
+(Học thích nghi)
+
+* Ưu tiên từ người dùng học yếu
+
+* Dựa trên:
+
+  * wrongCount
+  * learned status
+
+* Tương tự cơ chế:
+
+  * Duolingo
+  * Quizlet
+
+---
+
+### 8. Thuật toán Spaced Repetition cơ bản
+
+(Lặp lại ngắt quãng)
+
+* Từ sai nhiều xuất hiện lại thường xuyên hơn
+* Từ đã thuộc xuất hiện ít hơn
+
+---
+
+### 9. Thuật toán Weak Word Selection
+
+(Chọn từ yếu)
+
+* Chọn từ có:
+
+  * wrongCount cao
+  * learned = 0
+
+* Tăng khả năng ghi nhớ
+
+---
+
+### 10. Thuật toán phân loại dữ liệu
+
+(Category Filtering Algorithm)
+
+* Lọc từ theo:
+
+  * noun
+  * verb
+  * adjective
+  * adverb
+
+---
+
+### 11. Thuật toán Question-Answer Validation
+
+* So sánh đáp án người dùng
+
+* Hỗ trợ:
+
+  * English -> Vietnamese
+  * Vietnamese -> English
+
+* Sử dụng:
+
+  * strcmp()
+  * _stricmp()
+
+---
+
+### 12. Thuật toán Missing Character Game
+
+* Ẩn ký tự trong từ
+* Người dùng đoán ký tự bị thiếu
+* Dạng word puzzle algorithm
+
+---
+
+### 13. Thuật toán Experience & Level System
+
+(EXP/Level Progression)
+
+* EXP tăng theo hoạt động học
+* Level tăng theo EXP threshold
+
+---
+
+### 14. Thuật toán Study Streak Tracking
+
+* Theo dõi số ngày học liên tiếp
+
+* So sánh:
+
+  * ngày hiện tại
+  * ngày học gần nhất
+
+* Tương tự streak system của Duolingo
+
+---
+
+### 15. Thuật toán Daily Mission Tracking
+
+* Theo dõi:
+
+  * số từ học
+  * số flashcard review
+  * số game đã chơi
+
+* Dùng bộ đếm nhiệm vụ
+
+---
+
+### 16. Thuật toán Thống kê học tập
+
+(Learning Analytics)
+
+* Tính:
+
+  * Learning Rate
+  * Learned Words
+  * Weak Words
+  * Accuracy
+
+---
+
+### 17. Thuật toán File Persistence
+
+(Lưu trữ dữ liệu file)
+
+* Đọc/Ghi dữ liệu bằng:
+
+  * fopen()
+  * fscanf()
+  * fprintf()
+
+* Lưu:
+
+  * dictionary
+  * progress
+  * stats
+  * user data
+
+---
+
+### 18. Thuật toán State Persistence
+
+* Giữ trạng thái học tập sau khi thoát chương trình
+* Khôi phục dữ liệu khi đăng nhập lại
+
+---
+
+### 19. Thuật toán Console UI Rendering
+
+* Vẽ menu console
+* Tô màu giao diện
+* Hiển thị dashboard realtime
+
+---
+
+### 20. UTF-8 Console Encoding Handling
+
+* Xử lý hiển thị Unicode console Windows
+* Hỗ trợ box drawing + UTF-8

@@ -76,16 +76,15 @@ void showWordCard(Word *word){
 void showGameMenu(){
     clearScreen();
     printHeader("GAME CENTER");
-    printf("\n");
     printf("========================================\n");
     setColor(11); printf("[1] "); setColor(7);
-    printf("| [1] English -> Vietnamese            |\n");
+    printf("English -> Vietnamese\n");
     setColor(11); printf("[2] "); setColor(7);
-    printf("| [2] Vietnamese -> English            |\n");
+    printf("Vietnamese -> English\n");
     setColor(11); printf("[3] "); setColor(7);
-    printf("| [3] Missing Letter                   |\n");
+    printf("Missing Letter\n");
     setColor(12); printf("[0] "); setColor(7);
-    printf("| [0] Back                             |\n");
+    printf("Back\n");
     printf("========================================\n");
 }
 

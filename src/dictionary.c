@@ -29,7 +29,9 @@ Word* createWord(
     strncpy(newWord->type, type, sizeof(newWord->type) - 1);
     newWord->type[sizeof(newWord->type) - 1] = '\0';
     
+    newWord->learned = 0;
     newWord->wrongCount = 0;
+    newWord->isFavorite = 0;
     newWord->next = NULL;
     
     return newWord;
@@ -151,8 +153,10 @@ void showStats(Word *head) {
         temp = temp->next;
     }
 
-    float learningRate =
-        ((float)learnedWords / totalWords) * 100;
+    float learningRate = 0;
+    if (totalWords > 0) {
+        learningRate = ((float)learnedWords / totalWords) * 100;
+    }
 
     clearScreen();
 
@@ -257,7 +261,6 @@ void loadProgress(Word *head) {
     snprintf(path, sizeof(path), "data/users/%s/progress.txt", currentUser.username);
     FILE *file = fopen(path, "r");
     if (file == NULL) {
-        fprintf(stderr, "Could not open file for reading\n");
         return;
     }
     char word[50];
@@ -269,8 +272,8 @@ void loadProgress(Word *head) {
         Word *temp = head;
         while (temp != NULL) {
             if (strcmp(temp->word, word) == 0) {
-                temp->learned = learned;
-                temp->wrongCount = wrongCount;
+                temp->learned = learned == 1 ? 1 : 0;
+                temp->wrongCount = wrongCount < 0 ? 0 : wrongCount;
                 break;
             }
             temp = temp->next;

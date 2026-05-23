@@ -270,7 +270,6 @@ int main(){
     Word *head = NULL;
     loadDictionary(&head);
     loadProgress(head);
-    loadUserData();
     int choice;
     do {
         clearScreen();

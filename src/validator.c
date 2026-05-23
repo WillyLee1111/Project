@@ -20,11 +20,7 @@ int isValidUsername(char *username) {
     if (strlen(username) < 3 || strlen(username) > 50) {
         return 0; // Invalid length
     }
-    for (int i = 0; username[i] != '\0'; i++) {
-        if (!isalnum(username[i]) && username[i] != '_') {
-            return 0; // Invalid character found
-        }
-    }
+    // Chỉ kiểm tra độ dài, cho phép ký tự Unicode (tiếng Việt)
     return 1; // Valid username
 }
 

@@ -14,7 +14,7 @@ ACCESS|truy cập|/ˈæk.ses/|noun
 accident|tai nạn|/ˈæk.sɪ.dənt/|noun
 accommodation|chỗ ở|/əˌkɒm.əˈdeɪ.ʃən/|noun
 ACCOMPANY|đi cùng|/əˈkʌm.pə.ni/|verb
-according|theo|/əˈkɔː.dɪŋ/|preposition
+ACCORDING|theo|/əˈkɔː.dɪŋ/|preposition
 account|tài khoản|/əˈkaʊnt/|noun
 accurate|chính xác|/ˈæk.jə.rət/|adjective
 achieve|đạt được|/əˈtʃiːv/|verb
@@ -27,7 +27,7 @@ active|năng động|/ˈæk.tɪv/|adjective
 activity|hoạt động|/ækˈtɪv.ə.ti/|noun
 actor|diễn viên nam|/ˈæk.tər/|noun
 actress|diễn viên nữ|/ˈæk.trəs/|noun
-actual|thực sự|/ˈæk.tʃu.əl/|adjective
+ACTUAL|thực sự|/ˈæk.tʃu.əl/|adjective
 adapt|thích nghi|/əˈdæpt/|verb
 add|thêm vào|/æd/|verb
 addition|sự thêm vào|/əˈdɪʃ.ən/|noun
@@ -51,7 +51,7 @@ AFFORD|có đủ khả năng|/əˈfɔːd/|verb
 afraid|sợ hãi|/əˈfreɪd/|adjective
 after|sau khi|/ˈɑːf.tər/|preposition
 afternoon|buổi chiều|/ˌɑːf.təˈnuːn/|noun
-again|lại|/əˈɡen/|adverb
+AGAIN|lại|/əˈɡen/|adverb
 AGAINST|chống lại|/əˈɡenst/|preposition
 age|tuổi|/eɪdʒ/|noun
 agency|đại lý|/ˈeɪ.dʒən.si/|noun
@@ -84,7 +84,7 @@ although|mặc dù|/ɔːlˈðəʊ/|conjunction
 always|luôn luôn|/ˈɔːl.weɪz/|adverb
 amazing|kinh ngạc|/əˈmeɪ.zɪŋ/|adjective
 ambition|tham vọng|/æmˈbɪʃ.ən/|noun
-among|giữa|/əˈmʌŋ/|preposition
+AMONG|giữa|/əˈmʌŋ/|preposition
 amount|số lượng|/əˈmaʊnt/|noun
 analyse|phân tích|/ˈæn.əl.aɪz/|verb
 analysis|sự phân tích|/əˈnæl.ə.sɪs/|noun
@@ -97,7 +97,7 @@ animal|động vật|/ˈæn.ɪ.məl/|noun
 ankle|mắt cá chân|/ˈæŋ.kəl/|noun
 anniversary|lễ kỷ niệm|/ˌæn.ɪˈvɜː.sər.i/|noun
 announce|thông báo|/əˈnaʊns/|verb
-baby|em bé|/ˈbeɪ.bi/|noun
+BABY|em bé|/ˈbeɪ.bi/|noun
 background|lý lịch|/ˈbæk.ɡraʊnd/|noun
 bad|tồi tệ|/bæd/|adjective
 bag|túi|/bæɡ/|noun
@@ -153,9 +153,9 @@ data|dữ liệu|/ˈdeɪ.tə/|noun
 date|ngày|/deɪt/|noun
 daughter|con gái|/ˈdɔː.tər/|noun
 day|ngày|/deɪ/|noun
-dead|chết|/ded/|adjective
+DEAD|chết|/ded/|adjective
 deal|thỏa thuận|/diːl/|noun
-dear|thân yêu|/dɪər/|adjective
+DEAR|thân yêu|/dɪər/|adjective
 death|cái chết|/deθ/|noun
 debate|cuộc tranh luận|/dɪˈbeɪt/|noun
 debt|nợ|/det/|noun
@@ -170,13 +170,13 @@ earn|kiếm được|/ɜːn/|verb
 earth|trái đất|/ɜːθ/|noun
 ease|sự thanh thản|/iːz/|noun
 EASILY|dễ dàng|/ˈiː.zəl.i/|adverb
-east|hướng đông|/iːst/|noun
+EAST|hướng đông|/iːst/|noun
 easy|dễ|/ˈiː.zi/|adjective
 eat|ăn|/iːt/|verb
 economic|thuộc kinh tế|/iː.kəˈnɒm.ɪk/|adjective
 economy|nền kinh tế|/iˈkɒn.ə.mi/|noun
 edge|rìa|/edʒ/|noun
-edit|chỉnh sửa|/ˈed.ɪt/|verb
+EDIT|chỉnh sửa|/ˈed.ɪt/|verb
 edition|phiên bản|/ɪˈdɪʃ.ən/|noun
 educate|giáo dục|/ˈedʒ.u.keɪt/|verb
 education|sự giáo dục|/ˌedʒ.uˈkeɪ.ʃən/|noun
@@ -221,7 +221,7 @@ genuine|chân thành|/ˈdʒen.ju.ɪn/|adjective
 geography|địa lý|/dʒiˈɒɡ.rə.fi/|noun
 get|lấy|/ɡet/|verb
 ghost|ma|/ɡəʊst/|noun
-giant|khổng lồ|/ˈdʒaɪ.ənt/|adjective
+GIANT|khổng lồ|/ˈdʒaɪ.ənt/|adjective
 habit|thói quen|/ˈhæb.ɪt/|noun
 hair|tóc|/heər/|noun
 half|một nửa|/hɑːf/|noun
@@ -255,11 +255,11 @@ image|hình ảnh|/ˈɪm.ɪdʒ/|noun
 imagine|tưởng tượng|/ɪˈmædʒ.ɪn/|verb
 immediate|ngay lập tức|/ɪˈmiː.di.ət/|adjective
 impact|tác động|/ˈɪm.pækt/|noun
-implement|thực hiện|/ˈɪm.plɪ.ment/|verb
+IMPLEMENT|thực hiện|/ˈɪm.plɪ.ment/|verb
 imply|ám chỉ|/ɪmˈplaɪ/|verb
 import|nhập khẩu|/ɪmˈpɔːt/|verb
 importance|tầm quan trọng|/ɪmˈpɔː.təns/|noun
-important|quan trọng|/ɪmˈpɔː.tənt/|adjective
+IMPORTANT|quan trọng|/ɪmˈpɔː.tənt/|adjective
 impose|áp đặt|/ɪmˈpəʊz/|verb
 impossible|không thể|/ɪmˈpɒs.ə.bəl/|adjective
 jacket|áo khoác|/ˈdʒæk.ɪt/|noun
@@ -324,7 +324,7 @@ magic|ma thuật|/ˈmædʒ.ɪk/|noun
 main|chính|/meɪn/|adjective
 maintain|duy trì|/meɪnˈteɪn/|verb
 major|lớn|/ˈmeɪ.dʒər/|adjective
-majority|phần lớn|/məˈdʒɒr.ə.ti/|noun
+MAJORITY|phần lớn|/məˈdʒɒr.ə.ti/|noun
 make|làm|/meɪk/|verb
 male|nam giới|/meɪl/|noun
 man|đàn ông|/mæn/|noun
@@ -345,7 +345,7 @@ national|thuộc quốc gia|/ˈnæʃ.ən.əl/|adjective
 native|bản xứ|/ˈneɪ.tɪv/|adjective
 natural|tự nhiên|/ˈnætʃ.ər.əl/|adjective
 nature|thiên nhiên|/ˈneɪ.tʃər/|noun
-near|gần|/nɪər/|adjective
+NEAR|gần|/nɪər/|adjective
 nearly|gần như|/ˈnɪə.li/|adverb
 neat|gọn gàng|/niːt/|adjective
 necessary|cần thiết|/ˈnes.ə.ser.i/|adjective
@@ -360,9 +360,9 @@ nervous|lo lắng|/ˈnɜː.vəs/|adjective
 network|mạng lưới|/ˈnet.wɜːk/|noun
 OBJECT|vật thể|/ˈɒb.dʒɪkt/|noun
 objective|mục tiêu|/əbˈdʒek.tɪv/|noun
-observe|quan sát|/əbˈzɜːv/|verb
+OBSERVE|quan sát|/əbˈzɜːv/|verb
 OBTAIN|đạt được|/əbˈteɪn/|verb
-obvious|rõ ràng|/ˈɒb.vi.əs/|adjective
+OBVIOUS|rõ ràng|/ˈɒb.vi.əs/|adjective
 OCCASION|dịp|/əˈkeɪ.ʒən/|noun
 occupy|chiếm đóng|/ˈɒk.jə.paɪ/|verb
 occur|xảy ra|/əˈkɜːr/|verb
@@ -383,7 +383,7 @@ pack|đóng gói|/pæk/|verb
 PACKAGE|gói hàng|/ˈpæk.ɪdʒ/|noun
 page|trang|/peɪdʒ/|noun
 pain|nỗi đau|/peɪn/|noun
-paint|sơn|/peɪnt/|verb
+PAINT|sơn|/peɪnt/|verb
 pair|cặp|/peər/|noun
 palace|cung điện|/ˈpæl.ɪs/|noun
 PANEL|bảng điều khiển|/ˈpæn.əl/|noun
@@ -392,7 +392,7 @@ paper|giấy|/ˈpeɪ.pər/|noun
 parent|cha mẹ|/ˈpeə.rənt/|noun
 park|công viên|/pɑːk/|noun
 part|phần|/pɑːt/|noun
-participate|tham gia|/pɑːˈtɪs.ɪ.peɪt/|verb
+PARTICIPATE|tham gia|/pɑːˈtɪs.ɪ.peɪt/|verb
 particular|cụ thể|/pəˈtɪk.jə.lər/|adjective
 PARTNER|đối tác|/ˈpɑːt.nər/|noun
 party|bữa tiệc|/ˈpɑː.ti/|noun
@@ -466,7 +466,7 @@ teach|dạy|/tiːtʃ/|verb
 team|đội|/tiːm/|noun
 tear|xé|/teər/|verb
 technical|thuộc kỹ thuật|/ˈtek.nɪ.kəl/|adjective
-technology|công nghệ|/tekˈnɒl.ə.dʒi/|noun
+TECHNOLOGY|công nghệ|/tekˈnɒl.ə.dʒi/|noun
 tell|nói|/tel/|verb
 ugly|xấu xí|/ˈʌɡ.li/|adjective
 ultimate|cuối cùng|/ˈʌl.tɪ.mət/|adjective
@@ -481,7 +481,7 @@ union|liên hiệp|/ˈjuː.njən/|noun
 unique|độc đáo|/juːˈniːk/|adjective
 unit|đơn vị|/ˈjuː.nɪt/|noun
 universe|vũ trụ|/ˈjuː.nɪ.vɜːs/|noun
-university|đại học|/ˌjuː.nɪˈvɜː.sə.ti/|noun
+UNIVERSITY|đại học|/ˌjuː.nɪˈvɜː.sə.ti/|noun
 unknown|không xác định|/ʌnˈnəʊn/|adjective
 unless|trừ khi|/ənˈles/|conjunction
 until|cho đến khi|/ənˈtɪl/|preposition
@@ -516,7 +516,7 @@ wall|bức tường|/wɔːl/|noun
 wander|đi lang thang|/ˈwɒn.dər/|verb
 want|muốn|/wɒnt/|verb
 war|chiến tranh|/wɔːr/|noun
-warm|ấm áp|/wɔːm/|adjective
+WARM|ấm áp|/wɔːm/|adjective
 warn|cảnh báo|/wɔːn/|verb
 wash|rửa|/wɒʃ/|verb
 waste|rác thải|/weɪst/|noun
@@ -526,7 +526,7 @@ wave|làn sóng|/weɪv/|noun
 way|cách|/weɪ/|noun
 weak|yếu|/wiːk/|adjective
 wealth|sự giàu có|/welθ/|noun
-weapon|vũ khí|/ˈwep.ən/|noun
+WEAPON|vũ khí|/ˈwep.ən/|noun
 wear|mặc|/weər/|verb
 xenophobia|chứng bài ngoại|/ˌzen.əˈfəʊ.bi.ə/|noun
 xerox|sao chụp|/ˈzɪə.rɒks/|verb
@@ -537,7 +537,7 @@ yeah|vâng|/jeə/|adverb
 year|năm|/jɪər/|noun
 yell|hét lên|/jel/|verb
 YELLOW|màu vàng|/ˈjel.əʊ/|adjective
-yes|vâng|/jes/|adverb
+YES|vâng|/jes/|adverb
 yesterday|hôm qua|/ˈjes.tə.deɪ/|noun
 yet|chưa|/jet/|adverb
 yield|sản lượng|/jiːld/|noun
