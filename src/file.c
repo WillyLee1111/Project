@@ -121,7 +121,6 @@ int login() {
         strcpy(currentUser.password, "admin");
         ensureUserFolder(currentUser.username);
         loadUserData();
-        updateStudyStreak();
         return 1; // Admin login successful
     }
 
@@ -140,7 +139,6 @@ int login() {
             strcpy(currentUser.password, storedPassword);
             ensureUserFolder(currentUser.username);
             loadUserData();
-            updateStudyStreak();
             fclose(file);
             return 1; // Login successful
         }
@@ -223,21 +221,35 @@ int registerUser() {
 }
 
 
-void updateStudyStreak(){
+void checkAndCompleteMission(){
+    if (dailyMission.wordsLearnedToday >= 10 &&
+        dailyMission.flashcardsReviewed >= 5 &&
+        dailyMission.gamesPlayed >= 1) {
+        
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        char today[20];
+        strftime(today, sizeof(today), "%Y-%m-%d", &tm);
+        if(strcmp(studyStreak.lastStudyDate, today) != 0){
+            studyStreak.streakDays++;
+            strcpy(studyStreak.lastStudyDate, today);
+        }
+    }
+}
+
+// Gọi sau khi loadUserData(). Nếu hôm nay là ngày mới (khác lastStudyDate),
+// reset Daily Mission về 0 để bắt đầu nhiệm vụ của ngày mới.
+void resetDailyMissionIfNewDay(){
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     char today[20];
     strftime(today, sizeof(today), "%Y-%m-%d", &tm);
-    if(
-        strcmp(
-            studyStreak.lastStudyDate,
-            today
-        ) != 0
-    ){
-        studyStreak.streakDays++;
-        strcpy(
-            studyStreak.lastStudyDate,
-            today
-        );
+    if (strcmp(studyStreak.lastStudyDate, today) != 0 &&
+        strcmp(studyStreak.lastStudyDate, "") != 0 &&
+        strcmp(studyStreak.lastStudyDate, "0000-00-00") != 0) {
+        // Ngày mới -> reset mission
+        dailyMission.wordsLearnedToday = 0;
+        dailyMission.flashcardsReviewed = 0;
+        dailyMission.gamesPlayed = 0;
     }
 }

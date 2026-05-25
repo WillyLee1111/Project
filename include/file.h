@@ -7,5 +7,6 @@ void saveUserData();
 void loadUserData();
 int login();
 int registerUser();
-void updateStudyStreak();
-#endif // FILE_H
+void checkAndCompleteMission();
+void resetDailyMissionIfNewDay();
+#endif // FILE_H

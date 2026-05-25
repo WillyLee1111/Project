@@ -267,6 +267,8 @@ int main(){
     }
 
     SetConsoleOutputCP(CP_UTF8);
+    // Reset daily mission nếu hôm nay là ngày mới (chạy ngay sau loadUserData trong login)
+    resetDailyMissionIfNewDay();
     HashTable *ht = createHashTable();
     loadDictionary(ht);
     loadProgress(ht);
@@ -274,9 +276,10 @@ int main(){
     do {
         clearScreen();
         printf("=============== DAILY MISSION ===============\n");
-        printf("Words Learned     : %d /10\n", dailyMission.wordsLearnedToday);
-        printf("Flashcards Review   : %d /5\n", dailyMission.flashcardsReviewed);
-        printf("🔥 Study Streak     : %d days\n", studyStreak.streakDays);
+        printf("Words Learned   : %d /10  %s\n", dailyMission.wordsLearnedToday, dailyMission.wordsLearnedToday >= 10 ? "[DONE]" : "");
+        printf("Flashcards      : %d /5   %s\n", dailyMission.flashcardsReviewed, dailyMission.flashcardsReviewed >= 5 ? "[DONE]" : "");
+        printf("Games Played    : %d /1   %s\n", dailyMission.gamesPlayed, dailyMission.gamesPlayed >= 1 ? "[DONE]" : "");
+        printf("Study Streak    : %d days\n", studyStreak.streakDays);
         printHeader("ENGLISH DICTIONARY");
         showMiniPlayerCard();
         printf("\n");
@@ -316,9 +319,13 @@ int main(){
                 break;
             case 2:
                 flashcardMode(ht);
+                checkAndCompleteMission();
+                saveUserData();
                 break;
             case 3:
                 gameMenu(ht);
+                checkAndCompleteMission();
+                saveUserData();
                 break;
             case 4:
                 showStats(ht);
