@@ -169,7 +169,7 @@ band|ban nhạc|/bænd/|noun
 bank|ngân hàng|/bæŋk/|noun
 table|cái bàn|/ˈteɪ.bəl/|noun
 can|có thể|/kæn/|verb
-cap|mũ lưỡi trai|/kæp/|noun
+CAP|mũ lưỡi trai|/kæp/|noun
 car|ô tô|/kɑːr/|noun
 decide|quyết định|/dɪˈsaɪd/|verb
 adapt|thích nghi|/əˈdæpt/|verb
@@ -238,7 +238,7 @@ afraid|sợ hãi|/əˈfreɪd/|adjective
 negotiate|đàm phán|/nəˈɡəʊ.ʃi.eɪt/|verb
 dance|khiêu vũ|/dɑːns/|verb
 earth|trái đất|/ɜːθ/|noun
-decade|thập kỷ|/ˈdek.eɪd/|noun
+DECADE|thập kỷ|/ˈdek.eɪd/|noun
 gentle|dịu dàng|/ˈdʒen.təl/|adjective
 value|giá trị|/ˈvæl.juː/|noun
 death|cái chết|/deθ/|noun
@@ -290,7 +290,7 @@ JUNIOR|cấp dưới|/ˈdʒuː.ni.ər/|adjective
 READY|sẵn sàng|/ˈred.i/|adjective
 candidate|ứng cử viên|/ˈkæn.dɪ.dət/|noun
 question|câu hỏi|/ˈkwes.tʃən/|noun
-after|sau khi|/ˈɑːf.tər/|preposition
+AFTER|sau khi|/ˈɑːf.tər/|preposition
 ear|tai|/ɪər/|noun
 eat|ăn|/iːt/|verb
 realize|nhận ra|/ˈrɪə.laɪz/|verb
@@ -326,7 +326,7 @@ range|phạm vi|/reɪndʒ/|noun
 launch|ra mắt|/lɔːntʃ/|verb
 very|rất|/ˈver.i/|adverb
 admit|thừa nhận|/ədˈmɪt/|verb
-park|công viên|/pɑːk/|noun
+PARK|công viên|/pɑːk/|noun
 part|phần|/pɑːt/|noun
 OBVIOUS|rõ ràng|/ˈɒb.vi.əs/|adjective
 gallery|phòng trưng bày|/ˈɡæl.ər.i/|noun
@@ -446,7 +446,7 @@ hair|tóc|/heər/|noun
 manage|quản lý|/ˈmæn.ɪdʒ/|verb
 anger|sự tức giận|/ˈæŋ.ɡər/|noun
 recent|gần đây|/ˈriː.sənt/|adjective
-half|một nửa|/hɑːf/|noun
+HALF|một nửa|/hɑːf/|noun
 hall|đại sảnh|/hɔːl/|noun
 activity|hoạt động|/ækˈtɪv.ə.ti/|noun
 announce|thông báo|/əˈnaʊns/|verb

@@ -11,175 +11,130 @@
 #include "../include/file.h"
 #include "../include/ui.h"
 
-Mission dailyMission = {0,0,0};
+Mission dailyMission = {0,0,0,0,0,0};
 Streak studyStreak = {"", 0};
 PlayStats playStats = {0, 0};
 User currentUser;
 
+// Fix 5: Global ht for auto-save on unexpected close
+static HashTable *globalHt = NULL;
+
+BOOL WINAPI consoleHandler(DWORD signal) {
+    if ((signal == CTRL_CLOSE_EVENT || signal == CTRL_C_EVENT) && globalHt != NULL) {
+        saveProgress(globalHt);
+        saveUserData();
+        saveDictionary(globalHt);
+    }
+    return FALSE; // Let default handler terminate
+}
+
+// Draw a simple progress bar
+static void drawBar(int current, int total) {
+    int width = 10;
+    int filled = (total > 0) ? (current * width / total) : 0;
+    if (filled > width) filled = width;
+    printf("[");
+    for (int i = 0; i < width; i++) {
+        if (i < filled) printf("=");
+        else if (i == filled && current < total) printf(">");
+        else printf(" ");
+    }
+    printf("]");
+}
+
+// Fix 8: show word detail inline, used after displayDictionary
+static void showWordDetail(Word *w) {
+    if (w == NULL) return;
+    clearScreen();
+    printf("============= WORD DETAIL =============\n\n");
+    printf("Word          : %s\n", w->word);
+    printf("Pronunciation : %s\n", w->pronunciation);
+    printf("Type          : %s\n", w->type);
+    printf("Status        : %s | Wrong: %d\n\n",
+           w->learned ? "Learned" : "Not learned", w->wrongCount);
+    printf("Meaning(s):\n");
+    char copy[500];
+    strncpy(copy, w->meaning, sizeof(copy)-1);
+    copy[sizeof(copy)-1] = '\0';
+    char *tok = strtok(copy, ";");
+    int n = 1;
+    while (tok) { printf("  %d. %s\n", n++, tok); tok = strtok(NULL, ";"); }
+}
+
 void dictionaryMenu(HashTable *ht){
     int choice;
     do {
-
         clearScreen();
-
-        printf("============= DICTIONARY MENU =============");
-        printf("\n");
+        printf("============= DICTIONARY MENU =============\n");
         printf("=============================\n");
-        setColor(11);
-        printf("[1] ");
-        setColor(7);
-        printf("Show Dictionary\n");
-        setColor(11);
-        printf("[2] ");
-        setColor(7);
-        printf("Search Word\n");
-        setColor(11);
-        printf("[3] ");
-        setColor(7);
-        printf("Random Word\n");
-        setColor(11);
-        printf("[4] ");
-        setColor(7);
-        printf("Add Word\n");
-        setColor(11);
-        printf("[5] ");
-        setColor(7);
-        printf("Edit Word\n");
-        setColor(11);
-        printf("[6] ");
-        setColor(7);
-        printf("Delete Word\n");
-        setColor(12);
-        printf("[0] ");
-        setColor(7);
-        printf("Back\n");
+        setColor(11); printf("[1] "); setColor(7); printf("Show Dictionary\n");
+        setColor(11); printf("[2] "); setColor(7); printf("Search Word\n");
+        setColor(11); printf("[3] "); setColor(7); printf("Random Word\n");
+        setColor(11); printf("[4] "); setColor(7); printf("Add Word\n");
+        setColor(11); printf("[5] "); setColor(7); printf("Edit Word\n");
+        setColor(11); printf("[6] "); setColor(7); printf("Delete Word\n");
+        setColor(12); printf("[0] "); setColor(7); printf("Back\n");
         printf("=============================\n");
-
         printf("Enter your choice: ");
-
         scanf("%d", &choice);
         getchar();
         clearScreen();
 
         switch(choice){
-
-            case 1:
-
+            case 1: {
                 printf("============= DICTIONARY =============\n");
-
                 displayDictionary(ht);
-
-                pauseScreen();
-
-                break;
-
-            case 2: {
-
-                char target[50];
-
-                Word* suggestions[20];
-
-                printf("============= SEARCH WORD =============\n");
-
-                printf("Enter the word to search: ");
-
-                scanf("%s", target);
-
-                int count = suggestWords(
-                    ht,
-                    target,
-                    suggestions
-                );
-
-                printf("\n");
-
-                if (count > 0) {
-
-                    printf("Suggestions for '%s':\n", target);
-
-                    for (int i = 0; i < count; i++) {
-
-                        printf(
-                            "%d. %s\n",
-                            i + 1,
-                            suggestions[i]->word
-                        );
-                    }
-
-                    int choose;
-
-                    printf(
-                        "\nChoose a word (0 to cancel): "
-                    );
-
-                    scanf("%d", &choose);
-
-                    if (
-                        choose > 0 &&
-                        choose <= count
-                    ) {
-
-                        Word* selected =
-                            suggestions[choose - 1];
-
-                        clearScreen();
-
-                        printf(
-                            "============= WORD DETAIL =============\n\n"
-                        );
-
-                        printf(
-                            "Word          : %s\n",
-                            selected->word
-                        );
-
-                        printf(
-                            "Meaning       : %s\n",
-                            selected->meaning
-                        );
-
-                        printf(
-                            "Pronunciation : %s\n",
-                            selected->pronunciation
-                        );
-
-                        printf(
-                            "Type          : %s\n",
-                            selected->type
-                        );
+                // Fix 8: inline search after listing
+                printf("\n--- Type a word to view its detail, or press Enter to go back ---\n> ");
+                char searchInput[50];
+                if (fgets(searchInput, sizeof(searchInput), stdin)) {
+                    searchInput[strcspn(searchInput, "\r\n")] = '\0';
+                    if (strlen(searchInput) > 0) {
+                        Word *found = searchWord(ht, searchInput);
+                        if (found != NULL) {
+                            showWordDetail(found);
+                        } else {
+                            printf("Word '%s' not found in dictionary.\n", searchInput);
+                        }
+                        pauseScreen();
                     }
                 }
-
-                else {
-
-                    printf("Word not found.\n");
-                }
-
-                printf("\n");
-
-                pauseScreen();
-
                 break;
             }
-
-            case 3: {
-
-                Word *randomWord =
-                    getRandomWord(ht);
-
-                if (randomWord != NULL) {
-
-                    printf("============= RANDOM WORD =============\n\n");
-
-                    printf("Word          : %s\n",randomWord->word);
-                    printf("Meaning       : %s\n",randomWord->meaning);
-                    printf("Pronunciation : %s\n",randomWord->pronunciation);
-                    printf("Type          : %s\n",randomWord->type);
+            case 2: {
+                char target[50];
+                Word* suggestions[20];
+                printf("============= SEARCH WORD =============\n");
+                printf("Enter the word to search: ");
+                scanf("%s", target);
+                getchar();
+                int count = suggestWords(ht, target, suggestions);
+                printf("\n");
+                if (count > 0) {
+                    printf("Suggestions for '%s':\n", target);
+                    for (int i = 0; i < count; i++) {
+                        printf("%d. %s\n", i + 1, suggestions[i]->word);
+                    }
+                    int choose;
+                    printf("\nChoose a word (0 to cancel): ");
+                    scanf("%d", &choose);
+                    getchar();
+                    if (choose > 0 && choose <= count) {
+                        showWordDetail(suggestions[choose - 1]);
+                        pauseScreen();
+                    }
+                } else {
+                    printf("Word not found.\n");
+                    pauseScreen();
                 }
-                else {
-                    printf(
-                        "No words available.\n"
-                    );
+                break;
+            }
+            case 3: {
+                Word *randomWord = getRandomWord(ht);
+                if (randomWord != NULL) {
+                    showWordDetail(randomWord);
+                } else {
+                    printf("No words available.\n");
                 }
                 pauseScreen();
                 break;
@@ -203,11 +158,8 @@ void dictionaryMenu(HashTable *ht){
     } while(choice != 0);
 }
 
-
 void gameMenu(HashTable *ht) {
-
     int gameChoice;
-
     do {
         clearScreen();
         showGameMenu();
@@ -215,30 +167,25 @@ void gameMenu(HashTable *ht) {
         scanf("%d", &gameChoice);
         getchar();
         switch(gameChoice){
-            case 1:
-                englishToVietnameseGame(ht);
-                break;
-            case 2:
-                vietnameseToEnglishGame(ht);
-                break;
-            case 3:
-                playMissingLetterGame(ht);
-                break;
-            case 0:
-                return;
+            case 1: englishToVietnameseGame(ht); break;
+            case 2: vietnameseToEnglishGame(ht); break;
+            case 3: playMissingLetterGame(ht); break;
+            case 0: return;
             default:
                 printError("Invalid choice!");
                 pauseScreen();
         }
     } while(gameChoice != 0);
-
+    checkAndCompleteMission();
+    saveUserData();
 }
 
 int main(){
     showIntroScreen();
     SetConsoleOutputCP(CP_UTF8);
-        clearScreen();
-    srand(time(NULL));
+    clearScreen();
+    srand((unsigned int)time(NULL));
+
     int option;
     printf("Welcome to the English Dictionary App!\n");
     printf("1. Login\n");
@@ -252,67 +199,69 @@ int main(){
             pauseScreen();
             return 0;
         }
-    }
-    else if (option == 2) {
+    } else if (option == 2) {
         if (!registerUser()) {
             printf("Registration failed. Exiting...\n");
             pauseScreen();
             return 0;
         }
-    }
-    else {
+    } else {
         printf("Invalid option. Exiting...\n");
         pauseScreen();
         return 0;
     }
 
     SetConsoleOutputCP(CP_UTF8);
-    // Reset daily mission nếu hôm nay là ngày mới (chạy ngay sau loadUserData trong login)
+    // Fix 4: generate random targets for new day / first time
     resetDailyMissionIfNewDay();
+    saveUserData();
+
     HashTable *ht = createHashTable();
     loadDictionary(ht);
     loadProgress(ht);
+
+    // Fix 5: register auto-save handler
+    globalHt = ht;
+    SetConsoleCtrlHandler(consoleHandler, TRUE);
+
+    int tw, tf, tg;
+    int running = 1;
     int choice;
-    do {
+    while (running) {
         clearScreen();
+        tw = dailyMission.targetWords;
+        tf = dailyMission.targetFlashcards;
+        tg = dailyMission.targetGames;
+
         printf("=============== DAILY MISSION ===============\n");
-        printf("Words Learned   : %d /10  %s\n", dailyMission.wordsLearnedToday, dailyMission.wordsLearnedToday >= 10 ? "[DONE]" : "");
-        printf("Flashcards      : %d /5   %s\n", dailyMission.flashcardsReviewed, dailyMission.flashcardsReviewed >= 5 ? "[DONE]" : "");
-        printf("Games Played    : %d /1   %s\n", dailyMission.gamesPlayed, dailyMission.gamesPlayed >= 1 ? "[DONE]" : "");
-        printf("Study Streak    : %d days\n", studyStreak.streakDays);
+        printf("Words Learned  : %2d / %2d  ", dailyMission.wordsLearnedToday, tw);
+        drawBar(dailyMission.wordsLearnedToday, tw);
+        printf("%s\n", dailyMission.wordsLearnedToday >= tw ? " [DONE]" : "");
+
+        printf("Flashcards     : %2d / %2d  ", dailyMission.flashcardsReviewed, tf);
+        drawBar(dailyMission.flashcardsReviewed, tf);
+        printf("%s\n", dailyMission.flashcardsReviewed >= tf ? " [DONE]" : "");
+
+        printf("Games Played   : %2d / %2d  ", dailyMission.gamesPlayed, tg);
+        drawBar(dailyMission.gamesPlayed, tg);
+        printf("%s\n", dailyMission.gamesPlayed >= tg ? " [DONE]" : "");
+
+        printf("Study Streak   : %d days\n", studyStreak.streakDays);
+        printf("=============================================\n");
+
         printHeader("ENGLISH DICTIONARY");
         showMiniPlayerCard();
         printf("\n");
-        setColor(11);
-        printf("[1] ");
-        setColor(7);
-        printf("Dictionary Menu\n");
-
-        setColor(11);
-        printf("[2] ");
-        setColor(7);
-        printf("Flashcard Mode\n");
-
-        setColor(11);
-        printf("[3] ");
-        setColor(7);
-        printf("Game Center\n");
-
-        setColor(11);
-        printf("[4] ");
-        setColor(7);
-        printf("Show Stats\n");
-
-        setColor(12);
-        printf("[5] ");
-        setColor(7);
-        printf("Exit\n");
-
-
+        setColor(11); printf("[1] "); setColor(7); printf("Dictionary Menu\n");
+        setColor(11); printf("[2] "); setColor(7); printf("Flashcard Mode\n");
+        setColor(11); printf("[3] "); setColor(7); printf("Game Center\n");
+        setColor(11); printf("[4] "); setColor(7); printf("Show Stats\n");
+        setColor(12); printf("[5] "); setColor(7); printf("Exit\n");
         printf("\nChoose: ");
-
         scanf("%d", &choice);
+        getchar();
         clearScreen();
+
         switch(choice){
             case 1:
                 dictionaryMenu(ht);
@@ -324,26 +273,34 @@ int main(){
                 break;
             case 3:
                 gameMenu(ht);
-                checkAndCompleteMission();
-                saveUserData();
                 break;
             case 4:
                 showStats(ht);
-                pauseScreen();
                 break;
-            case 5:
-                saveProgress(ht);
-                saveUserData();
-                saveDictionary(ht);
-                printf("Data saved successfully.\n");
-                pauseScreen();
+            case 5: {
+                // Fix 5: confirm before exit + always save
+                printf("Are you sure you want to exit? (y/n): ");
+                char c;
+                scanf(" %c", &c);
+                if (c == 'y' || c == 'Y') {
+                    saveProgress(ht);
+                    saveUserData();
+                    saveDictionary(ht);
+                    setColor(10);
+                    printf("\nData saved successfully. Goodbye!\n");
+                    setColor(7);
+                    pauseScreen();
+                    running = 0;
+                }
                 break;
+            }
             default:
                 printf("Invalid choice.\n");
                 pauseScreen();
                 break;
         }
-    } while(choice != 5);
+    }
     freeHashTable(ht);
+    globalHt = NULL;
     return 0;
 }

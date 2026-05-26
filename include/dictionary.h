@@ -5,7 +5,7 @@
 
 typedef struct Word{
     char word[50];
-    char meaning[200];
+    char meaning[500]; // Supports multiple meanings separated by ';'
     char pronunciation[50];
     char type[20];
 
@@ -34,6 +34,9 @@ typedef struct Mission {
     int wordsLearnedToday;
     int flashcardsReviewed;
     int gamesPlayed;
+    int targetWords;      // randomized target each day
+    int targetFlashcards;
+    int targetGames;
 } Mission;
 
 extern Mission dailyMission;
@@ -73,6 +76,7 @@ int suggestWords(HashTable* ht, char *prefix, Word *suggestions[20]);
 Word* getRandomWord(HashTable* ht);
 void freeHashTable(HashTable* ht);
 Word* getAdaptiveWord(HashTable* ht);
+Word* getAdaptiveWordMinLen(HashTable* ht, int minLen);
 void showStats(HashTable* ht);
 void saveProgress(HashTable* ht);
 void loadProgress(HashTable* ht);

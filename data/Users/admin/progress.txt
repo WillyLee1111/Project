@@ -23,7 +23,7 @@ tackle 0 0
 unemployment 0 0
 ahead 0 0
 AGAIN 0 0
-illegal 0 0
+illegal 0 1
 valley 0 0
 airport 0 0
 advance 0 0
@@ -57,7 +57,7 @@ wear 0 0
 job 0 0
 aid 0 0
 aim 0 0
-office 0 0
+office 0 1
 joy 0 0
 air 0 0
 PARTICIPATE 0 0
@@ -72,7 +72,7 @@ cabinet 0 0
 magazine 0 0
 vary 0 0
 analyse 0 0
-vast 0 0
+vast 0 1
 AMONG 0 0
 UNFAIR 0 0
 knife 0 0
@@ -169,7 +169,7 @@ band 0 0
 bank 0 0
 table 0 0
 can 0 0
-cap 0 0
+CAP 1 0
 car 0 0
 decide 0 0
 adapt 0 0
@@ -238,7 +238,7 @@ afraid 0 0
 negotiate 0 0
 dance 0 0
 earth 0 0
-decade 0 0
+DECADE 0 0
 gentle 0 0
 value 0 0
 death 0 0
@@ -290,7 +290,7 @@ JUNIOR 1 0
 READY 0 0
 candidate 0 0
 question 0 0
-after 0 0
+AFTER 1 0
 ear 0 0
 eat 0 0
 realize 0 0
@@ -326,9 +326,9 @@ range 0 0
 launch 0 0
 very 0 0
 admit 0 0
-park 0 0
+PARK 1 0
 part 0 0
-OBVIOUS 0 0
+OBVIOUS 0 1
 gallery 0 0
 adequate 0 0
 pass 0 0
@@ -359,7 +359,7 @@ fail 0 0
 fair 0 0
 fall 0 0
 account 0 0
-UNIVERSITY 0 0
+UNIVERSITY 0 1
 about 0 0
 above 0 0
 SCHOOL 0 0
@@ -394,7 +394,7 @@ edition 0 0
 YES 0 0
 yet 0 0
 want 0 0
-RACE 0 0
+RACE 0 1
 WARM 0 0
 warn 0 0
 happy 0 0
@@ -446,7 +446,7 @@ hair 0 0
 manage 0 0
 anger 0 0
 recent 0 0
-half 0 0
+HALF 1 0
 hall 0 0
 activity 0 0
 announce 0 0
@@ -484,7 +484,7 @@ agree 0 0
 capital 0 0
 abstract 0 0
 DEBATE 0 1
-queen 0 0
+queen 0 1
 yield 0 0
 keyboard 0 0
 card 0 0
@@ -527,7 +527,7 @@ identify 0 0
 action 0 0
 uniform 0 0
 xenophobia 0 0
-passenger 0 0
+passenger 1 0
 basic 0 0
 immediate 0 0
 basis 0 0

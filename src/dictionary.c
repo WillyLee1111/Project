@@ -60,20 +60,39 @@ void insertWord(HashTable* ht, Word *newWord) {
     ht->buckets[index] = newWord;
 }
 
+// Helper: print meanings split by ';' as numbered list
+static void printWordMeanings(const char *meaning) {
+    char copy[500];
+    strncpy(copy, meaning, sizeof(copy) - 1);
+    copy[sizeof(copy) - 1] = '\0';
+    char *token = strtok(copy, ";");
+    int num = 1;
+    while (token != NULL) {
+        printf("  %d. %s\n", num++, token);
+        token = strtok(NULL, ";");
+    }
+}
+
 void displayDictionary(HashTable* ht) {
+    int count = 0;
     for (int i = 0; i < HASH_SIZE; i++) {
         Word *temp = ht->buckets[i];
         while (temp != NULL) {
+            count++;
             printf("=================================\n");
-            printf("Word: %s\n", temp->word);
-            printf("Meaning: %s\n", temp->meaning);
-            printf("Pronunciation: %s\n", temp->pronunciation);
-            printf("Type: %s\n", temp->type);
-            printf("Wrong Count: %d\n", temp->wrongCount);
+            printf("Word          : %s\n", temp->word);
+            printf("Meaning(s)    :\n");
+            printWordMeanings(temp->meaning);
+            printf("Pronunciation : %s\n", temp->pronunciation);
+            printf("Type          : %s\n", temp->type);
+            printf("Status        : %s | Wrong: %d\n",
+                   temp->learned ? "Learned" : "Not learned", temp->wrongCount);
             printf("=================================\n");
             temp = temp->next;
         }
     }
+    if (count == 0) printf("Dictionary is empty.\n");
+    else printf("Total: %d word(s)\n", count);
 }
 
 Word* searchWord(HashTable* ht, char *target) {
@@ -161,6 +180,42 @@ Word* getAdaptiveWord(HashTable* ht) {
     }
     return getRandomWord(ht);
 }
+
+// Like getAdaptiveWord but only picks words with length >= minLen.
+// Used by Missing Letter game to ensure enough letters are visible.
+Word* getAdaptiveWordMinLen(HashTable* ht, int minLen) {
+    int useWeakWords = rand() % 100;
+    if (useWeakWords < 70) {
+        Word* weakWords[1000];
+        int count = 0;
+        for (int i = 0; i < HASH_SIZE; i++) {
+            Word *temp = ht->buckets[i];
+            while (temp != NULL) {
+                if (temp->wrongCount >= 3 && temp->learned == 0 &&
+                    (int)strlen(temp->word) >= minLen) {
+                    if (count < 1000) weakWords[count++] = temp;
+                }
+                temp = temp->next;
+            }
+        }
+        if (count > 0) return weakWords[rand() % count];
+    }
+    // Random fallback with length filter
+    Word* candidates[1000];
+    int count = 0;
+    for (int i = 0; i < HASH_SIZE; i++) {
+        Word *temp = ht->buckets[i];
+        while (temp != NULL) {
+            if ((int)strlen(temp->word) >= minLen) {
+                if (count < 1000) candidates[count++] = temp;
+            }
+            temp = temp->next;
+        }
+    }
+    if (count == 0) return getRandomWord(ht); // ultimate fallback: any word
+    return candidates[rand() % count];
+}
+
 
 void showStats(HashTable* ht) {
     int totalWords = 0;
@@ -319,20 +374,46 @@ Word* getWeakWord(HashTable* ht) {
 }
 
 void addWord(HashTable* ht) {
-    char word[50], meaning[200], pronunciation[50], type[20];
-    printf("Enter the word: ");
-    scanf("%49s", word);
-    if (searchWord(ht, word) != NULL) {
-        printf("Word already exists in the dictionary.\n");
-        return;
+    char word[50], meaning[500], pronunciation[50], type[20];
+    char confirm = 'n';
+
+    // Fix 3: confirmation loop - allow correction before submitting
+    do {
+        printf("Enter the word: ");
+        scanf("%49s", word);
+        getchar();
+        if (searchWord(ht, word) != NULL) {
+            printf("Word '%s' already exists in the dictionary.\n", word);
+            pauseScreen();
+            return;
+        }
+        printf("Word entered: '%s' - Is this correct? (y/n): ", word);
+        scanf(" %c", &confirm);
+        getchar();
+    } while (confirm != 'y' && confirm != 'Y');
+
+    // Fix 6: multiple meanings - collect with ';' separator
+    meaning[0] = '\0';
+    int meaningCount = 0;
+    char addMore = 'y';
+    while (addMore == 'y' || addMore == 'Y') {
+        char tempMeaning[200];
+        printf("Enter meaning %d: ", meaningCount + 1);
+        fgets(tempMeaning, sizeof(tempMeaning), stdin);
+        tempMeaning[strcspn(tempMeaning, "\r\n")] = '\0';
+        if (meaningCount > 0)
+            strncat(meaning, ";", sizeof(meaning) - strlen(meaning) - 1);
+        strncat(meaning, tempMeaning, sizeof(meaning) - strlen(meaning) - 1);
+        meaningCount++;
+        printf("Add another meaning? (y/n): ");
+        scanf(" %c", &addMore);
+        getchar();
     }
-    getchar(); // Consume the newline character left by scanf
-    printf("Enter the meaning: ");
-    fgets(meaning, sizeof(meaning), stdin);
-    meaning[strcspn(meaning, "\r\n")] = '\0';
+
     printf("Enter the pronunciation: ");
     fgets(pronunciation, sizeof(pronunciation), stdin);
     pronunciation[strcspn(pronunciation, "\r\n")] = '\0';
+
     printf("Enter the type (noun/verb/adjective/adverb): ");
     fgets(type, sizeof(type), stdin);
     type[strcspn(type, "\r\n")] = '\0';
@@ -351,11 +432,36 @@ void editWord(HashTable* ht) {
         printf("Word not found.\n");
         return;
     }
-    char meaning[200], pronunciation[50], type[20];
-    printf("Enter the new meaning: ");
+    // Show current info
+    printf("\nCurrent info for '%s':\n", word->word);
+    printf("Meaning(s): "); 
+    char copy[500];
+    strncpy(copy, word->meaning, sizeof(copy)-1);
+    char *tok = strtok(copy, ";");
+    int n = 1;
+    while (tok) { printf("%d. %s  ", n++, tok); tok = strtok(NULL, ";"); }
+    printf("\nPronunciation: %s | Type: %s\n\n", word->pronunciation, word->type);
+
+    char meaning[500], pronunciation[50], type[20];
     getchar();
-    fgets(meaning, sizeof(meaning), stdin);
-    meaning[strcspn(meaning, "\r\n")] = '\0';
+    // Fix 6: multiple meanings when editing
+    meaning[0] = '\0';
+    int meaningCount = 0;
+    char addMore = 'y';
+    printf("Enter new meaning(s) - use ';' or enter one by one:\n");
+    while (addMore == 'y' || addMore == 'Y') {
+        char tempMeaning[200];
+        printf("Meaning %d: ", meaningCount + 1);
+        fgets(tempMeaning, sizeof(tempMeaning), stdin);
+        tempMeaning[strcspn(tempMeaning, "\r\n")] = '\0';
+        if (meaningCount > 0)
+            strncat(meaning, ";", sizeof(meaning) - strlen(meaning) - 1);
+        strncat(meaning, tempMeaning, sizeof(meaning) - strlen(meaning) - 1);
+        meaningCount++;
+        printf("Add another meaning? (y/n): ");
+        scanf(" %c", &addMore);
+        getchar();
+    }
     printf("Enter the new pronunciation: ");
     fgets(pronunciation, sizeof(pronunciation), stdin);
     pronunciation[strcspn(pronunciation, "\r\n")] = '\0';
@@ -368,7 +474,7 @@ void editWord(HashTable* ht) {
     word->pronunciation[sizeof(word->pronunciation) - 1] = '\0';
     strncpy(word->type, type, sizeof(word->type) - 1);
     word->type[sizeof(word->type) - 1] = '\0';
-    printf("Word updated successfully!\n");
+    printSuccess("Word updated successfully!");
 }
 
 void deleteWord(HashTable* ht) {
