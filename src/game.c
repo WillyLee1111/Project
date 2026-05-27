@@ -38,13 +38,13 @@ void playMissingLetterGame(HashTable *ht){
     printf("====================================================\n\n");
     setColor(10);
     printf("[1] "); setColor(7);
-    printf("Easy   - 1 letter hidden  (+20 EXP)  [%d words available]\n", cnt2);
+    printf("Standard - 1 letter hidden (+20 EXP)  [%d words]\n", cnt2);
     setColor(14);
     printf("[2] "); setColor(7);
-    printf("Medium - 2 letters hidden (+30 EXP)  [%d words available]\n", cnt4);
+    printf("Challenge - 2 letters hidden (+30 EXP) [%d words] \n", cnt4);
     setColor(12);
     printf("[3] "); setColor(7);
-    printf("Hard   - 3 letters hidden (+40 EXP)  [%d words available]\n", cnt6);
+    printf("Expert    - 3 letters hidden (+40 EXP) [%d words] \n", cnt6);
 
     printf("\nChoose difficulty: ");
     scanf("%d", &difficulty);
@@ -54,7 +54,7 @@ void playMissingLetterGame(HashTable *ht){
     int minLen   = getMinLen(difficulty);
     int numHidden = difficulty; // 1, 2, or 3
 
-    const char *diffLabel = difficulty == 1 ? "EASY" : difficulty == 2 ? "MEDIUM" : "HARD";
+    const char *diffLabel = difficulty == 1 ? "STANDARD" : difficulty == 2 ? "CHALLENGE" : "EXPERT";
 
     dailyMission.gamesPlayed++;
 
@@ -114,14 +114,18 @@ void playMissingLetterGame(HashTable *ht){
         scanf("%49s", answer);
         getchar();
 
+        // Convert answer to lowercase to match dictionary hash function (case-sensitive)
+        _strlwr(answer);
+
         // Hint option
-        if (_stricmp(answer, "H") == 0) {
+        if (strcmp(answer, "h") == 0) {
             setColor(14);
             printf("\n[HINT] Meaning: %s\n\n", word->meaning);
             setColor(7);
             printf("Enter the full word OR just the %d missing letter(s): ", actualHidden);
             scanf("%49s", answer);
             getchar();
+            _strlwr(answer);
         }
 
         // Build the formed word:
@@ -140,8 +144,21 @@ void playMissingLetterGame(HashTable *ht){
             }
         }
 
+        // Validate that formedWord actually matches the visible letters in 'hidden'
+        // Otherwise they could type a completely different word of the same length!
+        int isValidPattern = 1;
+        for (int i = 0; i < wordLen; i++) {
+            if (hidden[i] != '_' && formedWord[i] != hidden[i]) {
+                isValidPattern = 0;
+                break;
+            }
+        }
+
         // Check if the formed word exists in dictionary (not just the original word!)
-        Word* foundWord = searchWord(ht, formedWord);
+        Word* foundWord = NULL;
+        if (isValidPattern) {
+            foundWord = searchWord(ht, formedWord);
+        }
 
         if (foundWord != NULL) {
             sessionCorrect++;
@@ -168,7 +185,7 @@ void playMissingLetterGame(HashTable *ht){
             setColor(7);
         } else {
             setColor(12);
-            printf("\nKhong co tu nay trong tieng Anh.\n");
+            printf("\nKhông có từ này trong tiếng Anh.\n");
             setColor(7);
 
             // Reconstruct what the original word was so user can learn
@@ -232,7 +249,28 @@ void englishToVietnameseGame(HashTable *ht){
     printf("Your answer: ");
     fgets(answer, sizeof(answer), stdin);
     answer[strcspn(answer, "\n")] = '\0';
-    if (strstr(answer, word->meaning) != NULL || strstr(word->meaning, answer) != NULL) {
+    
+    int isCorrect = 0;
+    if (strlen(answer) > 0) {
+        char copy[500];
+        strncpy(copy, word->meaning, sizeof(copy) - 1);
+        copy[sizeof(copy) - 1] = '\0';
+        char *token = strtok(copy, ";");
+        while (token != NULL) {
+            // Remove leading/trailing spaces if any
+            while(*token == ' ') token++;
+            int len = strlen(token);
+            while(len > 0 && token[len-1] == ' ') { token[len-1] = '\0'; len--; }
+            
+            if (_stricmp(token, answer) == 0) {
+                isCorrect = 1;
+                break;
+            }
+            token = strtok(NULL, ";");
+        }
+    }
+
+    if (isCorrect) {
         setColor(10);
         printf("\nCorrect!\n");
         setColor(7);

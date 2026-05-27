@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "../include/file.h"
+#include "../include/utils.h"
 #include "../include/validator.h"
 
 static int usernameExists(const char *username) {
@@ -50,6 +51,8 @@ void loadDictionary(HashTable *ht) {
         char *type = strtok(NULL, "|");
         
         if (word && meaning && pronunciation && type) {
+            _strlwr(word);
+            _strlwr(type);
             Word *newWord = createWord(word, meaning, pronunciation, type);
             insertWord(ht, newWord);
         }
@@ -97,7 +100,7 @@ void loadUserData() {
         return;
     }
     char label[50];
-    while (fscanf(file, "%s", label) == 1) {
+    while (fscanf(file, "%49s", label) == 1) {
         if (strcmp(label, "MISSION") == 0) {
             // Try reading 6 values (new format), fall back to 3 (old format)
             int r = fscanf(file, "%d %d %d %d %d %d",
@@ -106,7 +109,7 @@ void loadUserData() {
                 &dailyMission.targetWords, &dailyMission.targetFlashcards, &dailyMission.targetGames);
             (void)r; // targets remain 0 if old format, resetDailyMissionIfNewDay will fill them
         } else if (strcmp(label, "STREAK") == 0) {
-            fscanf(file, "%s %d", studyStreak.lastStudyDate, &studyStreak.streakDays);
+            fscanf(file, "%19s %d", studyStreak.lastStudyDate, &studyStreak.streakDays);
         } else if (strcmp(label, "STATS") == 0) {
             fscanf(file, "%d %d", &playStats.level, &playStats.exp);
         }
@@ -115,11 +118,15 @@ void loadUserData() {
 }
 
 int login() {
+    clearScreen();
+    printf("=============================================\n");
+    setColor(11); printf("                  LOGIN\n"); setColor(7);
+    printf("=============================================\n\n");
     char username[50];
     char password[50];
-    printf("Username: ");
+    printf("  Username : ");
     scanf("%49s", username);
-    printf("Password: ");
+    printf("  Password : ");
     scanf("%49s", password);
 
     if(
@@ -159,35 +166,28 @@ int registerUser() {
     char username[50];
     char password[50];
     
-    // Nhập username cho đến khi hợp lệ
+    clearScreen();
+    printf("=============================================\n");
+    setColor(11); printf("                REGISTER\n"); setColor(7);
+    printf("=============================================\n\n");
+
     while (!usernameValid) {
-        printf("Choose a username: ");
-        if (fgets(username, sizeof(username), stdin) == NULL) {
-            return 0;
-        }
-        // Xóa ký tự newline
-        username[strcspn(username, "\n")] = '\0';
-        
-        if (!isValidUsername(username)) {
-            printf("Tên người dùng không hợp lệ. Phải có độ dài từ 3 đến 50 ký tự.\n");
+        printf("  Enter new Username : ");
+        scanf("%49s", username);
+        if (strlen(username) < 3) {
+            setColor(12); printf("  -> Username must be at least 3 characters.\n\n"); setColor(7);
         } else if (usernameExists(username)) {
-            printf("Username already exists. Please choose another username.\n");
+            setColor(12); printf("  -> Username already exists. Please choose another.\n\n"); setColor(7);
         } else {
             usernameValid = 1;
         }
     }
-    
-    // Nhập password cho đến khi hợp lệ
+
     while (!passwordValid) {
-        printf("Choose a password: ");
-        if (fgets(password, sizeof(password), stdin) == NULL) {
-            return 0;
-        }
-        // Xóa ký tự newline
-        password[strcspn(password, "\n")] = '\0';
-        
+        printf("  Enter new Password : ");
+        scanf("%49s", password);
         if (!isStrongPassword(password)) {
-            printf("Mật khẩu không hợp lệ. Mật khẩu phải có ít nhất 6 ký tự và bao gồm chữ hoa, chữ thường và một chữ số.\n");
+            setColor(12); printf("  -> Password invalid. Must have 6+ chars, uppercase, lowercase, and a digit.\n\n"); setColor(7);
         } else {
             passwordValid = 1;
         }

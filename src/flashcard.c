@@ -1,148 +1,128 @@
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 
 #include "../include/flashcard.h"
 #include "../include/dictionary.h"
 #include "../include/utils.h"
 
-void flashcardMode(HashTable *ht){
-
+void flashcardMode(HashTable *ht) {
     int mode;
     int choice = 1;
 
     clearScreen();
+    printf("=============================================\n");
+    setColor(14); printf("              FLASHCARD MODE\n"); setColor(7);
+    printf("=============================================\n\n");
 
-    printf("===============FLASHCARD MODE==================\n");
-// noun, verb, adjective, adverb, weak words
-    setColor(11); 
-    printf("[1] ");
-    setColor(7);
-    printf("All Word\n");
-    setColor(11); 
-    printf("[2] ");
-    setColor(7);
-    printf("Noun Word\n");
-    setColor(11); 
-    printf("[3] ");
-    setColor(7);
-    printf("Verb Word\n");
-    setColor(11); 
-    printf("[4] ");
-    setColor(7);
-    printf("Adjective Word\n");
-    setColor(11); 
-    printf("[5] ");
-    setColor(7);
-    printf("Adverb Word\n");
-    setColor(11); 
-    printf("[6] ");
-    setColor(7);
-    printf("Weak Words\n");
-    setColor(12);
-    printf("[0] ");
-    setColor(7);
-    printf("Back\n");
-    printf("Enter your choice: ");
+    setColor(11); printf("  [1] "); setColor(7); printf("Adaptive (Spaced Repetition)\n");
+    setColor(11); printf("  [2] "); setColor(7); printf("Nouns Only\n");
+    setColor(11); printf("  [3] "); setColor(7); printf("Verbs Only\n");
+    setColor(11); printf("  [4] "); setColor(7); printf("Adjectives Only\n");
+    setColor(11); printf("  [5] "); setColor(7); printf("Adverbs Only\n");
+    setColor(11); printf("  [6] "); setColor(7); printf("Weak Words Only\n");
+    setColor(12); printf("  [0] "); setColor(7); printf("Back\n");
+    
+    printf("\nEnter your choice: ");
     scanf("%d", &mode);
     getchar();
-    if (mode == 0) {
-            return;
-        }
+    
+    if (mode == 0) return;
+
     do {
         clearScreen();
         Word* card = NULL;
         if (mode == 1) {
+            // Adaptive mode will naturally show more weak words
             card = getAdaptiveWord(ht);
-        }
-        else if (mode == 2) {
-            card = getWordByType(
-                ht,
-                "noun"
-            );
-        }
-        else if (mode == 3) {
-            card = getWordByType(
-                ht,
-                "verb"
-            );
-        }
-        else if (mode == 4) {
-            card = getWordByType(
-                ht,
-                "adjective"
-            );
-        }
-        else if (mode == 5) {
-            card = getWordByType(
-                ht,
-                "adverb"
-            );
-        }
-        else if (mode == 6) {
+        } else if (mode == 2) {
+            card = getWordByType(ht, "noun");
+        } else if (mode == 3) {
+            card = getWordByType(ht, "verb");
+        } else if (mode == 4) {
+            card = getWordByType(ht, "adjective");
+        } else if (mode == 5) {
+            card = getWordByType(ht, "adverb");
+        } else if (mode == 6) {
             card = getWeakWord(ht);
         }
+
         if (card == NULL) {
-            printf("No words found.\n");
+            setColor(12); printf("\n  No words found for this mode.\n"); setColor(7);
             pauseScreen();
             return;
         }
-        clearScreen();
-//Front card
-        printHeader("FLASHCARD");
 
-        printf("\n");
-        printf("========================================\n");
-        printf("\n");
-        setColor(14);
-        printf(">>> %s <<< \n",strupr(card->word));
+        // --- FRONT OF FLASHCARD ---
+        clearScreen();
+        printf("=============================================\n");
+        setColor(14); printf("              FLASHCARD (FRONT)\n"); setColor(7);
+        printf("=============================================\n\n");
+        
+        setColor(11);
+        printf("           >>> %s <<< \n\n", strupr(card->word));
         setColor(7);
-        printf("\n");
-        printf("========================================\n");
-        printf("\nPress ENTER to flip...");
+        _strlwr(card->word); // Revert to lowercase if it was manipulated
+        
+        printf("=============================================\n");
+        printf("Press ENTER to flip...");
         getchar();
-        // Back card
-        clearScreen();
-        printHeader("FLASHCARD ANSWER");
-        printf("\n");
-        printf("Meaning :%s  \n", card->meaning);
-        printf("Type    :%s   \n",card->type);
-        printf("Pronun  :%s  \n",card->pronunciation);
-        printf("\n");
-        printf("========================================\n");
 
+        // --- BACK OF FLASHCARD ---
+        clearScreen();
+        printf("=============================================\n");
+        setColor(14); printf("               FLASHCARD (BACK)\n"); setColor(7);
+        printf("=============================================\n\n");
+        
+        printf("Word    : "); setColor(11); printf("%s\n", card->word); setColor(7);
+        printf("Meaning :\n");
+        printWordMeanings(card->meaning);
+        printf("Type    : %s\n", card->type);
+        printf("Pronun  : %s\n", card->pronunciation);
+        printf("\n=============================================\n\n");
+
+        // --- REVIEW SYSTEM (Spaced Repetition Simulation) ---
         int review;
-        printf("=================REVIEW==================\n");  
-        printf("1. Again\n");
-        printf("2. Good\n");
-        printf("3. Easy\n");
-        printf("Enter your choice: ");
+        printf("How well did you remember this word?\n\n");  
+        setColor(12); printf("  [1] "); setColor(7); printf("Again (Forgot it completely)\n");
+        setColor(14); printf("  [2] "); setColor(7); printf("Good  (Remembered with effort)\n");
+        setColor(10); printf("  [3] "); setColor(7); printf("Easy  (Remembered instantly)\n");
+        printf("\nEnter your choice: ");
         scanf("%d", &review);
         getchar();
+        
         dailyMission.flashcardsReviewed++;
-        playStats.exp += 10;
-        updateLevel();
+
         if (review == 1) {
-            card->wrongCount++;
-            printf("\nMarked as difficult.\n");
-        }
-        else if (review == 3) {
-            if( card -> learned == 0){
-                card -> learned = 1;
+            // AGAIN: Punish heavily. Mark as not learned, increase wrong count.
+            card->wrongCount += 2;
+            card->learned = 0;
+            setColor(12); printf("\n-> Marked as difficult. You will see it more often.\n"); setColor(7);
+        } else if (review == 2) {
+            // GOOD: Slow progression. Reduce wrong count but don't instantly mark as learned if it was very wrong.
+            if (card->wrongCount > 0) card->wrongCount--;
+            // If it was already learned, keep it learned.
+            playStats.exp += 10;
+            updateLevel();
+            setColor(14); printf("\n-> Good job! Keep practicing.\n"); setColor(7);
+        } else if (review == 3) {
+            // EASY: Reward heavily. Mark as fully learned.
+            if (card->learned == 0) {
+                card->learned = 1;
                 dailyMission.wordsLearnedToday++;
             }
+            card->wrongCount = 0; // Reset mistakes
             playStats.exp += 15;
             updateLevel();
-            printf("\nMarked as learned.\n");
+            setColor(10); printf("\n-> Marked as fully learned!\n"); setColor(7);
         }
-        int nextchoice;
-        printf("\n");
-        printf("1. Next Flashcard\n");
-        printf("2. Exit Flashcard Mode\n");
-        printf("Enter your choice: ");
-        scanf("%d", &nextchoice);
+        
+        printf("\n---------------------------------------------\n");
+        printf("  [1] Next Flashcard\n");
+        printf("  [2] Exit Flashcard Mode\n");
+        printf("Choose: ");
+        scanf("%d", &choice);
         getchar();
-        choice = nextchoice;
-    }
-    while (choice != 2);
+
+    } while (choice != 2);
 }

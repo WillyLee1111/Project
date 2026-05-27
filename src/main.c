@@ -67,12 +67,11 @@ void dictionaryMenu(HashTable *ht){
         clearScreen();
         printf("============= DICTIONARY MENU =============\n");
         printf("=============================\n");
-        setColor(11); printf("[1] "); setColor(7); printf("Show Dictionary\n");
-        setColor(11); printf("[2] "); setColor(7); printf("Search Word\n");
-        setColor(11); printf("[3] "); setColor(7); printf("Random Word\n");
-        setColor(11); printf("[4] "); setColor(7); printf("Add Word\n");
-        setColor(11); printf("[5] "); setColor(7); printf("Edit Word\n");
-        setColor(11); printf("[6] "); setColor(7); printf("Delete Word\n");
+        setColor(11); printf("[1] "); setColor(7); printf("Show & Search Dictionary\n");
+        setColor(11); printf("[2] "); setColor(7); printf("Random Word\n");
+        setColor(11); printf("[3] "); setColor(7); printf("Add Word\n");
+        setColor(11); printf("[4] "); setColor(7); printf("Edit Word\n");
+        setColor(11); printf("[5] "); setColor(7); printf("Delete Word\n");
         setColor(12); printf("[0] "); setColor(7); printf("Back\n");
         printf("=============================\n");
         printf("Enter your choice: ");
@@ -82,19 +81,53 @@ void dictionaryMenu(HashTable *ht){
 
         switch(choice){
             case 1: {
+                // Show all words
                 printf("============= DICTIONARY =============\n");
                 displayDictionary(ht);
-                // Fix 8: inline search after listing
-                printf("\n--- Type a word to view its detail, or press Enter to go back ---\n> ");
-                char searchInput[50];
-                if (fgets(searchInput, sizeof(searchInput), stdin)) {
-                    searchInput[strcspn(searchInput, "\r\n")] = '\0';
-                    if (strlen(searchInput) > 0) {
-                        Word *found = searchWord(ht, searchInput);
-                        if (found != NULL) {
-                            showWordDetail(found);
+
+                // Integrated search with BST suggestions
+                printf("\n=============================================\n");
+                printf("  Type a prefix to search (Enter = go back): ");
+                char prefix[50];
+                if (fgets(prefix, sizeof(prefix), stdin)) {
+                    prefix[strcspn(prefix, "\r\n")] = '\0';
+                    if (strlen(prefix) > 0) {
+                        Word *suggestions[20];
+                        int count = suggestWords(ht, prefix, suggestions);
+                        clearScreen();
+                        printf("============= SEARCH: \"%s\" =============\n\n", prefix);
+                        if (count == 1) {
+                            // Only one match: auto-show detail immediately
+                            clearScreen();
+                            printf("============= SEARCH: \"%s\" - 1 result =============\n\n", prefix);
+                            setColor(10);
+                            printf("  Auto-showing the only match found.\n\n");
+                            setColor(7);
+                            showWordDetail(suggestions[0]);
+                        } else if (count > 1) {
+                            printf("Found %d suggestion(s) - results sorted A-Z (BST):\n\n", count);
+                            for (int i = 0; i < count; i++) {
+                                setColor(11);
+                                printf("  [%d] ", i + 1);
+                                setColor(7);
+                                printf("%s", suggestions[i]->word);
+                                setColor(8);
+                                printf(" (%s)\n", suggestions[i]->type);
+                                setColor(7);
+                            }
+                            printf("\n");
+                            setColor(12); printf("  [0] "); setColor(7); printf("Cancel\n");
+                            printf("\nChoose a word to view detail: ");
+                            int choose;
+                            scanf("%d", &choose);
+                            getchar();
+                            if (choose > 0 && choose <= count) {
+                                showWordDetail(suggestions[choose - 1]);
+                            }
                         } else {
-                            printf("Word '%s' not found in dictionary.\n", searchInput);
+                            setColor(12);
+                            printf("  No words found with prefix \"%s\".\n", prefix);
+                            setColor(7);
                         }
                         pauseScreen();
                     }
@@ -102,34 +135,6 @@ void dictionaryMenu(HashTable *ht){
                 break;
             }
             case 2: {
-                char target[50];
-                Word* suggestions[20];
-                printf("============= SEARCH WORD =============\n");
-                printf("Enter the word to search: ");
-                scanf("%s", target);
-                getchar();
-                int count = suggestWords(ht, target, suggestions);
-                printf("\n");
-                if (count > 0) {
-                    printf("Suggestions for '%s':\n", target);
-                    for (int i = 0; i < count; i++) {
-                        printf("%d. %s\n", i + 1, suggestions[i]->word);
-                    }
-                    int choose;
-                    printf("\nChoose a word (0 to cancel): ");
-                    scanf("%d", &choose);
-                    getchar();
-                    if (choose > 0 && choose <= count) {
-                        showWordDetail(suggestions[choose - 1]);
-                        pauseScreen();
-                    }
-                } else {
-                    printf("Word not found.\n");
-                    pauseScreen();
-                }
-                break;
-            }
-            case 3: {
                 Word *randomWord = getRandomWord(ht);
                 if (randomWord != NULL) {
                     showWordDetail(randomWord);
@@ -139,17 +144,17 @@ void dictionaryMenu(HashTable *ht){
                 pauseScreen();
                 break;
             }
-            case 4:
+            case 3:
                 addWord(ht);
                 saveDictionary(ht);
                 pauseScreen();
                 break;
-            case 5:
+            case 4:
                 editWord(ht);
                 saveDictionary(ht);
                 pauseScreen();
                 break;
-            case 6:
+            case 5:
                 deleteWord(ht);
                 saveDictionary(ht);
                 pauseScreen();
@@ -183,32 +188,54 @@ void gameMenu(HashTable *ht) {
 int main(){
     showIntroScreen();
     SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
     clearScreen();
     srand((unsigned int)time(NULL));
 
     int option;
-    printf("Welcome to the English Dictionary App!\n");
-    printf("1. Login\n");
-    printf("2. Register\n");
-    printf("Enter your choice: ");
-    scanf("%d", &option);
-    getchar();
-    if (option == 1) {
-        if (!login()) {
-            printf("Login failed. Exiting...\n");
+    while (1) {
+        clearScreen();
+        printf("=============================================\n");
+        setColor(14); printf("       ENGLISH DICTIONARY & VOCAB GAME\n"); setColor(7);
+        printf("=============================================\n\n");
+        setColor(11); printf("  [1] "); setColor(7); printf("Login\n");
+        setColor(11); printf("  [2] "); setColor(7); printf("Register\n");
+        setColor(12); printf("  [0] "); setColor(7); printf("Exit\n");
+        printf("\n=============================================\n");
+        printf("Enter your choice: ");
+        scanf("%d", &option);
+        getchar();
+
+        if (option == 1) {
+            if (login()) {
+                break; // Proceed to main app
+            } else {
+                setColor(12);
+                printf("\nLogin failed. Incorrect username or password.\n");
+                setColor(7);
+                pauseScreen();
+            }
+        } else if (option == 2) {
+            if (registerUser()) {
+                setColor(10);
+                printf("\nRegistration successful! Please login now.\n");
+                setColor(7);
+                pauseScreen();
+            } else {
+                setColor(12);
+                printf("\nRegistration failed.\n");
+                setColor(7);
+                pauseScreen();
+            }
+        } else if (option == 0) {
+            printf("\nExiting program... Goodbye!\n");
+            exit(0);
+        } else {
+            setColor(12);
+            printf("\nInvalid option. Please try again.\n");
+            setColor(7);
             pauseScreen();
-            return 0;
         }
-    } else if (option == 2) {
-        if (!registerUser()) {
-            printf("Registration failed. Exiting...\n");
-            pauseScreen();
-            return 0;
-        }
-    } else {
-        printf("Invalid option. Exiting...\n");
-        pauseScreen();
-        return 0;
     }
 
     SetConsoleOutputCP(CP_UTF8);

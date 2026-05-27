@@ -11,6 +11,7 @@ HashTable* createHashTable() {
     for (int i = 0; i < HASH_SIZE; i++) {
         ht->buckets[i] = NULL;
     }
+    ht->bstRoot = NULL;  // BST starts empty
     return ht;
 }
 
@@ -54,14 +55,107 @@ Word* createWord(
     return newWord;
 }
 
+// ============================================================
+// Hash Table core operations
+// hashFunction: djb2 algorithm (Dan Bernstein)
+//   hash(i) = hash(i-1) * 33 + char[i]
+//   Seed 5381 is prime; multiplier 33 gives good bit distribution.
+//   Complexity: O(L) where L = word length; lookup/insert O(1) avg.
+// ============================================================
+
+// ============================================================
+// BST Implementation - used by suggestWords for O(log n) prefix search
+// BST ordering: case-insensitive alphabetical (_stricmp)
+// In-order traversal (left->root->right) yields words in A-Z order
+// Prefix search complexity: O(log n + k), k = number of matches
+// ============================================================
+
+BSTNode* bstInsert(BSTNode *root, const char *word) {
+    if (root == NULL) {
+        BSTNode *node = (BSTNode*)malloc(sizeof(BSTNode));
+        strncpy(node->word, word, sizeof(node->word) - 1);
+        node->word[sizeof(node->word) - 1] = '\0';
+        node->left = node->right = NULL;
+        return node;
+    }
+    int cmp = _stricmp(word, root->word);
+    if      (cmp < 0) root->left  = bstInsert(root->left,  word);
+    else if (cmp > 0) root->right = bstInsert(root->right, word);
+    // cmp == 0: duplicate word, skip
+    return root;
+}
+
+static BSTNode* bstMinNode(BSTNode *node) {
+    while (node->left != NULL) node = node->left;
+    return node;
+}
+
+BSTNode* bstDelete(BSTNode *root, const char *word) {
+    if (root == NULL) return NULL;
+    int cmp = _stricmp(word, root->word);
+    if (cmp < 0) {
+        root->left  = bstDelete(root->left,  word);
+    } else if (cmp > 0) {
+        root->right = bstDelete(root->right, word);
+    } else {
+        // Found the node to delete
+        if (root->left == NULL) {
+            BSTNode *tmp = root->right; free(root); return tmp;
+        }
+        if (root->right == NULL) {
+            BSTNode *tmp = root->left;  free(root); return tmp;
+        }
+        // Two children: replace with in-order successor (min of right subtree)
+        BSTNode *successor = bstMinNode(root->right);
+        strncpy(root->word, successor->word, sizeof(root->word) - 1);
+        root->word[sizeof(root->word) - 1] = '\0';
+        root->right = bstDelete(root->right, successor->word);
+    }
+    return root;
+}
+
+void freeBST(BSTNode *root) {
+    if (root == NULL) return;
+    freeBST(root->left);
+    freeBST(root->right);
+    free(root);
+}
+
+// Recursive in-order BST traversal for prefix suggestions.
+// Pruning: if current word < prefix, go right only;
+//          if current word > prefix+*, go left only;
+//          if matches prefix, collect and go both.
+static void bstCollect(BSTNode *node, const char *prefix, int prefixLen,
+                        Word **suggestions, int *count, HashTable *ht) {
+    if (node == NULL || *count >= 20) return;
+    int cmp = _strnicmp(node->word, prefix, prefixLen);
+    if (cmp < 0) {
+        // This word comes before the prefix alphabetically -> only right subtree can match
+        bstCollect(node->right, prefix, prefixLen, suggestions, count, ht);
+    } else if (cmp > 0) {
+        // This word comes after the prefix alphabetically -> only left subtree can match
+        bstCollect(node->left, prefix, prefixLen, suggestions, count, ht);
+    } else {
+        // This word starts with the prefix -> collect it and check both subtrees
+        bstCollect(node->left,  prefix, prefixLen, suggestions, count, ht);
+        Word *found = searchWord(ht, node->word);
+        if (found != NULL && *count < 20) suggestions[(*count)++] = found;
+        bstCollect(node->right, prefix, prefixLen, suggestions, count, ht);
+    }
+}
+
+// ============================================================
+
 void insertWord(HashTable* ht, Word *newWord) {
     unsigned int index = hashFunction(newWord->word);
     newWord->next = ht->buckets[index];
     ht->buckets[index] = newWord;
+    // Keep BST in sync for O(log n) prefix suggestions
+    ht->bstRoot = bstInsert(ht->bstRoot, newWord->word);
 }
 
 // Helper: print meanings split by ';' as numbered list
-static void printWordMeanings(const char *meaning) {
+void printWordMeanings(const char *meaning) {
     char copy[500];
     strncpy(copy, meaning, sizeof(copy) - 1);
     copy[sizeof(copy) - 1] = '\0';
@@ -73,29 +167,44 @@ static void printWordMeanings(const char *meaning) {
     }
 }
 
-void displayDictionary(HashTable* ht) {
-    int count = 0;
-    for (int i = 0; i < HASH_SIZE; i++) {
-        Word *temp = ht->buckets[i];
-        while (temp != NULL) {
-            count++;
-            printf("=================================\n");
-            printf("Word          : %s\n", temp->word);
-            printf("Meaning(s)    :\n");
-            printWordMeanings(temp->meaning);
-            printf("Pronunciation : %s\n", temp->pronunciation);
-            printf("Type          : %s\n", temp->type);
-            printf("Status        : %s | Wrong: %d\n",
-                   temp->learned ? "Learned" : "Not learned", temp->wrongCount);
-            printf("=================================\n");
-            temp = temp->next;
-        }
+// In-order BST traversal to print all words in alphabetical order (A-Z).
+// This leverages the BST's sorted property - no extra sorting needed.
+static void bstPrintInOrder(BSTNode *node, HashTable *ht, int *count) {
+    if (node == NULL) return;
+    bstPrintInOrder(node->left, ht, count);
+    Word *w = searchWord(ht, node->word);
+    if (w != NULL) {
+        (*count)++;
+        printf("=================================\n");
+        printf("%-14s: %s\n", "Word", w->word);
+        printf("%-14s:\n", "Meaning(s)");
+        printWordMeanings(w->meaning);
+        printf("%-14s: %s\n", "Pronunciation", w->pronunciation);
+        printf("%-14s: %s\n", "Type", w->type);
+        printf("%-14s: %s | Wrong: %d\n", "Status",
+               w->learned ? "Learned" : "Not learned", w->wrongCount);
+        printf("=================================\n");
     }
-    if (count == 0) printf("Dictionary is empty.\n");
-    else printf("Total: %d word(s)\n", count);
+    bstPrintInOrder(node->right, ht, count);
+}
+
+void displayDictionary(HashTable* ht) {
+    // Count total words
+    int total = 0;
+    for (int i = 0; i < HASH_SIZE; i++) {
+        Word *tmp = ht->buckets[i];
+        while (tmp) { total++; tmp = tmp->next; }
+    }
+    if (total == 0) { printf("Dictionary is empty.\n"); return; }
+
+    // Display via BST in-order = alphabetically sorted A-Z
+    int count = 0;
+    bstPrintInOrder(ht->bstRoot, ht, &count);
+    printf("\nTotal: %d word(s) [sorted A-Z via BST in-order]\n", count);
 }
 
 Word* searchWord(HashTable* ht, char *target) {
+    _strlwr(target); // Ensure case-insensitive hash lookup
     unsigned int index = hashFunction(target);
     Word *temp = ht->buckets[index];
     while (temp != NULL) {
@@ -107,18 +216,13 @@ Word* searchWord(HashTable* ht, char *target) {
     return NULL;
 }
 
+// suggestWords: uses the embedded BST for O(log n) prefix search.
+// Results are returned in alphabetical order (BST in-order property).
 int suggestWords(HashTable* ht, char *prefix, Word *suggestions[20]) {
+    _strlwr(prefix);
     int count = 0;
-    size_t prefixLen = strlen(prefix);
-    for (int i = 0; i < HASH_SIZE && count < 20; i++) {
-        Word *temp = ht->buckets[i];
-        while (temp != NULL && count < 20) {
-            if (_strnicmp(temp->word, prefix, prefixLen) == 0) {
-                suggestions[count++] = temp;
-            }
-            temp = temp->next;
-        }
-    }
+    int prefixLen = (int)strlen(prefix);
+    bstCollect(ht->bstRoot, prefix, prefixLen, suggestions, &count, ht);
     return count;
 }
 
@@ -132,6 +236,7 @@ void freeHashTable(HashTable* ht) {
             free(toFree);
         }
     }
+    freeBST(ht->bstRoot);  // free the BST
     free(ht);
 }
 
@@ -218,86 +323,98 @@ Word* getAdaptiveWordMinLen(HashTable* ht, int minLen) {
 
 
 void showStats(HashTable* ht) {
-    int totalWords = 0;
-    int learnedWords = 0;
-    int weakWords = 0;
+    int totalWords = 0, learnedWords = 0, weakWords = 0;
+    // Word type counters
+    int cntNoun = 0, cntVerb = 0, cntAdj = 0, cntAdv = 0, cntOther = 0;
+    // Collect top-5 hardest words (sorted by wrongCount desc)
+    Word *top5[5] = {NULL, NULL, NULL, NULL, NULL};
+
     for (int i = 0; i < HASH_SIZE; i++) {
         Word *temp = ht->buckets[i];
         while (temp != NULL) {
             totalWords++;
             if (temp->learned == 1) learnedWords++;
             if (temp->wrongCount >= 3 && temp->learned == 0) weakWords++;
-            temp = temp->next;
-        }
-    }
 
-    float learningRate = 0;
-    if (totalWords > 0) {
-        learningRate = ((float)learnedWords / totalWords) * 100;
-    }
+            // Count by type
+            if      (_stricmp(temp->type, "noun")      == 0) cntNoun++;
+            else if (_stricmp(temp->type, "verb")      == 0) cntVerb++;
+            else if (_stricmp(temp->type, "adjective") == 0) cntAdj++;
+            else if (_stricmp(temp->type, "adverb")    == 0) cntAdv++;
+            else cntOther++;
 
-    clearScreen();
-
-    printf("============== PLAYER STATISTICS ==============");
-    printf("\n");
-    printf("========================================\n");
-    setColor(11);
-    printf("LEVEL");
-    setColor(7);
-    printf("            : %d\n", playStats.level);
-
-    setColor(11);
-    printf("EXP");
-    setColor(7);
-    printf("              : %d\n", playStats.exp);
-
-    setColor(11);
-    printf("STREAK");
-    setColor(7);
-    printf("           : %d days\n",studyStreak.streakDays);
-
-    printf("========================================\n");
-    printf("\n");
-    setColor(14);
-    printf("DICTIONARY PROGRESS\n");
-    setColor(7);
-    printf("----------------------------------------\n");
-    printf("Total Words     : %d\n",totalWords);
-    printf("Learned Words   : %d\n",learnedWords);
-    printf("Weak Words      : %d\n",weakWords);
-    printf("Learning Rate   : %.2f%%\n",learningRate);
-    printf("----------------------------------------\n");
-    printf("\n");
-    setColor(13);
-    printf("DAILY MISSION\n");
-    setColor(7);
-    printf("----------------------------------------\n");
-    printf("Words Learned   : %d / 10\n",dailyMission.wordsLearnedToday);
-    printf("Flashcards      : %d / 5\n",dailyMission.flashcardsReviewed);
-    printf("Games Played    : %d / 1\n",dailyMission.gamesPlayed);
-    printf("----------------------------------------\n");
-    printf("\n");
-    setColor(12);
-    printf("MOST DIFFICULT WORDS\n");
-    setColor(7);
-    printf("----------------------------------------\n");
-    
-    int found = 0;
-    for (int i = 0; i < HASH_SIZE; i++) {
-        Word *temp = ht->buckets[i];
-        while (temp != NULL) {
-            if (temp->wrongCount >= 3 && temp->learned == 0) {
-                found = 1;
-                printf("%s  (%d wrongs)\n", temp->word,temp->wrongCount);
+            // Insert into top-5 if wrongCount is high enough (insertion sort)
+            for (int k = 0; k < 5; k++) {
+                if (top5[k] == NULL || temp->wrongCount > top5[k]->wrongCount) {
+                    for (int m = 4; m > k; m--) top5[m] = top5[m-1];
+                    top5[k] = temp;
+                    break;
+                }
             }
             temp = temp->next;
         }
     }
-    if (!found) {
-        printf("No difficult words yet!\n");
-    }
+
+    float learningRate = totalWords > 0 ? ((float)learnedWords / totalWords) * 100.0f : 0;
+
+    clearScreen();
+    printf("============== PLAYER STATISTICS ==============\n");
+    printf("========================================\n");
+    setColor(11); printf("LEVEL      "); setColor(7); printf(": %d\n", playStats.level);
+    setColor(11); printf("EXP        "); setColor(7); printf(": %d / %d (next level)\n",
+        playStats.exp, (playStats.level) * 100);
+    setColor(11); printf("STREAK     "); setColor(7); printf(": %d days\n", studyStreak.streakDays);
+    printf("========================================\n\n");
+
+    // Dictionary progress with bar
+    setColor(14); printf("DICTIONARY PROGRESS\n"); setColor(7);
     printf("----------------------------------------\n");
+    printf("Total Words   : %d\n", totalWords);
+    printf("Learned       : %d / %d  [", learnedWords, totalWords);
+    int bar = totalWords > 0 ? (learnedWords * 20 / totalWords) : 0;
+    setColor(10);
+    for (int i = 0; i < bar; i++) printf("=");
+    setColor(7);
+    for (int i = bar; i < 20; i++) printf(" ");
+    printf("]  %.1f%%\n", learningRate);
+    printf("Weak Words    : %d (wrong >= 3 times, not learned)\n", weakWords);
     printf("\n");
+
+    // By word type breakdown
+    setColor(14); printf("WORDS BY TYPE\n"); setColor(7);
+    printf("----------------------------------------\n");
+    printf("  Noun      : %d\n", cntNoun);
+    printf("  Verb      : %d\n", cntVerb);
+    printf("  Adjective : %d\n", cntAdj);
+    printf("  Adverb    : %d\n", cntAdv);
+    printf("  Other     : %d\n", cntOther);
+    printf("\n");
+
+    // Daily mission with dynamic targets
+    setColor(13); printf("DAILY MISSION\n"); setColor(7);
+    printf("----------------------------------------\n");
+    printf("Words Learned : %d / %d\n", dailyMission.wordsLearnedToday,
+           dailyMission.targetWords > 0 ? dailyMission.targetWords : 10);
+    printf("Flashcards    : %d / %d\n", dailyMission.flashcardsReviewed,
+           dailyMission.targetFlashcards > 0 ? dailyMission.targetFlashcards : 5);
+    printf("Games Played  : %d / %d\n", dailyMission.gamesPlayed,
+           dailyMission.targetGames > 0 ? dailyMission.targetGames : 1);
+    printf("\n");
+
+    // Top-5 hardest words sorted by wrongCount
+    setColor(12); printf("TOP 5 HARDEST WORDS (sorted by wrong count)\n"); setColor(7);
+    printf("----------------------------------------\n");
+    int anyHard = 0;
+    for (int k = 0; k < 5; k++) {
+        if (top5[k] != NULL && top5[k]->wrongCount > 0) {
+            anyHard = 1;
+            printf("  %d. %-15s wrong: %d  status: %s\n", k + 1,
+                   top5[k]->word, top5[k]->wrongCount,
+                   top5[k]->learned ? "learned" : "not learned");
+        }
+    }
+    if (!anyHard) { setColor(10); printf("  No wrong answers yet! Keep it up!\n"); setColor(7); }
+    printf("----------------------------------------\n");
     pauseScreen();
 }
 
@@ -382,6 +499,7 @@ void addWord(HashTable* ht) {
         printf("Enter the word: ");
         scanf("%49s", word);
         getchar();
+        _strlwr(word); // Standardize to lowercase
         if (searchWord(ht, word) != NULL) {
             printf("Word '%s' already exists in the dictionary.\n", word);
             pauseScreen();
@@ -417,6 +535,7 @@ void addWord(HashTable* ht) {
     printf("Enter the type (noun/verb/adjective/adverb): ");
     fgets(type, sizeof(type), stdin);
     type[strcspn(type, "\r\n")] = '\0';
+    _strlwr(type);
 
     Word *newWord = createWord(word, meaning, pronunciation, type);
     insertWord(ht, newWord);
@@ -468,6 +587,8 @@ void editWord(HashTable* ht) {
     printf("Enter the new type (noun/verb/adjective/adverb): ");
     fgets(type, sizeof(type), stdin);
     type[strcspn(type, "\r\n")] = '\0';
+    _strlwr(type);
+    
     strncpy(word->meaning, meaning, sizeof(word->meaning) - 1);
     word->meaning[sizeof(word->meaning) - 1] = '\0';
     strncpy(word->pronunciation, pronunciation, sizeof(word->pronunciation) - 1);
@@ -481,6 +602,7 @@ void deleteWord(HashTable* ht) {
     char target[50];
     printf("Enter the word to delete: ");
     scanf("%49s", target);
+    _strlwr(target);
     unsigned int index = hashFunction(target);
     Word* temp = ht->buckets[index];
     Word* prev = NULL;
@@ -498,7 +620,10 @@ void deleteWord(HashTable* ht) {
     } else {
         prev->next = temp->next;
     }
+    // Keep BST in sync
+    ht->bstRoot = bstDelete(ht->bstRoot, temp->word);
     free(temp);
+
     printSuccess("Word deleted successfully!");
 }
 
