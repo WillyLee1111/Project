@@ -1,4 +1,3 @@
-﻿keen|say mê|/kiːn/|adjective
 keep|giữ|/kiːp/|verb
 observe|quan sát|/əbˈzɜːv/|verb
 airline|hãng hàng không|/ˈeə.laɪn/|noun
@@ -393,6 +392,7 @@ wall|bức tường|/wɔːl/|noun
 edition|phiên bản|/ɪˈdɪʃ.ən/|noun
 yes|vâng|/jes/|adverb
 yet|chưa|/jet/|adverb
+﻿keen|say mê|/kiːn/|adjective
 want|muốn|/wɒnt/|verb
 race|cuộc đua|/reɪs/|noun
 warm|ấm áp|/wɔːm/|adjective

@@ -355,7 +355,6 @@ void showStats(HashTable* ht) {
         }
     }
 
-    float learningRate = totalWords > 0 ? ((float)learnedWords / totalWords) * 100.0f : 0;
 
     clearScreen();
     printf("============== PLAYER STATISTICS ==============\n");
@@ -366,18 +365,11 @@ void showStats(HashTable* ht) {
     setColor(11); printf("STREAK     "); setColor(7); printf(": %d days\n", studyStreak.streakDays);
     printf("========================================\n\n");
 
-    // Dictionary progress with bar
+    // Dictionary progress
     setColor(14); printf("DICTIONARY PROGRESS\n"); setColor(7);
     printf("----------------------------------------\n");
     printf("Total Words   : %d\n", totalWords);
-    printf("Learned       : %d / %d  [", learnedWords, totalWords);
-    int bar = totalWords > 0 ? (learnedWords * 20 / totalWords) : 0;
-    setColor(10);
-    for (int i = 0; i < bar; i++) printf("=");
-    setColor(7);
-    for (int i = bar; i < 20; i++) printf(" ");
-    printf("]  %.1f%%\n", learningRate);
-    printf("Weak Words    : %d (wrong >= 3 times, not learned)\n", weakWords);
+    printf("Learned       : %d / %d\n", learnedWords, totalWords);
     printf("\n");
 
     // By word type breakdown
