@@ -27,8 +27,8 @@ valley|thung lũng|/ˈvæl.i/|noun
 airport|sân bay|/ˈeə.pɔːt/|noun
 advance|tiến bộ|/ədˈvɑːns/|noun
 economy|nền kinh tế|/iˈkɒn.ə.mi/|noun
-jam|mứt|/dʒæm/|noun
 parent|cha mẹ|/ˈpeə.rənt/|noun
+jam|mứt|/dʒæm/|noun
 aircraft|máy bay|/ˈeə.krɑːft/|noun
 alter|thay đổi|/ˈɒl.tər/|verb
 raise|nâng lên|/reɪz/|verb
@@ -95,8 +95,8 @@ administration|sự quản trị|/ədˌmɪn.ɪˈstreɪ.ʃən/|noun
 upper|phía trên|/ˈʌp.ər/|adjective
 farmer|nông dân|/ˈfɑː.mər/|noun
 reason|lý do|/ˈriː.zən/|noun
-lady|quý cô|/ˈleɪ.di/|noun
 ugly|xấu xí|/ˈʌɡ.li/|adjective
+lady|quý cô|/ˈleɪ.di/|noun
 habit|thói quen|/ˈhæb.ɪt/|noun
 eager|háo hức|/ˈiː.ɡər/|adjective
 package|gói hàng|/ˈpæk.ɪdʒ/|noun
@@ -187,8 +187,8 @@ safe|an toàn|/seɪf/|adjective
 yell|hét lên|/jel/|verb
 economic|thuộc kinh tế|/iː.kəˈnɒm.ɪk/|adjective
 quit|từ bỏ|/kwɪt/|verb
-affair|vấn đề|/əˈfeər/|noun
 quick|nhanh|/kwɪk/|adjective
+affair|vấn đề|/əˈfeər/|noun
 acknowledge|công nhận|/əkˈnɒl.ɪdʒ/|verb
 sail|chèo thuyền|/seɪl/|verb
 team|đội|/tiːm/|noun
@@ -213,13 +213,13 @@ particular|cụ thể|/pəˈtɪk.jə.lər/|adjective
 save|cứu|/seɪv/|verb
 edge|rìa|/edʒ/|noun
 become|trở nên|/bɪˈkʌm/|verb
-edit|chỉnh sửa|/ˈed.ɪt/|verb
 nerve|dây thần kinh|/nɜːv/|noun
+edit|chỉnh sửa|/ˈed.ɪt/|verb
 quite|khá|/kwaɪt/|adverb
 justice|công lý|/ˈdʒʌs.tɪs/|noun
 receive|nhận|/rɪˈsiːv/|verb
-man|đàn ông|/mæn/|noun
 name|tên|/neɪm/|noun
+man|đàn ông|/mæn/|noun
 map|bản đồ|/mæp/|noun
 via|thông qua|/ˈvaɪə/|preposition
 safety|sự an toàn|/ˈseɪf.ti/|noun
@@ -249,8 +249,8 @@ march|tháng ba|/mɑːtʃ/|noun
 across|ngang qua|/əˈkrɒs/|preposition
 alternative|sự thay thế|/ɒlˈtɜː.nə.tɪv/|noun
 xerox|sao chụp|/ˈzɪə.rɒks/|verb
-animal|động vật|/ˈæn.ɪ.məl/|noun
 kick|đá|/kɪk/|verb
+animal|động vật|/ˈæn.ɪ.məl/|noun
 screen|màn hình|/skriːn/|noun
 target|mục tiêu|/ˈtɑː.ɡɪt/|noun
 effective|hiệu quả|/ɪˈfek.tɪv/|adjective
@@ -269,23 +269,23 @@ kill|giết|/kɪl/|verb
 accept|chấp nhận|/əkˈsept/|verb
 always|luôn luôn|/ˈɔːl.weɪz/|adverb
 kind|loại|/kaɪnd/|noun
-king|vua|/kɪŋ/|noun
 radio|đài phát thanh|/ˈreɪ.di.əʊ/|noun
+king|vua|/kɪŋ/|noun
 veteran|cựu chiến binh|/ˈvet.ər.ən/|noun
 familiar|quen thuộc|/fəˈmɪl.i.ər/|adjective
 famous|nổi tiếng|/ˈfeɪ.məs/|adjective
 dare|dám|/deər/|verb
 dark|tối|/dɑːk/|adjective
 access|truy cập|/ˈæk.ses/|noun
-data|dữ liệu|/ˈdeɪ.tə/|noun
 obtain|đạt được|/əbˈteɪn/|verb
+data|dữ liệu|/ˈdeɪ.tə/|noun
 date|ngày|/deɪt/|noun
 reality|thực tế|/riˈæl.ə.ti/|noun
 agent|đại lý|/ˈeɪ.dʒənt/|noun
 kiss|hôn|/kɪs/|verb
 reach|chạm tới|/riːtʃ/|verb
-junior|cấp dưới|/ˈdʒuː.ni.ər/|adjective
 react|phản ứng|/riˈækt/|verb
+junior|cấp dưới|/ˈdʒuː.ni.ər/|adjective
 ready|sẵn sàng|/ˈred.i/|adjective
 candidate|ứng cử viên|/ˈkæn.dɪ.dət/|noun
 question|câu hỏi|/ˈkwes.tʃən/|noun
@@ -328,8 +328,8 @@ admit|thừa nhận|/ədˈmɪt/|verb
 park|công viên|/pɑːk/|noun
 part|phần|/pɑːt/|noun
 obvious|rõ ràng|/ˈɒb.vi.əs/|adjective
-adequate|đầy đủ|/ˈæd.ə.kwət/|adjective
 gallery|phòng trưng bày|/ˈɡæl.ər.i/|noun
+adequate|đầy đủ|/ˈæd.ə.kwət/|adjective
 pass|vượt qua|/pɑːs/|verb
 lead|dẫn dắt|/liːd/|verb
 uncle|chú|/ˈʌŋ.kəl/|noun
@@ -383,12 +383,12 @@ wait|chờ đợi|/weɪt/|verb
 imagine|tưởng tượng|/ɪˈmædʒ.ɪn/|verb
 sample|mẫu|/ˈsɑːm.pəl/|noun
 waste|rác thải|/weɪst/|noun
-generate|tạo ra|/ˈdʒen.ə.reɪt/|verb
 wake|thức dậy|/weɪk/|verb
+generate|tạo ra|/ˈdʒen.ə.reɪt/|verb
 leader|lãnh đạo|/ˈliː.dər/|noun
 walk|đi bộ|/wɔːk/|verb
-layer|lớp|/ˈleɪ.ər/|noun
 wall|bức tường|/wɔːl/|noun
+layer|lớp|/ˈleɪ.ər/|noun
 edition|phiên bản|/ɪˈdɪʃ.ən/|noun
 yes|vâng|/jes/|adverb
 yet|chưa|/jet/|adverb
@@ -430,8 +430,8 @@ make|làm|/meɪk/|verb
 neck|cổ|/nek/|noun
 national|thuộc quốc gia|/ˈnæʃ.ən.əl/|adjective
 rapid|nhanh chóng|/ˈræp.ɪd/|adjective
-aggressive|hung hăng|/əˈɡres.ɪv/|adjective
 male|nam giới|/meɪl/|noun
+aggressive|hung hăng|/əˈɡres.ɪv/|adjective
 need|cần|/niːd/|verb
 agreement|sự đồng ý|/əˈɡriː.mənt/|noun
 many|nhiều|/ˈmen.i/|determiner
@@ -465,8 +465,8 @@ scale|quy mô|/skeɪl/|noun
 hate|ghét|/heɪt/|verb
 education|sự giáo dục|/ˌedʒ.uˈkeɪ.ʃən/|noun
 have|có|/hæv/|verb
-dead|chết|/ded/|adjective
 quality|chất lượng|/ˈkwɒl.ə.ti/|noun
+dead|chết|/ded/|adjective
 deal|thỏa thuận|/diːl/|noun
 dear|thân yêu|/dɪər/|adjective
 advantage|lợi thế|/ədˈvɑːn.tɪdʒ/|noun
@@ -494,8 +494,8 @@ yard|cái sân|/jɑːd/|noun
 ambition|tham vọng|/æmˈbɪʃ.ən/|noun
 educate|giáo dục|/ˈedʒ.u.keɪt/|verb
 maintain|duy trì|/meɪnˈteɪn/|verb
-accommodation|chỗ ở|/əˌkɒm.əˈdeɪ.ʃən/|noun
 daily|hàng ngày|/ˈdeɪ.li/|adjective
+accommodation|chỗ ở|/əˌkɒm.əˈdeɪ.ʃən/|noun
 also|cũng|/ˈɔːl.səʊ/|adverb
 alive|còn sống|/əˈlaɪv/|adjective
 tail|cái đuôi|/teɪl/|noun
