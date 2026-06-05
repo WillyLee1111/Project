@@ -412,7 +412,7 @@ void showStats(HashTable* ht) {
 
 void saveProgress(HashTable* ht) {
     char path[100];
-    snprintf(path, sizeof(path), "data/users/%s/progress.txt", currentUser.username);
+    snprintf(path, sizeof(path), "data/Users/%s/progress.txt", currentUser.username);
     FILE *file = fopen(path, "w");
     if (file == NULL) {
         fprintf(stderr, "Could not open file for writing\n");
@@ -430,7 +430,7 @@ void saveProgress(HashTable* ht) {
 
 void loadProgress(HashTable* ht) {
     char path[100];
-    snprintf(path, sizeof(path), "data/users/%s/progress.txt", currentUser.username);
+    snprintf(path, sizeof(path), "data/Users/%s/progress.txt", currentUser.username);
     FILE *file = fopen(path, "r");
     if (file == NULL) {
         return;
@@ -480,6 +480,24 @@ Word* getWeakWord(HashTable* ht) {
     if (count == 0) return NULL;
     int randomIndex = rand() % count;
     return weakWords[randomIndex];
+}
+
+Word* getStudiedWord(HashTable* ht) {
+    Word* studiedWords[1000];
+    int count = 0;
+    for (int i = 0; i < HASH_SIZE; i++) {
+        Word *temp = ht->buckets[i];
+        while (temp != NULL) {
+            // Include words that have been learned or answered wrong
+            if (temp->learned == 1 || temp->wrongCount > 0) {
+                if (count < 1000) studiedWords[count++] = temp;
+            }
+            temp = temp->next;
+        }
+    }
+    if (count == 0) return getRandomWord(ht); // fallback
+    int randomIndex = rand() % count;
+    return studiedWords[randomIndex];
 }
 
 void addWord(HashTable* ht) {

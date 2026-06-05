@@ -233,8 +233,14 @@ void playMissingLetterGame(HashTable *ht){
 
 void englishToVietnameseGame(HashTable *ht){
     clearScreen();
+    if (dailyMission.flashcardsReviewed == 0) {
+        printf("\n  Ban chua hoc Flashcard hom nay!\n");
+        printf("  Hay vao Flashcard on tap tu vung truoc nhe.\n");
+        pauseScreen();
+        return;
+    }
     dailyMission.gamesPlayed++;
-    Word *word = getRandomWord(ht);
+    Word *word = getStudiedWord(ht);
     if(word == NULL){
         printf("No words available.\n");
         pauseScreen();
@@ -287,8 +293,14 @@ void englishToVietnameseGame(HashTable *ht){
 
 void vietnameseToEnglishGame(HashTable *ht){
     clearScreen();
+    if (dailyMission.flashcardsReviewed == 0) {
+        printf("\n  Ban chua hoc Flashcard hom nay!\n");
+        printf("  Hay vao Flashcard on tap tu vung truoc nhe.\n");
+        pauseScreen();
+        return;
+    }
     dailyMission.gamesPlayed++;
-    Word *word = getRandomWord(ht);
+    Word *word = getStudiedWord(ht);
     if(word == NULL){
         printf("No words available.\n");
         pauseScreen();

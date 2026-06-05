@@ -69,10 +69,11 @@ void saveUserData() {
         fprintf(stderr, "Could not save user data for %s\n", currentUser.username);
         return;
     }
-    // Save 6 mission fields including randomized targets
+    // Save 6 mission fields + mission date (date targets were generated for)
     fprintf(file, "MISSION %d %d %d %d %d %d\n",
         dailyMission.wordsLearnedToday, dailyMission.flashcardsReviewed, dailyMission.gamesPlayed,
         dailyMission.targetWords, dailyMission.targetFlashcards, dailyMission.targetGames);
+    fprintf(file, "MISSIONDATE %s\n", dailyMission.missionDate);
     fprintf(file, "STREAK %s %d\n", studyStreak.lastStudyDate, studyStreak.streakDays);
     fprintf(file, "STATS %d %d\n", playStats.level, playStats.exp);
     fclose(file);
@@ -85,6 +86,7 @@ void loadUserData() {
     dailyMission.targetWords = 0;    // 0 = not set yet, will be generated after srand
     dailyMission.targetFlashcards = 0;
     dailyMission.targetGames = 0;
+    dailyMission.missionDate[0] = '\0'; // empty = not set yet
 
     strcpy(studyStreak.lastStudyDate, "");
     studyStreak.streakDays = 0;
@@ -96,18 +98,19 @@ void loadUserData() {
     snprintf(path, sizeof(path), "data/Users/%s/userdata.txt", currentUser.username);
     FILE *file = fopen(path, "r");
     if (file == NULL) {
-        fprintf(stderr, "Could not load user data for %s from %s\n", currentUser.username, path);
+        // First time user — no file yet, defaults are fine
         return;
     }
     char label[50];
     while (fscanf(file, "%49s", label) == 1) {
         if (strcmp(label, "MISSION") == 0) {
-            // Try reading 6 values (new format), fall back to 3 (old format)
             int r = fscanf(file, "%d %d %d %d %d %d",
                 &dailyMission.wordsLearnedToday, &dailyMission.flashcardsReviewed,
                 &dailyMission.gamesPlayed,
                 &dailyMission.targetWords, &dailyMission.targetFlashcards, &dailyMission.targetGames);
-            (void)r; // targets remain 0 if old format, resetDailyMissionIfNewDay will fill them
+            (void)r;
+        } else if (strcmp(label, "MISSIONDATE") == 0) {
+            fscanf(file, "%19s", dailyMission.missionDate);
         } else if (strcmp(label, "STREAK") == 0) {
             fscanf(file, "%19s %d", studyStreak.lastStudyDate, &studyStreak.streakDays);
         } else if (strcmp(label, "STATS") == 0) {
@@ -230,10 +233,12 @@ int registerUser() {
 
 
 void checkAndCompleteMission(){
-    // Use dynamic random targets (Fix 4)
     int tw = dailyMission.targetWords > 0 ? dailyMission.targetWords : 10;
     int tf = dailyMission.targetFlashcards > 0 ? dailyMission.targetFlashcards : 5;
     int tg = dailyMission.targetGames > 0 ? dailyMission.targetGames : 1;
+
+    // Save progress counts regardless (so partial progress persists)
+    saveUserData();
 
     if (dailyMission.wordsLearnedToday >= tw &&
         dailyMission.flashcardsReviewed >= tf &&
@@ -243,10 +248,14 @@ void checkAndCompleteMission(){
         struct tm tm = *localtime(&t);
         char today[20];
         strftime(today, sizeof(today), "%Y-%m-%d", &tm);
-        if (strcmp(studyStreak.lastStudyDate, today) != 0){
+        // Streak: only update if haven't counted today yet
+        if (strcmp(studyStreak.lastStudyDate, today) != 0) {
             studyStreak.streakDays++;
             strcpy(studyStreak.lastStudyDate, today);
+            setColor(10);
             printf("\n*** DAILY MISSION COMPLETE! Streak: %d days! ***\n", studyStreak.streakDays);
+            setColor(7);
+            saveUserData(); // Persist streak immediately
         }
     }
 }
@@ -258,26 +267,34 @@ void resetDailyMissionIfNewDay(){
     char today[20];
     strftime(today, sizeof(today), "%Y-%m-%d", &tm);
 
-    int isNewDay = (strcmp(studyStreak.lastStudyDate, today) != 0 &&
-                    strcmp(studyStreak.lastStudyDate, "") != 0 &&
-                    strcmp(studyStreak.lastStudyDate, "0000-00-00") != 0);
+    // Check if the targets were generated for a different day
+    int isNewDay = (strlen(dailyMission.missionDate) > 0 &&
+                    strcmp(dailyMission.missionDate, today) != 0 &&
+                    strcmp(dailyMission.missionDate, "0000-00-00") != 0);
 
     if (isNewDay) {
-        // New day: reset progress counters
+        // New day: reset progress counters and generate new targets
         dailyMission.wordsLearnedToday = 0;
         dailyMission.flashcardsReviewed = 0;
         dailyMission.gamesPlayed = 0;
-        // Generate new random targets for the new day (Fix 4)
         dailyMission.targetWords      = rand() % 11 + 5;  // 5-15
         dailyMission.targetFlashcards = rand() % 6  + 3;  // 3-8
         dailyMission.targetGames      = rand() % 3  + 1;  // 1-3
+        strcpy(dailyMission.missionDate, today);
+        saveUserData(); // Persist new day targets immediately
+        return;
     }
 
-    // Generate targets if still 0 (first time user / old save format)
-    if (dailyMission.targetWords == 0)
-        dailyMission.targetWords = rand() % 11 + 5;
-    if (dailyMission.targetFlashcards == 0)
-        dailyMission.targetFlashcards = rand() % 6 + 3;
-    if (dailyMission.targetGames == 0)
-        dailyMission.targetGames = rand() % 3 + 1;
+    // First time ever (no date or no targets): generate targets and record the date
+    if (dailyMission.targetWords == 0 || strlen(dailyMission.missionDate) == 0 ||
+        strcmp(dailyMission.missionDate, "0000-00-00") == 0) {
+        if (dailyMission.targetWords == 0)
+            dailyMission.targetWords = rand() % 11 + 5;
+        if (dailyMission.targetFlashcards == 0)
+            dailyMission.targetFlashcards = rand() % 6 + 3;
+        if (dailyMission.targetGames == 0)
+            dailyMission.targetGames = rand() % 3 + 1;
+        strcpy(dailyMission.missionDate, today);
+        saveUserData(); // Persist initial targets
+    }
 }

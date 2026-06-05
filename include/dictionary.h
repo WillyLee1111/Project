@@ -5,7 +5,7 @@
 
 typedef struct Word{
     char word[50];
-    char meaning[500]; // Supports multiple meanings separated by ';'
+    char meaning[500];
     char pronunciation[50];
     char type[20];
 
@@ -46,6 +46,7 @@ typedef struct Mission {
     int targetWords;      // randomized target each day
     int targetFlashcards;
     int targetGames;
+    char missionDate[20]; // date targets were generated for (YYYY-MM-DD)
 } Mission;
 
 extern Mission dailyMission;
@@ -78,6 +79,7 @@ extern PlayStats playStats;
 
 Word* getWordByType(HashTable* ht, char *type);
 Word* getWeakWord(HashTable* ht);
+Word* getStudiedWord(HashTable* ht);
 void insertWord(HashTable* ht, Word *newWord);
 void displayDictionary(HashTable* ht);
 Word* searchWord(HashTable* ht, char *target);
