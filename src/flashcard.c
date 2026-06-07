@@ -6,28 +6,48 @@
 #include "../include/dictionary.h"
 #include "../include/utils.h"
 
+static Word* currentFlashcard = NULL;
+static char currentReviewResult[200] = "";
+static int currentReviewColor = 7;
+
+static void printFlashcardBack() {
+    printf("=============================================\n");
+    setColor(14); printf("               FLASHCARD (BACK)\n"); setColor(7);
+    printf("=============================================\n\n");
+
+    printf("Word    : "); setColor(11); printf("%s\n", currentFlashcard->word); setColor(7);
+    printf("Meaning :\n");
+    printWordMeanings(currentFlashcard->meaning);
+    printf("Type    : %s\n", currentFlashcard->type);
+    printf("Pronun  : %s\n", currentFlashcard->pronunciation);
+    printf("\n=============================================\n");
+    printf("How well did you remember this word?\n");
+}
+
+static void printNextMenuHeader() {
+    printFlashcardBack();
+    setColor(currentReviewColor);
+    printf("\n%s\n", currentReviewResult);
+    setColor(7);
+}
+
 void flashcardMode(HashTable *ht) {
     int mode;
 
     do {
         int choice = 1;
-
-        clearScreen();
-        printf("=============================================\n");
-        setColor(14); printf("              FLASHCARD MODE\n"); setColor(7);
-        printf("=============================================\n\n");
-
-        setColor(11); printf("  [1] "); setColor(7); printf("Adaptive (Spaced Repetition)\n");
-        setColor(11); printf("  [2] "); setColor(7); printf("Nouns Only\n");
-        setColor(11); printf("  [3] "); setColor(7); printf("Verbs Only\n");
-        setColor(11); printf("  [4] "); setColor(7); printf("Adjectives Only\n");
-        setColor(11); printf("  [5] "); setColor(7); printf("Adverbs Only\n");
-        setColor(11); printf("  [6] "); setColor(7); printf("Weak Words Only\n");
-        setColor(12); printf("  [0] "); setColor(7); printf("Back to Main Menu\n");
-
-        printf("\nEnter your choice: ");
-        scanf("%d", &mode);
-        getchar();
+        char *flashcardOptions[] = {
+            "Adaptive (Spaced Repetition)",
+            "Nouns Only",
+            "Verbs Only",
+            "Adjectives Only",
+            "Adverbs Only",
+            "Weak Words Only",
+            "Back to Main Menu"
+        };
+        mode = selectMenu("FLASHCARD MODE", flashcardOptions, 7, NULL);
+        if (mode == 6) mode = 0;
+        else mode += 1;
 
         if (mode == 0) return;
 
@@ -70,39 +90,28 @@ void flashcardMode(HashTable *ht) {
             getchar();
 
             // --- BACK OF FLASHCARD ---
-            clearScreen();
-            printf("=============================================\n");
-            setColor(14); printf("               FLASHCARD (BACK)\n"); setColor(7);
-            printf("=============================================\n\n");
-
-            printf("Word    : "); setColor(11); printf("%s\n", card->word); setColor(7);
-            printf("Meaning :\n");
-            printWordMeanings(card->meaning);
-            printf("Type    : %s\n", card->type);
-            printf("Pronun  : %s\n", card->pronunciation);
-            printf("\n=============================================\n\n");
-
-            // --- REVIEW SYSTEM (Spaced Repetition Simulation) ---
-            int review;
-            printf("How well did you remember this word?\n\n");
-            setColor(12); printf("  [1] "); setColor(7); printf("Again (Forgot it completely)\n");
-            setColor(14); printf("  [2] "); setColor(7); printf("Good  (Remembered with effort)\n");
-            setColor(10); printf("  [3] "); setColor(7); printf("Easy  (Remembered instantly)\n");
-            printf("\nEnter your choice: ");
-            scanf("%d", &review);
-            getchar();
+            currentFlashcard = card;
+            char *reviewOptions[] = {
+                "Again (Forgot it completely)",
+                "Good  (Remembered with effort)",
+                "Easy  (Remembered instantly)"
+            };
+            int review = selectMenu("", reviewOptions, 3, printFlashcardBack);
+            review += 1;
 
             dailyMission.flashcardsReviewed++;
 
             if (review == 1) {
                 card->wrongCount += 2;
                 card->learned = 0;
-                setColor(12); printf("\n-> Marked as difficult. You will see it more often.\n"); setColor(7);
+                currentReviewColor = 12;
+                strcpy(currentReviewResult, "-> Marked as difficult. You will see it more often.");
             } else if (review == 2) {
                 if (card->wrongCount > 0) card->wrongCount--;
                 playStats.exp += 10;
                 updateLevel();
-                setColor(14); printf("\n-> Good job! Keep practicing.\n"); setColor(7);
+                currentReviewColor = 14;
+                strcpy(currentReviewResult, "-> Good job! Keep practicing.");
             } else if (review == 3) {
                 if (card->learned == 0) {
                     card->learned = 1;
@@ -111,15 +120,16 @@ void flashcardMode(HashTable *ht) {
                 card->wrongCount = 0;
                 playStats.exp += 15;
                 updateLevel();
-                setColor(10); printf("\n-> Marked as fully learned!\n"); setColor(7);
+                currentReviewColor = 10;
+                strcpy(currentReviewResult, "-> Marked as fully learned!");
             }
 
-            printf("\n---------------------------------------------\n");
-            setColor(11); printf("  [1] "); setColor(7); printf("Next Flashcard\n");
-            setColor(12); printf("  [2] "); setColor(7); printf("Back to Flashcard Menu\n");
-            printf("Choose: ");
-            scanf("%d", &choice);
-            getchar();
+            char *nextOptions[] = {
+                "Next Flashcard",
+                "Back to Flashcard Menu"
+            };
+            choice = selectMenu("", nextOptions, 2, printNextMenuHeader);
+            choice += 1;
 
         } while (choice != 2);
 

@@ -55,20 +55,6 @@ Word* createWord(
     return newWord;
 }
 
-// ============================================================
-// Hash Table core operations
-// hashFunction: djb2 algorithm (Dan Bernstein)
-//   hash(i) = hash(i-1) * 33 + char[i]
-//   Seed 5381 is prime; multiplier 33 gives good bit distribution.
-//   Complexity: O(L) where L = word length; lookup/insert O(1) avg.
-// ============================================================
-
-// ============================================================
-// BST Implementation - used by suggestWords for O(log n) prefix search
-// BST ordering: case-insensitive alphabetical (_stricmp)
-// In-order traversal (left->root->right) yields words in A-Z order
-// Prefix search complexity: O(log n + k), k = number of matches
-// ============================================================
 
 BSTNode* bstInsert(BSTNode *root, const char *word) {
     if (root == NULL) {
@@ -121,10 +107,7 @@ void freeBST(BSTNode *root) {
     free(root);
 }
 
-// Recursive in-order BST traversal for prefix suggestions.
-// Pruning: if current word < prefix, go right only;
-//          if current word > prefix+*, go left only;
-//          if matches prefix, collect and go both.
+
 static void bstCollect(BSTNode *node, const char *prefix, int prefixLen,
                         Word **suggestions, int *count, HashTable *ht) {
     if (node == NULL || *count >= 20) return;
@@ -216,7 +199,7 @@ Word* searchWord(HashTable* ht, char *target) {
     return NULL;
 }
 
-// suggestWords: uses the embedded BST for O(log n) prefix search.
+// suggestWords: uses the embedded BST 
 // Results are returned in alphabetical order (BST in-order property).
 int suggestWords(HashTable* ht, char *prefix, Word *suggestions[20]) {
     _strlwr(prefix);
@@ -317,15 +300,38 @@ Word* getAdaptiveWordMinLen(HashTable* ht, int minLen) {
             temp = temp->next;
         }
     }
-    if (count == 0) return getRandomWord(ht); // ultimate fallback: any word
+    if (count == 0) return getRandomWord(ht); 
     return candidates[rand() % count];
 }
 
+static void drawAsciiBar(int learned, int total) {
+    int width = 20;
+    int filled = (total > 0) ? (learned * width / total) : 0;
+    printf("[");
+    for (int i = 0; i < width; i++) {
+        if (i < filled) {
+            setColor(10); // Light Green
+            printf("\xE2\x96\xA0"); // ■
+        } else {
+            setColor(8); // Dark Gray
+            printf("-");
+        }
+    }
+    setColor(7); // Reset
+    printf("]");
+    int percent = (total > 0) ? (learned * 100 / total) : 0;
+    printf(" %3d%%", percent);
+}
 
 void showStats(HashTable* ht) {
     int totalWords = 0, learnedWords = 0, weakWords = 0;
     // Word type counters
-    int cntNoun = 0, cntVerb = 0, cntAdj = 0, cntAdv = 0, cntOther = 0;
+    int totalNoun = 0, learnedNoun = 0;
+    int totalVerb = 0, learnedVerb = 0;
+    int totalAdj = 0, learnedAdj = 0;
+    int totalAdv = 0, learnedAdv = 0;
+    int totalOther = 0, learnedOther = 0;
+
     // Collect top-5 hardest words (sorted by wrongCount desc)
     Word *top5[5] = {NULL, NULL, NULL, NULL, NULL};
 
@@ -337,11 +343,22 @@ void showStats(HashTable* ht) {
             if (temp->wrongCount >= 3 && temp->learned == 0) weakWords++;
 
             // Count by type
-            if      (_stricmp(temp->type, "noun")      == 0) cntNoun++;
-            else if (_stricmp(temp->type, "verb")      == 0) cntVerb++;
-            else if (_stricmp(temp->type, "adjective") == 0) cntAdj++;
-            else if (_stricmp(temp->type, "adverb")    == 0) cntAdv++;
-            else cntOther++;
+            if (_stricmp(temp->type, "noun") == 0) {
+                totalNoun++;
+                if (temp->learned == 1) learnedNoun++;
+            } else if (_stricmp(temp->type, "verb") == 0) {
+                totalVerb++;
+                if (temp->learned == 1) learnedVerb++;
+            } else if (_stricmp(temp->type, "adjective") == 0) {
+                totalAdj++;
+                if (temp->learned == 1) learnedAdj++;
+            } else if (_stricmp(temp->type, "adverb") == 0) {
+                totalAdv++;
+                if (temp->learned == 1) learnedAdv++;
+            } else {
+                totalOther++;
+                if (temp->learned == 1) learnedOther++;
+            }
 
             // Insert into top-5 if wrongCount is high enough (insertion sort)
             for (int k = 0; k < 5; k++) {
@@ -373,16 +390,33 @@ void showStats(HashTable* ht) {
     printf("\n");
 
     // By word type breakdown
-    setColor(14); printf("WORDS BY TYPE\n"); setColor(7);
+    setColor(14); printf("WORDS BY TYPE (Learned / Total)\n"); setColor(7);
     printf("----------------------------------------\n");
-    printf("  Noun      : %d\n", cntNoun);
-    printf("  Verb      : %d\n", cntVerb);
-    printf("  Adjective : %d\n", cntAdj);
-    printf("  Adverb    : %d\n", cntAdv);
-    printf("  Other     : %d\n", cntOther);
+    
+    printf("  %-10s: %3d / %-3d ", "Noun", learnedNoun, totalNoun);
+    drawAsciiBar(learnedNoun, totalNoun);
+    printf("\n");
+    
+    printf("  %-10s: %3d / %-3d ", "Verb", learnedVerb, totalVerb);
+    drawAsciiBar(learnedVerb, totalVerb);
+    printf("\n");
+    
+    printf("  %-10s: %3d / %-3d ", "Adjective", learnedAdj, totalAdj);
+    drawAsciiBar(learnedAdj, totalAdj);
+    printf("\n");
+    
+    printf("  %-10s: %3d / %-3d ", "Adverb", learnedAdv, totalAdv);
+    drawAsciiBar(learnedAdv, totalAdv);
+    printf("\n");
+    
+    if (totalOther > 0) {
+        printf("  %-10s: %3d / %-3d ", "Other", learnedOther, totalOther);
+        drawAsciiBar(learnedOther, totalOther);
+        printf("\n");
+    }
     printf("\n");
 
-    // Daily mission with dynamic targets
+    // Daily mission
     setColor(13); printf("DAILY MISSION\n"); setColor(7);
     printf("----------------------------------------\n");
     printf("Words Learned : %d / %d\n", dailyMission.wordsLearnedToday,
@@ -488,7 +522,7 @@ Word* getStudiedWord(HashTable* ht) {
     for (int i = 0; i < HASH_SIZE; i++) {
         Word *temp = ht->buckets[i];
         while (temp != NULL) {
-            // Include words that have been learned or answered wrong
+            
             if (temp->learned == 1 || temp->wrongCount > 0) {
                 if (count < 1000) studiedWords[count++] = temp;
             }
@@ -504,7 +538,7 @@ void addWord(HashTable* ht) {
     char word[50], meaning[500], pronunciation[50], type[20];
     char confirm = 'n';
 
-    // Fix 3: confirmation loop - allow correction before submitting
+   
     do {
         printf("Enter the word: ");
         scanf("%49s", word);
@@ -520,7 +554,7 @@ void addWord(HashTable* ht) {
         getchar();
     } while (confirm != 'y' && confirm != 'Y');
 
-    // Fix 6: multiple meanings - collect with ';' separator
+    
     meaning[0] = '\0';
     int meaningCount = 0;
     char addMore = 'y';
@@ -573,7 +607,7 @@ void editWord(HashTable* ht) {
 
     char meaning[500], pronunciation[50], type[20];
     getchar();
-    // Fix 6: multiple meanings when editing
+    
     meaning[0] = '\0';
     int meaningCount = 0;
     char addMore = 'y';

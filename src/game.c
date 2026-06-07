@@ -128,9 +128,7 @@ void playMissingLetterGame(HashTable *ht){
             _strlwr(answer);
         }
 
-        // Build the formed word:
-        //   If user typed the full word (len == wordLen) -> use it directly
-        //   Otherwise fill '_' blanks left-to-right with the typed chars
+
         char formedWord[50];
         if ((int)strlen(answer) == wordLen) {
             strncpy(formedWord, answer, sizeof(formedWord) - 1);
@@ -144,8 +142,7 @@ void playMissingLetterGame(HashTable *ht){
             }
         }
 
-        // Validate that formedWord actually matches the visible letters in 'hidden'
-        // Otherwise they could type a completely different word of the same length!
+        
         int isValidPattern = 1;
         for (int i = 0; i < wordLen; i++) {
             if (hidden[i] != '_' && formedWord[i] != hidden[i]) {

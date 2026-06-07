@@ -16,17 +16,17 @@ typedef struct Word{
     struct Word *next;
 }Word;
 
-// BST node used for O(log n) prefix-based word suggestion
+// BST node for prefix suggestions (sorted A-Z)
 typedef struct BSTNode {
     char word[50];
     struct BSTNode *left;
     struct BSTNode *right;
 } BSTNode;
 
-// Dictionary storage: Hash Table (O(1) lookup) + BST (O(log n) prefix suggestion)
+// Dictionary storage: Hash Table 
 typedef struct HashTable {
     Word *buckets[HASH_SIZE];
-    BSTNode *bstRoot;   // BST for sorted prefix suggestions
+    BSTNode *bstRoot;   
 } HashTable;
 
 HashTable* createHashTable();

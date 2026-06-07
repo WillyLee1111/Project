@@ -10,6 +10,12 @@ void clearScreen() {
     system("cls"); // Use "cls" on Windows
 }
 
+void resetCursor() {
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD pos = {0, 0};
+    SetConsoleCursorPosition(hOut, pos);
+}
+
 void pauseScreen() {
     system("pause"); // Use "pause" on Windows
 }
@@ -99,4 +105,53 @@ void printError(char text[]){
     setColor(12);
     printf("[ERROR] %s\n", text);
     setColor(7);
+}
+
+int selectMenu(char *title, char *options[], int numOptions, void (*printHeaderCallback)(void)) {
+    int cursor = 0;
+    int key;
+
+    clearScreen(); // Xóa màn hình 1 lần duy nhất lúc mới vào menu
+
+    while (1) {
+        resetCursor(); // Đưa con trỏ về (0,0) thay vì xóa toàn bộ màn hình
+        if (printHeaderCallback != NULL) {
+            printHeaderCallback();
+        } else if (title != NULL && strlen(title) > 0) {
+            printHeader(title);
+            printf("\n");
+        }
+
+        for (int i = 0; i < numOptions; i++) {
+            if (i == cursor) {
+                if (strstr(options[i], "Exit") != NULL || strstr(options[i], "Back") != NULL) {
+                    setColor(12); // Red for Exit/Back
+                } else {
+                    setColor(11); // Cyan for others
+                }
+                printf(" %s ", ARROW);
+                setColor(240); // White background, Black text
+                printf(" %s \n", options[i]);
+                setColor(7); // Reset
+            } else {
+                setColor(7);
+                printf("   ");
+                printf(" %s \n", options[i]);
+            }
+        }
+
+        key = _getch();
+        if (key == 224) { // Arrow key prefix
+            key = _getch();
+            if (key == 72) { // Up arrow
+                cursor--;
+                if (cursor < 0) cursor = numOptions - 1;
+            } else if (key == 80) { // Down arrow
+                cursor++;
+                if (cursor >= numOptions) cursor = 0;
+            }
+        } else if (key == 13) { // Enter key
+            return cursor;
+        }
+    }
 }

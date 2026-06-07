@@ -73,38 +73,18 @@ static void showWordDetail(Word *w) {
 void dictionaryMenu(HashTable *ht) {
   int choice;
   do {
+    char *dictOptions[] = {
+        "Show & Search Dictionary",
+        "Random Word",
+        "Add Word",
+        "Edit Word",
+        "Delete Word",
+        "Back"
+    };
+    choice = selectMenu("DICTIONARY MENU", dictOptions, 6, NULL);
     clearScreen();
-    printf("============= DICTIONARY MENU =============\n");
-    printf("=============================\n");
-    setColor(11);
-    printf("[1] ");
-    setColor(7);
-    printf("Show & Search Dictionary\n");
-    setColor(11);
-    printf("[2] ");
-    setColor(7);
-    printf("Random Word\n");
-    setColor(11);
-    printf("[3] ");
-    setColor(7);
-    printf("Add Word\n");
-    setColor(11);
-    printf("[4] ");
-    setColor(7);
-    printf("Edit Word\n");
-    setColor(11);
-    printf("[5] ");
-    setColor(7);
-    printf("Delete Word\n");
-    setColor(12);
-    printf("[0] ");
-    setColor(7);
-    printf("Back\n");
-    printf("=============================\n");
-    printf("Enter your choice: ");
-    scanf("%d", &choice);
-    getchar();
-    clearScreen();
+    if (choice == 5) choice = 0;
+    else choice += 1;
 
     switch (choice) {
     case 1: {
@@ -198,11 +178,16 @@ void dictionaryMenu(HashTable *ht) {
 void gameMenu(HashTable *ht) {
   int gameChoice;
   do {
+    char *gameOptions[] = {
+        "English -> Vietnamese",
+        "Vietnamese -> English",
+        "Missing Letter",
+        "Back"
+    };
+    gameChoice = selectMenu("GAME CENTER", gameOptions, 4, NULL);
     clearScreen();
-    showGameMenu();
-    printf("\nChoose: ");
-    scanf("%d", &gameChoice);
-    getchar();
+    if (gameChoice == 3) gameChoice = 0;
+    else gameChoice += 1;
     switch (gameChoice) {
     case 1:
       englishToVietnameseGame(ht);
@@ -224,6 +209,32 @@ void gameMenu(HashTable *ht) {
   saveUserData();
 }
 
+void printMainMenuHeader() {
+  int tw = dailyMission.targetWords;
+  int tf = dailyMission.targetFlashcards;
+  int tg = dailyMission.targetGames;
+
+  printf("=============== DAILY MISSION ===============\n");
+  printf("Words Learned  : %2d / %2d  ", dailyMission.wordsLearnedToday, tw);
+  drawBar(dailyMission.wordsLearnedToday, tw);
+  printf("%s\n", dailyMission.wordsLearnedToday >= tw ? " [DONE]" : "");
+
+  printf("Flashcards     : %2d / %2d  ", dailyMission.flashcardsReviewed, tf);
+  drawBar(dailyMission.flashcardsReviewed, tf);
+  printf("%s\n", dailyMission.flashcardsReviewed >= tf ? " [DONE]" : "");
+
+  printf("Games Played   : %2d / %2d  ", dailyMission.gamesPlayed, tg);
+  drawBar(dailyMission.gamesPlayed, tg);
+  printf("%s\n", dailyMission.gamesPlayed >= tg ? " [DONE]" : "");
+
+  printf("Study Streak   : %d days\n", studyStreak.streakDays);
+  printf("=============================================\n");
+
+  printHeader("ENGLISH DICTIONARY");
+  showMiniPlayerCard();
+  printf("\n");
+}
+
 int main() {
   showIntroScreen();
   SetConsoleOutputCP(CP_UTF8);
@@ -233,32 +244,19 @@ int main() {
 
   int option;
   while (1) {
-    clearScreen();
-    printf("=============================================\n");
-    setColor(14);
-    printf("       ENGLISH DICTIONARY & VOCAB GAME\n");
-    setColor(7);
-    printf("=============================================\n\n");
-    setColor(11);
-    printf("  [1] ");
-    setColor(7);
-    printf("Login\n");
-    setColor(11);
-    printf("  [2] ");
-    setColor(7);
-    printf("Register\n");
-    setColor(12);
-    printf("  [0] ");
-    setColor(7);
-    printf("Exit\n");
-    printf("\n=============================================\n");
-    printf("Enter your choice: ");
-    scanf("%d", &option);
-    getchar();
+    char *introOptions[] = {
+        "Login",
+        "Register",
+        "Exit"
+    };
+    int rawChoice = selectMenu("ENGLISH DICTIONARY & VOCAB GAME", introOptions, 3, NULL);
+    if (rawChoice == 0) option = 1;
+    else if (rawChoice == 1) option = 2;
+    else option = 0;
 
     if (option == 1) {
       if (login()) {
-        break; // Proceed to main app
+        break; // Proceed to main c
       } else {
         setColor(12);
         printf("\nLogin failed. Incorrect username or password.\n");
@@ -289,7 +287,7 @@ int main() {
   }
 
   SetConsoleOutputCP(CP_UTF8);
-  // Fix 4: generate random targets for new day / first time
+
   resetDailyMissionIfNewDay();
   saveUserData();
 
@@ -297,7 +295,7 @@ int main() {
   loadDictionary(ht);
   loadProgress(ht);
 
-  // Fix 5: register auto-save handler
+  
   globalHt = ht;
   SetConsoleCtrlHandler(consoleHandler, TRUE);
 
@@ -305,53 +303,15 @@ int main() {
   int running = 1;
   int choice;
   while (running) {
-    clearScreen();
-    tw = dailyMission.targetWords;
-    tf = dailyMission.targetFlashcards;
-    tg = dailyMission.targetGames;
-
-    printf("=============== DAILY MISSION ===============\n");
-    printf("Words Learned  : %2d / %2d  ", dailyMission.wordsLearnedToday, tw);
-    drawBar(dailyMission.wordsLearnedToday, tw);
-    printf("%s\n", dailyMission.wordsLearnedToday >= tw ? " [DONE]" : "");
-
-    printf("Flashcards     : %2d / %2d  ", dailyMission.flashcardsReviewed, tf);
-    drawBar(dailyMission.flashcardsReviewed, tf);
-    printf("%s\n", dailyMission.flashcardsReviewed >= tf ? " [DONE]" : "");
-
-    printf("Games Played   : %2d / %2d  ", dailyMission.gamesPlayed, tg);
-    drawBar(dailyMission.gamesPlayed, tg);
-    printf("%s\n", dailyMission.gamesPlayed >= tg ? " [DONE]" : "");
-
-    printf("Study Streak   : %d days\n", studyStreak.streakDays);
-    printf("=============================================\n");
-
-    printHeader("ENGLISH DICTIONARY");
-    showMiniPlayerCard();
-    printf("\n");
-    setColor(11);
-    printf("[1] ");
-    setColor(7);
-    printf("Dictionary Menu\n");
-    setColor(11);
-    printf("[2] ");
-    setColor(7);
-    printf("Flashcard Mode\n");
-    setColor(11);
-    printf("[3] ");
-    setColor(7);
-    printf("Game Center\n");
-    setColor(11);
-    printf("[4] ");
-    setColor(7);
-    printf("Show Stats\n");
-    setColor(12);
-    printf("[5] ");
-    setColor(7);
-    printf("Exit\n");
-    printf("\nChoose: ");
-    scanf("%d", &choice);
-    getchar();
+    char *mainOptions[] = {
+        "Dictionary Menu",
+        "Flashcard Mode",
+        "Game Center",
+        "Show Stats",
+        "Exit"
+    };
+    choice = selectMenu("", mainOptions, 5, printMainMenuHeader);
+    choice += 1;
     clearScreen();
 
     switch (choice) {
@@ -370,7 +330,7 @@ int main() {
       showStats(ht);
       break;
     case 5: {
-      // Fix 5: confirm before exit + always save
+      
       printf("Are you sure you want to exit? (y/n): ");
       char c;
       scanf(" %c", &c);
