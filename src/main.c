@@ -96,6 +96,9 @@ void dictionaryMenu(HashTable *ht) {
         clearScreen();
         printf("============= DICTIONARY =============\n");
         displayDictionary(ht);
+        printf("\n");
+        pauseScreen();
+        clearScreen();
 
         printf("\n=============================================\n");
         printf("  Type a prefix to search (Enter = go back): ");
@@ -127,7 +130,7 @@ void dictionaryMenu(HashTable *ht) {
         } else {
           // xây dựng và sd nút điều hướng
           char *searchOpts[21];
-          char labels[20][60];
+          char labels[20][80];
           for (int i = 0; i < count; i++) {
             snprintf(labels[i], sizeof(labels[i]), "%-20s (%s)",
                      suggestions[i]->word, suggestions[i]->type);
@@ -302,7 +305,6 @@ int main() {
   globalHt = ht;
   SetConsoleCtrlHandler(consoleHandler, TRUE);
 
-  int tw, tf, tg;
   int running = 1;
   int choice;
   while (running) {

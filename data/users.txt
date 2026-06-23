@@ -1,5 +1,4 @@
-Thinh|2712
-Hoang|1234
+
 adim|adim
 admin|admin
 ThinhNg|271207Thinh

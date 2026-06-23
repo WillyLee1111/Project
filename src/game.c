@@ -200,6 +200,7 @@ void playMissingLetterGame(HashTable *ht){
         if (sessionTotal > 0)
             printf(" (%.0f%%)", (float)sessionCorrect / sessionTotal * 100.0f);
         printf("\n");
+        pauseScreen();
 
         char *nextOpts[] = { "Play Again", "Exit Game" };
         int nextChoice = selectMenu("MISSING LETTER", nextOpts, 2, NULL);

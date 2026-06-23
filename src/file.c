@@ -54,6 +54,11 @@ void loadDictionary(HashTable *ht) {
         char *type = strtok(NULL, "|");
         
         if (word && meaning && pronunciation && type) {
+            if ((unsigned char)word[0] == 0xEF &&
+                (unsigned char)word[1] == 0xBB &&
+                (unsigned char)word[2] == 0xBF) {
+                word += 3;
+            }
             _strlwr(word);
             _strlwr(type);
             Word *newWord = createWord(word, meaning, pronunciation, type);
@@ -219,14 +224,15 @@ int registerUser() {
     snprintf(userDataPath, sizeof(userDataPath), "data/Users/%s/userdata.txt", username);
     FILE *userDataFile = fopen(userDataPath, "w");
     if (userDataFile != NULL) {
-        fprintf(userDataFile, "MISSION 0 0 0\n");
+        fprintf(userDataFile, "MISSION 0 0 0 0 0 0\n");
+        fprintf(userDataFile, "MISSIONDATE 0000-00-00\n");
         fprintf(userDataFile, "STREAK 0000-00-00 0\n");
         fprintf(userDataFile, "STATS 1 0\n");
         fclose(userDataFile);
     }
 
     char progressPath[100];
-    snprintf(progressPath, sizeof(progressPath), "data/users/%s/progress.txt", username);
+    snprintf(progressPath, sizeof(progressPath), "data/Users/%s/progress.txt", username);
     FILE *progressFile = fopen(progressPath, "w");
     if (progressFile != NULL) {
         fclose(progressFile);
