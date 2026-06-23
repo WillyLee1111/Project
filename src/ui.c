@@ -15,7 +15,7 @@ void showIntroScreen(){
     setColor(10);
     printf("             PBL1: DO AN LAP TRINH TINH TOAN               \n");
     setColor(7);
-    printf("   De tai: Hoc tu vung tieng Anh thong qua tro choi        \n");
+    printf("   De tai:        Hoc tu vung tieng Anh                    \n");
     printf("   Giao vien huong dan: Truong Ngoc Chau                   \n");
     setColor(11);
     printf("   Sinh vien: Nguyen Hung Thinh - 25T_Nhat1               \n");
