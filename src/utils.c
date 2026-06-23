@@ -9,7 +9,8 @@
 void clearScreen() {
     system("cls"); // Use "cls" on Windows
 }
-
+//đưa con troe hiển thị về tọa độ (0,0);
+//vẽ đè nội dung mới lên giao diện cũ mà k xóa màn hình
 void resetCursor() {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD pos = {0, 0};
@@ -24,13 +25,14 @@ void printHeader(char title[]) {
     printf("╔══════════════════════════════════════╗\n");
     printf("║ %-36s ║\n", title);
     printf("╚══════════════════════════════════════╝\n");
-    setColor(7); // Reset to default color
+    setColor(7); 
 }
 
 void setColor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
-
+//hiển thị tính toán phần trăm điểm kinh nghiệm
+//vẽ thẻ thông tin người chơi thu nhỏ hiển thị ở đầu menu
 void showMiniPlayerCard(){
     int maxExp = playStats.level * 100;
     if(maxExp <= 0) { maxExp = 100;}
@@ -106,12 +108,14 @@ void printError(char text[]){
     printf("[ERROR] %s\n", text);
     setColor(7);
 }
-
+//chạy vòng lặp vẽ menu bằng con trỏ. nhận phím bằng getch, di chuyển bằng up/down
+//tạo menu tương tác điều hướng
 int selectMenu(char *title, char *options[], int numOptions, void (*printHeaderCallback)(void)) {
     int cursor = 0;
     int key;
 
     clearScreen(); // Xóa màn hình 1 lần duy nhất lúc mới vào menu
+    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE)); // Dọn buffer tránh Enter thừa từ fgets
 
     while (1) {
         resetCursor(); // Đưa con trỏ về (0,0) thay vì xóa toàn bộ màn hình

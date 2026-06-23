@@ -6,6 +6,8 @@
 #include "../include/validator.h"
 #include "../include/utils.h"
 
+//cấp bộ nhớ cho struct HashTable, khởi tạo các bucket về NULL và BST root về NULL
+// khởi tạo để sẵn sàng lưu trữ
 HashTable* createHashTable() {
     HashTable *ht = (HashTable*)malloc(sizeof(HashTable));
     for (int i = 0; i < HASH_SIZE; i++) {
@@ -14,16 +16,18 @@ HashTable* createHashTable() {
     ht->bstRoot = NULL;  // BST starts empty
     return ht;
 }
-
+// thực hiện thuật toán djb2( duyệt chữ cái, dịch bít nhân 33 + max ASCII sau đó chia 10007)
+// để lưu từ vựng thành 1 index thành sô nguyên để lưu trữ, truy cập nhanh trong HST
 unsigned int hashFunction(char* word) {
-    unsigned int hash = 5381;
+    unsigned int hash = 5381; 
     int c;
     while ((c = *word++)) {
         hash = ((hash << 5) + hash) + tolower(c);
     }
     return hash % HASH_SIZE;
 }
-
+//Cấp ram cho struct Word, dùng strncpy để copy dữ liệu vào struct, đảm bảo không tràn bộ nhớ, khởi tạo các trường khác về mặc định, gán stat ban đầu là 0
+//khởi tạo từ với thông số mặc định
 Word* createWord(
     char* word, 
     char* meaning, 
@@ -55,7 +59,8 @@ Word* createWord(
     return newWord;
 }
 
-
+//Ss từ cần chèn với node hiện tại, nếu nhỏ hơn thì đi trái, lớn hơn thì đi phải, nếu bằng thì bỏ qua (không chèn trùng)
+//thêm từ vào BST để hỗ trợ gợi ý từ theo prefix
 BSTNode* bstInsert(BSTNode *root, const char *word) {
     if (root == NULL) {
         BSTNode *node = (BSTNode*)malloc(sizeof(BSTNode));
@@ -70,12 +75,14 @@ BSTNode* bstInsert(BSTNode *root, const char *word) {
     // cmp == 0: duplicate word, skip
     return root;
 }
-
+//chạy vòng lặp for theo nhánh trái, cho đến khi kh rẽ trái được nữa.
+// tìm nút nhỏ nhất trong 1 nhánh cây của BST, sp BST delete trong trường hợp 2 con
 static BSTNode* bstMinNode(BSTNode *node) {
     while (node->left != NULL) node = node->left;
     return node;
 }
-
+//Đệ quy tìm kiếm từ cần xóa, 1 con or kh con thì xóa, 2 con thì thế ở nhánh phải
+//Xóa từ
 BSTNode* bstDelete(BSTNode *root, const char *word) {
     if (root == NULL) return NULL;
     int cmp = _stricmp(word, root->word);
@@ -99,7 +106,8 @@ BSTNode* bstDelete(BSTNode *root, const char *word) {
     }
     return root;
 }
-
+//Đệ quy giải phóng nhánh trái, phải sau đó giải phóng chính nút đó bằng lệnh free
+//thu hôi vùng bộ nhớ của BST khi xóa toàn bộ cây
 void freeBST(BSTNode *root) {
     if (root == NULL) return;
     freeBST(root->left);
@@ -107,19 +115,20 @@ void freeBST(BSTNode *root) {
     free(root);
 }
 
-
+//ss tiền tố prefix với từ ở nút htai nếu từ đứng trước/sau tiền tố thì chỉ duyệt tiếp nhánh phải/nhánh trái; nếu khớp tiền tố thì lưu từ đó vào mảng kết quả suggestions (tối đa 20 từ) rồi tiếp tục duyệt cả hai nhánh.
+//duyệt cây BST để thu thập với tiền tố ng dùng nhập, sp cho thuật toán gợi ý
 static void bstCollect(BSTNode *node, const char *prefix, int prefixLen,
                         Word **suggestions, int *count, HashTable *ht) {
     if (node == NULL || *count >= 20) return;
     int cmp = _strnicmp(node->word, prefix, prefixLen);
     if (cmp < 0) {
-        // This word comes before the prefix alphabetically -> only right subtree can match
+        // Từ này đứng trước tiền tố theo thứ tự bảng chữ cái -> chỉ nhánh cây bên phải mới khớp
         bstCollect(node->right, prefix, prefixLen, suggestions, count, ht);
     } else if (cmp > 0) {
-        // This word comes after the prefix alphabetically -> only left subtree can match
+        // Từ này đứng sau tiền tố theo thứ tự bảng chữ cái -> chỉ nhánh cây bên trái mới có thể khớp
         bstCollect(node->left, prefix, prefixLen, suggestions, count, ht);
     } else {
-        // This word starts with the prefix -> collect it and check both subtrees
+        // Từ này bắt đầu bằng tiền tố -> thu thập nó và kiểm tra cả hai nhánh
         bstCollect(node->left,  prefix, prefixLen, suggestions, count, ht);
         Word *found = searchWord(ht, node->word);
         if (found != NULL && *count < 20) suggestions[(*count)++] = found;
@@ -127,8 +136,8 @@ static void bstCollect(BSTNode *node, const char *prefix, int prefixLen,
     }
 }
 
-// ============================================================
-
+//tính index và chèn từ mới vào ds lk tại bucket, gọi bstInsert để cập nhật BST cho gợi ý prefix
+// đưa từ mới vào đồng bộ ở cả bảng băm và cây BST để đảm bảo truy cập nhanh và gợi ý hiệu quả
 void insertWord(HashTable* ht, Word *newWord) {
     unsigned int index = hashFunction(newWord->word);
     newWord->next = ht->buckets[index];
@@ -137,7 +146,8 @@ void insertWord(HashTable* ht, Word *newWord) {
     ht->bstRoot = bstInsert(ht->bstRoot, newWord->word);
 }
 
-// Helper: print meanings split by ';' as numbered list
+// tạo chuỗi meaning có thể chứa nhiều nghĩa, mỗi nghĩa cách nhau bằng dấu chấm phẩy ';'
+// hiển thị chi tiết 1 từ, tách nghĩa thành từng dòng nếu có nhiều nghĩa
 void printWordMeanings(const char *meaning) {
     char copy[500];
     strncpy(copy, meaning, sizeof(copy) - 1);
@@ -150,8 +160,8 @@ void printWordMeanings(const char *meaning) {
     }
 }
 
-// In-order BST traversal to print all words in alphabetical order (A-Z).
-// This leverages the BST's sorted property - no extra sorting needed.
+// duyệt BST theo thứ tự inorder ( left -> node -> right) với mỗi nút, gọi searchWord để lấy thông tin và in ra
+// Duyệt và in thông tin các từ trong từ điển theo A-> Z
 static void bstPrintInOrder(BSTNode *node, HashTable *ht, int *count) {
     if (node == NULL) return;
     bstPrintInOrder(node->left, ht, count);
@@ -170,9 +180,10 @@ static void bstPrintInOrder(BSTNode *node, HashTable *ht, int *count) {
     }
     bstPrintInOrder(node->right, ht, count);
 }
-
+//đếm tổng số từ trog bảng băm, nếu có từ gọi đệ quy bstPrintInOrder từ gốc để in
+//Hiện ds từ điển đã đc sắp xếp bảng chữ cái
 void displayDictionary(HashTable* ht) {
-    // Count total words
+    // đếm tổng từ
     int total = 0;
     for (int i = 0; i < HASH_SIZE; i++) {
         Word *tmp = ht->buckets[i];
@@ -180,12 +191,13 @@ void displayDictionary(HashTable* ht) {
     }
     if (total == 0) { printf("Dictionary is empty.\n"); return; }
 
-    // Display via BST in-order = alphabetically sorted A-Z
+    // in ra BST theo bảng chữ cái
     int count = 0;
     bstPrintInOrder(ht->bstRoot, ht, &count);
     printf("\nTotal: %d word(s) [sorted A-Z via BST in-order]\n", count);
 }
-
+// tính index, nhảy tới bucket, duyệt ds lk để tìm từ khớp, trả về con trỏ đến struct Word nếu tìm thấy, ngược lại trả về NULL
+// Tra cứu từ vựng bằng cách tính hash và duyệt bucket tương ứng
 Word* searchWord(HashTable* ht, char *target) {
     _strlwr(target); // Ensure case-insensitive hash lookup
     unsigned int index = hashFunction(target);
@@ -199,8 +211,8 @@ Word* searchWord(HashTable* ht, char *target) {
     return NULL;
 }
 
-// suggestWords: uses the embedded BST 
-// Results are returned in alphabetical order (BST in-order property).
+// chuyển tiền tố, tạo biến, gọi đệ quy bstCollect để thu thập từ gợi ý, trả về số lượng gợi ý tìm được
+// trả về danh sách gợi ý tối đa 20 từ khớp với tiền tố đã nhập
 int suggestWords(HashTable* ht, char *prefix, Word *suggestions[20]) {
     _strlwr(prefix);
     int count = 0;
@@ -208,7 +220,8 @@ int suggestWords(HashTable* ht, char *prefix, Word *suggestions[20]) {
     bstCollect(ht->bstRoot, prefix, prefixLen, suggestions, &count, ht);
     return count;
 }
-
+//duyệt toàn bộ mảng để giải phóng từ Word, trong dslk, gọi freeBST để giải phóng BST, xong gphong struct
+// Giải phóng toàn bộ memory của từ điển khi thoát chương trình
 void freeHashTable(HashTable* ht) {
     if (ht == NULL) return;
     for (int i = 0; i < HASH_SIZE; i++) {
@@ -222,7 +235,8 @@ void freeHashTable(HashTable* ht) {
     freeBST(ht->bstRoot);  // free the BST
     free(ht);
 }
-
+//đếm tổng số từ đang có, sinh 1 số ngẫu nhiên, duyệt lại để lấy số đó
+// bốc ngẫu nhiên 1 từ
 Word* getRandomWord(HashTable* ht) {
     int count = 0;
     for (int i = 0; i < HASH_SIZE; i++) {
@@ -246,7 +260,8 @@ Word* getRandomWord(HashTable* ht) {
     }
     return NULL;
 }
-
+//sinh ra số từ 0 tới 99, nếu <70 thì duyệt lại lấy ngẫu nhiên từ yếu, còn k thì ở 30 gọi getRandom
+//Thuật toán học tập thích ứng 
 Word* getAdaptiveWord(HashTable* ht) {
     int useWeakWords = rand() % 100;
     if (useWeakWords < 70) {
@@ -269,8 +284,8 @@ Word* getAdaptiveWord(HashTable* ht) {
     return getRandomWord(ht);
 }
 
-// Like getAdaptiveWord but only picks words with length >= minLen.
-// Used by Missing Letter game to ensure enough letters are visible.
+// Tương tự như getAdaptiveWord nhưng chỉ chọn những từ có độ dài >= minLen.
+// Được trò chơi Missing Letter sử dụng để đảm bảo đủ số lượng chữ cái hiển thị.
 Word* getAdaptiveWordMinLen(HashTable* ht, int minLen) {
     int useWeakWords = rand() % 100;
     if (useWeakWords < 70) {
@@ -303,7 +318,8 @@ Word* getAdaptiveWordMinLen(HashTable* ht, int minLen) {
     if (count == 0) return getRandomWord(ht); 
     return candidates[rand() % count];
 }
-
+//tính tỉ lệ phần trăm, in kí tự ... để đại diện tiến độ
+//vẽ biểu đồ thanh phần trăm 
 static void drawAsciiBar(int learned, int total) {
     int width = 20;
     int filled = (total > 0) ? (learned * width / total) : 0;
@@ -322,17 +338,18 @@ static void drawAsciiBar(int learned, int total) {
     int percent = (total > 0) ? (learned * 100 / total) : 0;
     printf(" %3d%%", percent);
 }
-
+//quét bản, thu thập số liệu. in ra báo cáo thống kê
+//tổng hợp và hiển thị
 void showStats(HashTable* ht) {
     int totalWords = 0, learnedWords = 0, weakWords = 0;
-    // Word type counters
+    // Bộ đếm loại từ
     int totalNoun = 0, learnedNoun = 0;
     int totalVerb = 0, learnedVerb = 0;
     int totalAdj = 0, learnedAdj = 0;
     int totalAdv = 0, learnedAdv = 0;
     int totalOther = 0, learnedOther = 0;
 
-    // Collect top-5 hardest words (sorted by wrongCount desc)
+    // thu thập 5 từ khó
     Word *top5[5] = {NULL, NULL, NULL, NULL, NULL};
 
     for (int i = 0; i < HASH_SIZE; i++) {
@@ -342,7 +359,7 @@ void showStats(HashTable* ht) {
             if (temp->learned == 1) learnedWords++;
             if (temp->wrongCount >= 3 && temp->learned == 0) weakWords++;
 
-            // Count by type
+            // đếm loại từ
             if (_stricmp(temp->type, "noun") == 0) {
                 totalNoun++;
                 if (temp->learned == 1) learnedNoun++;
@@ -360,7 +377,7 @@ void showStats(HashTable* ht) {
                 if (temp->learned == 1) learnedOther++;
             }
 
-            // Insert into top-5 if wrongCount is high enough (insertion sort)
+            // Chèn vào top 5 nếu wrongCount đủ lớn (sắp xếp chèn)
             for (int k = 0; k < 5; k++) {
                 if (top5[k] == NULL || temp->wrongCount > top5[k]->wrongCount) {
                     for (int m = 4; m > k; m--) top5[m] = top5[m-1];
@@ -443,7 +460,8 @@ void showStats(HashTable* ht) {
     printf("----------------------------------------\n");
     pauseScreen();
 }
-
+//mở file progress.txt ghi lại thuộc tính learned và wrongCount
+//lưu progress
 void saveProgress(HashTable* ht) {
     char path[100];
     snprintf(path, sizeof(path), "data/Users/%s/progress.txt", currentUser.username);
@@ -461,7 +479,8 @@ void saveProgress(HashTable* ht) {
     }
     fclose(file);
 }
-
+//mở file progess.txt của riêng user, đọc dulieu và dùng searchWord để cập nhật trạng thái học tập
+//tải lên tiến độ học tập
 void loadProgress(HashTable* ht) {
     char path[100];
     snprintf(path, sizeof(path), "data/Users/%s/progress.txt", currentUser.username);
@@ -481,7 +500,8 @@ void loadProgress(HashTable* ht) {
     }
     fclose(file);
 }
-
+//quét xem từ đó trùng với type nào
+//lọc và lấy ngẫu nhiên theo loại
 Word* getWordByType(HashTable* ht, char *type) {
     Word* filtered[1000];
     int count = 0;
@@ -498,7 +518,8 @@ Word* getWordByType(HashTable* ht, char *type) {
     int randomIndex = rand() % count;
     return filtered[randomIndex];
 }
-
+//lọc wrongCount >=3 đưa và learned ==0 đưa vào mảng, lấy ngẫu nhiên trả về
+//chọn ngẫu nhiên 1 từ trong danh sách các từ ng dùng hay sai
 Word* getWeakWord(HashTable* ht) {
     Word* weakWords[1000];
     int count = 0;
@@ -515,7 +536,8 @@ Word* getWeakWord(HashTable* ht) {
     int randomIndex = rand() % count;
     return weakWords[randomIndex];
 }
-
+//thu thập từ trạng thái learned ==1 hay wrongCount >0 đưa vào mảng và lấy ngẫu nhiên
+//chọn 1 từ ngẫu nhiên ng dùng đã từng ttac để ôn
 Word* getStudiedWord(HashTable* ht) {
     Word* studiedWords[1000];
     int count = 0;
@@ -533,7 +555,8 @@ Word* getStudiedWord(HashTable* ht) {
     int randomIndex = rand() % count;
     return studiedWords[randomIndex];
 }
-
+//ng dùng nhập từ mới, nhập nhiều nghĩa thông qua ;, rồi đưa vào BST
+//cung cấp giao diện ng dùng tự thêm từ
 void addWord(HashTable* ht) {
     char word[50], meaning[500], pronunciation[50], type[20];
     char confirm = 'n';
@@ -585,7 +608,8 @@ void addWord(HashTable* ht) {
     insertWord(ht, newWord);
     printSuccess("Word added successfully!");
 }
-
+//tìm từ, hiện thông số, ng dùng sửa và ghi đè Ram
+//sửa thông tin
 void editWord(HashTable* ht) {
     char target[50];
     printf("Enter the word to edit: ");
@@ -595,7 +619,7 @@ void editWord(HashTable* ht) {
         printf("Word not found.\n");
         return;
     }
-    // Show current info
+    // cho thấy thông tin hiện tại
     printf("\nCurrent info for '%s':\n", word->word);
     printf("Meaning(s): "); 
     char copy[500];
@@ -641,7 +665,8 @@ void editWord(HashTable* ht) {
     word->type[sizeof(word->type) - 1] = '\0';
     printSuccess("Word updated successfully!");
 }
-
+//tìm từ từ dslk, ngắt liên kết, xóa nút đó trên cây BST + gphong bộ nhớ
+//xóa hoàn toàn khỏi từ điển
 void deleteWord(HashTable* ht) {
     char target[50];
     printf("Enter the word to delete: ");
@@ -670,7 +695,8 @@ void deleteWord(HashTable* ht) {
 
     printSuccess("Word deleted successfully!");
 }
-
+//mở file dictionary.txt duyệt toàn bộ từ điển theo struct phân tách |
+//lưu vv các thay đổi từ điển
 void saveDictionary(HashTable* ht) {
     FILE *file = fopen("data/dictionary.txt", "w");
     if (file == NULL) {
@@ -686,7 +712,8 @@ void saveDictionary(HashTable* ht) {
     }
     fclose(file);
 }
-
+//tính toán cấp độ dựa trên exp
+//cập nhật cấp bậc của tài khoản
 void updateLevel (){
     playStats.level = playStats.exp / 100 + 1;
 }

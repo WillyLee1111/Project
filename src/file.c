@@ -7,7 +7,8 @@
 #include "../include/file.h"
 #include "../include/utils.h"
 #include "../include/validator.h"
-
+//mở file data/users.txt, duyệt và kiểm tra tên đki
+//ngăn vc đki trùng tên
 static int usernameExists(const char *username) {
     FILE *file = fopen("data/users.txt", "r");
     if (file == NULL) {
@@ -27,7 +28,8 @@ static int usernameExists(const char *username) {
     fclose(file);
     return 0;
 }
-
+//gọi mkdir tạo thư mục data/users/ và thư mục cá nhân data/Users/username
+// đảm bảo thư mục lưu trữ dulieu cá nhân
 static void ensureUserFolder(const char *username) {
     char folderPath[100];
 
@@ -35,7 +37,8 @@ static void ensureUserFolder(const char *username) {
     snprintf(folderPath, sizeof(folderPath), "data/Users/%s", username);
     mkdir(folderPath);
 }
-
+//đọc file dulieu gốc, phân tách dữ liệu bằng dấu |
+//tải cơ sở dữ liệu từ điển vào bộ nhớ ram khi mở chương trình
 void loadDictionary(HashTable *ht) {
     FILE* file = fopen("data/dictionary.txt", "r");
     if (file == NULL) {
@@ -59,7 +62,8 @@ void loadDictionary(HashTable *ht) {
     }
     fclose(file);
 }
-
+// Tạo đường dẫn file userdata.txt riêng của user và ghi đè thông tin cấu trúc nhiệm vụ ngày, streak, level, EXP của user đó vào file.
+//Lưu trữ vĩnh viễn các thông số thành tích cá nhân của người dùng.
 void saveUserData() {
     char path[100];
     ensureUserFolder(currentUser.username);
@@ -69,7 +73,7 @@ void saveUserData() {
         fprintf(stderr, "Could not save user data for %s\n", currentUser.username);
         return;
     }
-    // Save 6 mission fields + mission date (date targets were generated for)
+    
     fprintf(file, "MISSION %d %d %d %d %d %d\n",
         dailyMission.wordsLearnedToday, dailyMission.flashcardsReviewed, dailyMission.gamesPlayed,
         dailyMission.targetWords, dailyMission.targetFlashcards, dailyMission.targetGames);
@@ -78,15 +82,16 @@ void saveUserData() {
     fprintf(file, "STATS %d %d\n", playStats.level, playStats.exp);
     fclose(file);
 }
-
+//Khởi tạo các giá trị mặc định của người dùng, mở file userdata.txt riêng của user để đọc và gán lại các thông số nhiệm vụ ngày, streak, level, EXP tương ứng.
+//Khôi phục trạng thái thành tích cá nhân của người dùng khi đăng nhập.
 void loadUserData() {
     dailyMission.wordsLearnedToday = 0;
     dailyMission.flashcardsReviewed = 0;
     dailyMission.gamesPlayed = 0;
-    dailyMission.targetWords = 0;    // 0 = not set yet, will be generated after srand
+    dailyMission.targetWords = 0;    // 0 = chưa thiết lập, sẽ tạo sau 
     dailyMission.targetFlashcards = 0;
     dailyMission.targetGames = 0;
-    dailyMission.missionDate[0] = '\0'; // empty = not set yet
+    dailyMission.missionDate[0] = '\0'; // chưa được thiết lập
 
     strcpy(studyStreak.lastStudyDate, "");
     studyStreak.streakDays = 0;
@@ -98,7 +103,7 @@ void loadUserData() {
     snprintf(path, sizeof(path), "data/Users/%s/userdata.txt", currentUser.username);
     FILE *file = fopen(path, "r");
     if (file == NULL) {
-        // First time user — no file yet, defaults are fine
+        // Người dùng lần đầu — chưa có tệp nào, cài đặt mặc định
         return;
     }
     char label[50];
@@ -119,7 +124,8 @@ void loadUserData() {
     }
     fclose(file);
 }
-
+//Yêu cầu nhập tài khoản/mật khẩu, kiểm tra tài khoản admin mặc định hoặc duyệt file users.txt để xác thực thông tin. Nếu khớp, nạp dữ liệu cá nhân của user đó và trả về 1 (thành công).
+//Xác thực quyền đăng nhập của người dùng.
 int login() {
     clearScreen();
     printf("=============================================\n");
@@ -164,6 +170,8 @@ int login() {
     fclose(file);
     return 0; // Login failed
 }
+// ycau nhập username và password hợp lệ thông qua validator. ghi tk mới vào users.txt, tạo folder riêng
+//Đky tkhoan ng dùng mới
 int registerUser() {
     int usernameValid = 0, passwordValid = 0;
     char username[50];
@@ -228,16 +236,15 @@ int registerUser() {
     strcpy(currentUser.password, password);
     loadUserData();
     
-    return 1; // Registration successful
+    return 1; 
 }
-
-
+// so sánh tiến độ, thỏa mãn thì sẽ tăng streak lên 1, cập nhật hc lần cuối và save
+//tự động kiểm tra và ghi nhận chuỗi ngày streak học tập
 void checkAndCompleteMission(){
     int tw = dailyMission.targetWords > 0 ? dailyMission.targetWords : 10;
     int tf = dailyMission.targetFlashcards > 0 ? dailyMission.targetFlashcards : 5;
     int tg = dailyMission.targetGames > 0 ? dailyMission.targetGames : 1;
 
-    // Save progress counts regardless (so partial progress persists)
     saveUserData();
 
     if (dailyMission.wordsLearnedToday >= tw &&
@@ -260,20 +267,20 @@ void checkAndCompleteMission(){
     }
 }
 
-// Called after loadUserData(). Resets mission if it's a new day and generates new random targets.
+// Nếu phát hiện ngày mới, reset tiến trình ngày về 0 và khởi tạo mục tiêu ngẫu nhiên mới (từ 5-15 từ, 3-8 flashcards, 1-3 game).
+//tự động làm mới nv
 void resetDailyMissionIfNewDay(){
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     char today[20];
     strftime(today, sizeof(today), "%Y-%m-%d", &tm);
 
-    // Check if the targets were generated for a different day
     int isNewDay = (strlen(dailyMission.missionDate) > 0 &&
                     strcmp(dailyMission.missionDate, today) != 0 &&
                     strcmp(dailyMission.missionDate, "0000-00-00") != 0);
 
     if (isNewDay) {
-        // New day: reset progress counters and generate new targets
+        
         dailyMission.wordsLearnedToday = 0;
         dailyMission.flashcardsReviewed = 0;
         dailyMission.gamesPlayed = 0;
@@ -281,11 +288,11 @@ void resetDailyMissionIfNewDay(){
         dailyMission.targetFlashcards = rand() % 6  + 3;  // 3-8
         dailyMission.targetGames      = rand() % 3  + 1;  // 1-3
         strcpy(dailyMission.missionDate, today);
-        saveUserData(); // Persist new day targets immediately
+        saveUserData(); 
         return;
     }
 
-    // First time ever (no date or no targets): generate targets and record the date
+    // Lần đầu tiên (không có ngày tháng hoặc mục tiêu): tạo mục tiêu và ghi lại ngày tháng.
     if (dailyMission.targetWords == 0 || strlen(dailyMission.missionDate) == 0 ||
         strcmp(dailyMission.missionDate, "0000-00-00") == 0) {
         if (dailyMission.targetWords == 0)
@@ -295,6 +302,6 @@ void resetDailyMissionIfNewDay(){
         if (dailyMission.targetGames == 0)
             dailyMission.targetGames = rand() % 3 + 1;
         strcpy(dailyMission.missionDate, today);
-        saveUserData(); // Persist initial targets
+        saveUserData();
     }
 }

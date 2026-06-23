@@ -10,6 +10,8 @@ static Word* currentFlashcard = NULL;
 static char currentReviewResult[200] = "";
 static int currentReviewColor = 7;
 
+//in ra giao diện mặt sau của flashcard
+//bổ trợ vẽ mặt sau
 static void printFlashcardBack() {
     printf("=============================================\n");
     setColor(14); printf("               FLASHCARD (BACK)\n"); setColor(7);
@@ -23,14 +25,16 @@ static void printFlashcardBack() {
     printf("\n=============================================\n");
     printf("How well did you remember this word?\n");
 }
-
+// gọi printFlashCardBack và in thêm thông báo kết quả đánh giá
+//hiển thị thông báo phản hồi chuyển tiếp trước khi người dùng nhấn chuyển sang thẻ học tiếp theo.
 static void printNextMenuHeader() {
     printFlashcardBack();
     setColor(currentReviewColor);
     printf("\n%s\n", currentReviewResult);
     setColor(7);
 }
-
+//quản lý vòng lặp ở chế độ học thẻ
+//giúp ng dùng ghi nhớ
 void flashcardMode(HashTable *ht) {
     int mode;
 

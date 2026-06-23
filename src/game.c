@@ -6,19 +6,19 @@
 #include "../include/dictionary.h"
 #include "../include/utils.h"
 
-// Difficulty settings
-// Easy   (1 hidden): words >= 2 letters  -> at least 1 visible
-// Medium (2 hidden): words >= 4 letters  -> at least 2 visible
-// Hard   (3 hidden): words >= 6 letters  -> at least 3 visible
+// cài đặt độ khó
+// Easy   (1 từ mất): words >= 2 letters  -> at least 1 visible
+// Medium (2 từ mất): words >= 4 letters  -> at least 2 visible
+// Hard   (3 từ mất): words >= 6 letters  -> at least 3 visible
 static int getMinLen(int difficulty) {
     if (difficulty == 2) return 4;
     if (difficulty == 3) return 6;
     return 2;
 }
-
+// chọn độ khó, lấy ngẫu nhiên trong từ điển theo độ dài tương ứng, ẩn chữ bằng dấu _
 void playMissingLetterGame(HashTable *ht){
 
-    // Show how many words are available per difficulty
+    // Đếm số từ có sẵn cho mỗi độ khó
     int cnt2 = 0, cnt4 = 0, cnt6 = 0;
     for (int i = 0; i < HASH_SIZE; i++) {
         Word *tmp = ht->buckets[i];
@@ -32,24 +32,17 @@ void playMissingLetterGame(HashTable *ht){
     }
 
     int difficulty = 1;
-    clearScreen();
-    printf("====================================================\n");
-    printf("            MISSING LETTER GAME\n");
-    printf("====================================================\n\n");
-    setColor(10);
-    printf("[1] "); setColor(7);
-    printf("Standard - 1 letter hidden (+20 EXP)  [%d words]\n", cnt2);
-    setColor(14);
-    printf("[2] "); setColor(7);
-    printf("Challenge - 2 letters hidden (+30 EXP) [%d words] \n", cnt4);
-    setColor(12);
-    printf("[3] "); setColor(7);
-    printf("Expert    - 3 letters hidden (+40 EXP) [%d words] \n", cnt6);
 
-    printf("\nChoose difficulty: ");
-    scanf("%d", &difficulty);
-    getchar();
-    if (difficulty < 1 || difficulty > 3) difficulty = 1;
+    // Thiết kế nhãn menu độ khó kèm số lượng từ.
+    char opt1[60], opt2[60], opt3[60];
+    snprintf(opt1, sizeof(opt1), "Standard  - 1 letter hidden (+20 EXP)  [%d words]", cnt2);
+    snprintf(opt2, sizeof(opt2), "Challenge - 2 letters hidden (+30 EXP)  [%d words]", cnt4);
+    snprintf(opt3, sizeof(opt3), "Expert    - 3 letters hidden (+40 EXP)  [%d words]", cnt6);
+    char *diffOptions[] = { opt1, opt2, opt3, "Back" };
+
+    int diffChoice = selectMenu("MISSING LETTER - SELECT DIFFICULTY", diffOptions, 4, NULL);
+    if (diffChoice == 3) return; // Back
+    difficulty = diffChoice + 1; // 1, 2, or 3
 
     int minLen   = getMinLen(difficulty);
     int numHidden = difficulty; // 1, 2, or 3
@@ -64,7 +57,7 @@ void playMissingLetterGame(HashTable *ht){
     while (choice != 2) {
         clearScreen();
 
-        // Select a word of appropriate length
+        // Chọn một từ có độ dài phù hợp.
         Word* word = getAdaptiveWordMinLen(ht, minLen);
         if (word == NULL) {
             setColor(12);
@@ -78,7 +71,7 @@ void playMissingLetterGame(HashTable *ht){
         int wordLen     = (int)strlen(word->word);
         int actualHidden = (numHidden <= wordLen) ? numHidden : wordLen;
 
-        // Build hidden string by randomly masking actualHidden unique positions
+        // chuỗi ẩn kí tự
         char hidden[50];
         strncpy(hidden, word->word, sizeof(hidden) - 1);
         hidden[sizeof(hidden) - 1] = '\0';
@@ -114,7 +107,7 @@ void playMissingLetterGame(HashTable *ht){
         scanf("%49s", answer);
         getchar();
 
-        // Convert answer to lowercase to match dictionary hash function (case-sensitive)
+        
         _strlwr(answer);
 
         // Hint option
@@ -151,7 +144,7 @@ void playMissingLetterGame(HashTable *ht){
             }
         }
 
-        // Check if the formed word exists in dictionary (not just the original word!)
+        
         Word* foundWord = NULL;
         if (isValidPattern) {
             foundWord = searchWord(ht, formedWord);
@@ -185,7 +178,7 @@ void playMissingLetterGame(HashTable *ht){
             printf("\nKhông có từ này trong tiếng Anh.\n");
             setColor(7);
 
-            // Reconstruct what the original word was so user can learn
+            
             char original[50];
             strncpy(original, hidden, sizeof(original) - 1);
             original[sizeof(original) - 1] = '\0';
@@ -202,14 +195,15 @@ void playMissingLetterGame(HashTable *ht){
             updateLevel();
         }
 
-        // Live session score
+        // Điểm số trực tiếp + menu chơi lại
         printf("\nSession: %d/%d correct", sessionCorrect, sessionTotal);
         if (sessionTotal > 0)
             printf(" (%.0f%%)", (float)sessionCorrect / sessionTotal * 100.0f);
-        printf("\n\n[1] Play Again   [2] Exit Game\nChoice: ");
-        scanf("%d", &choice);
-        getchar();
-        pauseScreen();
+        printf("\n");
+
+        char *nextOpts[] = { "Play Again", "Exit Game" };
+        int nextChoice = selectMenu("MISSING LETTER", nextOpts, 2, NULL);
+        if (nextChoice == 1) choice = 2; // Exit
     }
 
     // Final score screen
@@ -227,7 +221,8 @@ void playMissingLetterGame(HashTable *ht){
     }
     pauseScreen();
 }
-
+// chọn ngẫu nhiên 1 từ đã học, hiện tanh gõ tviet
+//dịch thuật 
 void englishToVietnameseGame(HashTable *ht){
     clearScreen();
     if (dailyMission.flashcardsReviewed == 0) {
@@ -287,7 +282,8 @@ void englishToVietnameseGame(HashTable *ht){
     }
     pauseScreen();
 }
-
+// chọn ngẫu nhiên 1 từ đã học, hiện tviet gõ tanh
+//dịch thuật 
 void vietnameseToEnglishGame(HashTable *ht){
     clearScreen();
     if (dailyMission.flashcardsReviewed == 0) {

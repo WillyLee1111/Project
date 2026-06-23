@@ -12,13 +12,13 @@
 #include "../include/utils.h"
 
 Mission dailyMission = {0, 0, 0, 0, 0, 0, ""};
-
 Streak studyStreak = {"", 0};
 PlayStats playStats = {0, 0};
 User currentUser;
 
 static HashTable *globalHt = NULL;
-
+//gọi hàm lưu tiến độ trc khi thoát
+//tránh mất dl khi đóng đột ngột
 BOOL WINAPI consoleHandler(DWORD signal) {
   if ((signal == CTRL_CLOSE_EVENT || signal == CTRL_C_EVENT) &&
       globalHt != NULL) {
@@ -29,7 +29,8 @@ BOOL WINAPI consoleHandler(DWORD signal) {
   return FALSE; // Let default handler terminate
 }
 
-// Draw a simple progress bar
+// Tính toán tỷ lệ, vẽ ký tự = cho phần đã xong, > cho phần đang làm và khoảng trắng cho phần còn lại trong khung thanh tiến trình dài 10 ký tự.
+// vẽ hthanh tiếng độ
 static void drawBar(int current, int total) {
   int width = 10;
   int filled = (total > 0) ? (current * width / total) : 0;
@@ -47,7 +48,8 @@ static void drawBar(int current, int total) {
   printf("]");
 }
 
-// Fix 8: show word detail inline, used after displayDictionary
+// in thông số chi tiết của từ
+//cung cấp giao diện hiển thị thông tin từ khi tra cứu
 static void showWordDetail(Word *w) {
   if (w == NULL)
     return;
@@ -69,7 +71,8 @@ static void showWordDetail(Word *w) {
     tok = strtok(NULL, ";");
   }
 }
-
+//chạy vòng lặp điều hướng menu từ điển, chạy liên tục đến khi nhấn enter
+// qly giao diện và điều hướng các chức năng quản lý
 void dictionaryMenu(HashTable *ht) {
   int choice;
   do {
@@ -88,60 +91,59 @@ void dictionaryMenu(HashTable *ht) {
 
     switch (choice) {
     case 1: {
-      // Show all words
-      printf("============= DICTIONARY =============\n");
-      displayDictionary(ht);
+      int stayInSearch = 1;
+      while (stayInSearch) {
+        clearScreen();
+        printf("============= DICTIONARY =============\n");
+        displayDictionary(ht);
 
-      // Integrated search with BST suggestions
-      printf("\n=============================================\n");
-      printf("  Type a prefix to search (Enter = go back): ");
-      char prefix[50];
-      if (fgets(prefix, sizeof(prefix), stdin)) {
+        printf("\n=============================================\n");
+        printf("  Type a prefix to search (Enter = go back): ");
+        char prefix[50];
+        if (!fgets(prefix, sizeof(prefix), stdin)) break;
         prefix[strcspn(prefix, "\r\n")] = '\0';
-        if (strlen(prefix) > 0) {
-          Word *suggestions[20];
-          int count = suggestWords(ht, prefix, suggestions);
-          clearScreen();
-          printf("============= SEARCH: \"%s\" =============\n\n", prefix);
-          if (count == 1) {
-            // Only one match: auto-show detail immediately
-            clearScreen();
-            printf("============= SEARCH: \"%s\" - 1 result =============\n\n",
-                   prefix);
-            setColor(10);
-            printf("  Auto-showing the only match found.\n\n");
-            setColor(7);
-            showWordDetail(suggestions[0]);
-          } else if (count > 1) {
-            printf("Found %d suggestion(s) - results sorted A-Z (BST):\n\n",
-                   count);
-            for (int i = 0; i < count; i++) {
-              setColor(11);
-              printf("  [%d] ", i + 1);
-              setColor(7);
-              printf("%s", suggestions[i]->word);
-              setColor(8);
-              printf(" (%s)\n", suggestions[i]->type);
-              setColor(7);
-            }
-            printf("\n");
-            setColor(12);
-            printf("  [0] ");
-            setColor(7);
-            printf("Cancel\n");
-            printf("\nChoose a word to view detail: ");
-            int choose;
-            scanf("%d", &choose);
-            getchar();
-            if (choose > 0 && choose <= count) {
-              showWordDetail(suggestions[choose - 1]);
-            }
-          } else {
-            setColor(12);
-            printf("  No words found with prefix \"%s\".\n", prefix);
-            setColor(7);
-          }
+
+        if (strlen(prefix) == 0) {
+          stayInSearch = 0;
+          break;
+        }
+
+        Word *suggestions[20];
+        int count = suggestWords(ht, prefix, suggestions);
+        clearScreen();
+        printf("============= SEARCH: \"%s\" =============\n\n", prefix);
+
+        if (count == 0) {
+          setColor(12);
+          printf("  No words found with prefix \"%s\".\n", prefix);
+          setColor(7);
           pauseScreen();
+        } else if (count == 1) {
+          setColor(10);
+          printf("  Auto-showing the only match found.\n\n");
+          setColor(7);
+          showWordDetail(suggestions[0]);
+          pauseScreen();
+        } else {
+          // xây dựng và sd nút điều hướng
+          char *searchOpts[21];
+          char labels[20][60];
+          for (int i = 0; i < count; i++) {
+            snprintf(labels[i], sizeof(labels[i]), "%-20s (%s)",
+                     suggestions[i]->word, suggestions[i]->type);
+            searchOpts[i] = labels[i];
+          }
+          searchOpts[count] = "Back";
+
+          char searchTitle[80];
+          snprintf(searchTitle, sizeof(searchTitle),
+                   "Found %d result(s) for \"%s\"", count, prefix);
+
+          int chosen = selectMenu(searchTitle, searchOpts, count + 1, NULL);
+          if (chosen < count) {
+            showWordDetail(suggestions[chosen]);
+            pauseScreen();
+          }
         }
       }
       break;
@@ -208,7 +210,8 @@ void gameMenu(HashTable *ht) {
   checkAndCompleteMission();
   saveUserData();
 }
-
+//in thông tin nv hằng ngày
+//hiển thị bảng tóm tắt nv ở trên
 void printMainMenuHeader() {
   int tw = dailyMission.targetWords;
   int tf = dailyMission.targetFlashcards;
