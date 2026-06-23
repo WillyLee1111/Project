@@ -180,7 +180,7 @@ data/
 - `showMiniPlayerCard()`:
   - tính phần trăm EXP so với cấp độ hiện tại.
   - vẽ thanh tiến trình bằng ký tự `■`.
-- `showDictionaryMenu()` và `showGameMenu()` in menu đẹp.
+- `selectMenu(...)`: tạo menu điều hướng bằng phím mũi tên và Enter.
 - `printSuccess(...)` / `printError(...)` in thông báo màu.
 
 ### 7. Xác thực và kiểm tra dữ liệu

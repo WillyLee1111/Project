@@ -56,43 +56,12 @@ for(int i = 0; i < 14; i++){
 }
 
 
-void showDictionaryMenu(){
-    clearScreen();
-    printHeader("DICTIONARY MENU");
-    printf("\n");
-    printf("========================================\n");
-    printf("| [1] Show Dictionary                  |\n");
-    printf("| [2] Search Word                      |\n");
-    printf("| [3] Random Word                      |\n");
-    printf("| [4] Add Word                         |\n");
-    printf("| [5] Edit Word                        |\n");
-    printf("| [6] Delete Word                      |\n");
-    printf("| [0] Back                             |\n");
-    printf("========================================\n");
-}
-
-
 void showWordCard(Word *word){
     printf("========================================\n");
     printf("| Word          : %-20s |\n",word->word);
     printf("| Meaning       : %-20s |\n",word->meaning);
     printf("| Pronunciation : %-20s |\n",word->pronunciation);
     printf("| Type          : %-20s |\n", word->type);
-    printf("========================================\n");
-}
-
-void showGameMenu(){
-    clearScreen();
-    printHeader("GAME CENTER");
-    printf("========================================\n");
-    setColor(11); printf("[1] "); setColor(7);
-    printf("English -> Vietnamese\n");
-    setColor(11); printf("[2] "); setColor(7);
-    printf("Vietnamese -> English\n");
-    setColor(11); printf("[3] "); setColor(7);
-    printf("Missing Letter\n");
-    setColor(12); printf("[0] "); setColor(7);
-    printf("Back\n");
     printf("========================================\n");
 }
 

@@ -13,9 +13,7 @@ void pauseScreen();
 void printHeader(char title[]);
 void setColor(int color);
 void showMiniPlayerCard();
-void showDictionaryMenu();
 void showWordCard(Word *word);
-void showGameMenu();
 void printSuccess(char *text);
 void printError(char *text);
 
