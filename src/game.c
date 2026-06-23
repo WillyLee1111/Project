@@ -96,7 +96,11 @@ void playMissingLetterGame(HashTable *ht){
         setColor(11);
         printf("╔══════════════════════════════════════════════════╗\n");
         setColor(14);
-        printf("║ 🔤 MISSING LETTER | %s | Score: %d/%d ║\n", diffLabel, sessionCorrect, sessionTotal - 1);
+        char headerText[200];
+        sprintf(headerText, " 🔤 MISSING LETTER | %s | Score: %d/%d ", diffLabel, sessionCorrect, sessionTotal - 1);
+        printf("║%s", headerText);
+        for (int i = getVisualWidth(headerText); i < 50; i++) printf(" ");
+        printf("║\n");
         setColor(11);
         printf("╚══════════════════════════════════════════════════╝\n");
         setColor(7);
@@ -217,7 +221,7 @@ void playMissingLetterGame(HashTable *ht){
     setColor(11);
     printf("╔════════════════════════════════════════╗\n");
     setColor(14);
-    printf("║          🔤 GAME OVER 🔤              ║\n");
+    printf("║          🔤 GAME OVER 🔤               ║\n");
     setColor(11);
     printf("╚════════════════════════════════════════╝\n");
     setColor(7);
@@ -254,7 +258,7 @@ void englishToVietnameseGame(HashTable *ht){
     setColor(11);
     printf("╔════════════════════════════════════════════╗\n");
     setColor(14);
-    printf("║    🇬🇧 ENGLISH -> VIETNAMESE 🇻🇳        ║\n");
+    printf("║    🇬🇧 ENGLISH -> VIETNAMESE 🇻🇳             ║\n");
     setColor(11);
     printf("╚════════════════════════════════════════════╝\n");
     setColor(7);
@@ -321,7 +325,7 @@ void vietnameseToEnglishGame(HashTable *ht){
     setColor(11);
     printf("╔════════════════════════════════════════════╗\n");
     setColor(14);
-    printf("║    🇻🇳 VIETNAMESE -> ENGLISH 🇬🇧        ║\n");
+    printf("║    🇻🇳 VIETNAMESE -> ENGLISH 🇬🇧             ║\n");
     setColor(11);
     printf("╚════════════════════════════════════════════╝\n");
     setColor(7);

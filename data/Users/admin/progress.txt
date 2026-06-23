@@ -3,7 +3,7 @@ keep 0 0
 observe 1 0
 airline 0 0
 advertise 0 0
-okay 0 0
+okay 1 0
 absolute 0 0
 party 0 0
 paint 0 0
@@ -294,7 +294,7 @@ after 1 0
 ear 0 0
 eat 0 0
 realize 0 0
-teach 0 0
+teach 1 0
 management 1 0
 yellow 0 0
 hardly 0 0
