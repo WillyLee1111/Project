@@ -445,6 +445,7 @@ int main() {
       printf("Are you sure you want to exit? (y/n): ");
       char c;
       scanf(" %c", &c);
+      while(getchar() != '\n');
       if (c == 'y' || c == 'Y') {
         saveProgress(ht);
         saveUserData();

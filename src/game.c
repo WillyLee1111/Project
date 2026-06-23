@@ -40,7 +40,7 @@ void playMissingLetterGame(HashTable *ht){
     snprintf(opt3, sizeof(opt3), "💎 Expert    - 3 letters hidden (+40 EXP)  [%d words]", cnt6);
     char *diffOptions[] = { opt1, opt2, opt3, "Back" };
 
-    int diffChoice = selectMenu("🔤 MISSING LETTER - SELECT DIFFICULTY", diffOptions, 4, NULL);
+    int diffChoice = selectMenu("🔤 MISSING LETTER -SELECT DIFFICULTY", diffOptions, 4, NULL);
     if (diffChoice == 3) return; // Back
     difficulty = diffChoice + 1; // 1, 2, or 3
 
@@ -114,7 +114,7 @@ void playMissingLetterGame(HashTable *ht){
         printf("Enter the full word OR just the %d missing letter(s) ['H' = hint]: ", actualHidden);
         char answer[50];
         scanf("%49s", answer);
-        getchar();
+        while(getchar() != '\n');
 
         
         _strlwr(answer);
@@ -126,7 +126,7 @@ void playMissingLetterGame(HashTable *ht){
             setColor(7);
             printf("Enter the full word OR just the %d missing letter(s): ", actualHidden);
             scanf("%49s", answer);
-            getchar();
+            while(getchar() != '\n');
             _strlwr(answer);
         }
 

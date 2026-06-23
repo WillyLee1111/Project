@@ -586,7 +586,7 @@ void addWord(HashTable* ht) {
     do {
         printf("Enter the word: ");
         scanf("%49s", word);
-        getchar();
+        while(getchar() != '\n');
         _strlwr(word); // Standardize to lowercase
         if (searchWord(ht, word) != NULL) {
             printf("Word '%s' already exists in the dictionary.\n", word);
@@ -595,7 +595,7 @@ void addWord(HashTable* ht) {
         }
         printf("Word entered: '%s' - Is this correct? (y/n): ", word);
         scanf(" %c", &confirm);
-        getchar();
+        while(getchar() != '\n');
     } while (confirm != 'y' && confirm != 'Y');
 
     
@@ -613,7 +613,7 @@ void addWord(HashTable* ht) {
         meaningCount++;
         printf("Add another meaning? (y/n): ");
         scanf(" %c", &addMore);
-        getchar();
+        while(getchar() != '\n');
     }
 
     printf("Enter the pronunciation: ");
@@ -635,6 +635,7 @@ void editWord(HashTable* ht) {
     char target[50];
     printf("Enter the word to edit: ");
     scanf("%49s", target);
+    while(getchar() != '\n');
     Word* word = searchWord(ht, target);
     if (word == NULL) {
         printf("Word not found.\n");
@@ -651,7 +652,6 @@ void editWord(HashTable* ht) {
     printf("\nPronunciation: %s | Type: %s\n\n", word->pronunciation, word->type);
 
     char meaning[500], pronunciation[50], type[20];
-    getchar();
     
     meaning[0] = '\0';
     int meaningCount = 0;
@@ -668,7 +668,7 @@ void editWord(HashTable* ht) {
         meaningCount++;
         printf("Add another meaning? (y/n): ");
         scanf(" %c", &addMore);
-        getchar();
+        while(getchar() != '\n');
     }
     printf("Enter the new pronunciation: ");
     fgets(pronunciation, sizeof(pronunciation), stdin);
@@ -692,6 +692,7 @@ void deleteWord(HashTable* ht) {
     char target[50];
     printf("Enter the word to delete: ");
     scanf("%49s", target);
+    while(getchar() != '\n');
     _strlwr(target);
     unsigned int index = hashFunction(target);
     Word* temp = ht->buckets[index];

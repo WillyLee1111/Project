@@ -155,6 +155,7 @@ int login() {
     printf("  🔑 Password : ");
     setColor(7);
     scanf("%49s", password);
+    while(getchar() != '\n');
     printf("\n");
 
     if(
@@ -238,6 +239,7 @@ int registerUser() {
         printf("  Enter new Password : ");
         setColor(7);
         scanf("%49s", password);
+        while(getchar() != '\n');
         printf("\n");
         if (!isStrongPassword(password)) {
             setColor(12);
