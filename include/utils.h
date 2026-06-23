@@ -14,7 +14,10 @@ void printHeader(char title[]);
 void setColor(int color);
 void showMiniPlayerCard();
 void showWordCard(Word *word);
+void showWordCardBoxed(Word *word);
 void printSuccess(char *text);
 void printError(char *text);
+void displayDictionaryBoxed(HashTable *ht);
+int getVisualWidth(const char *str);
 
 #endif // UTILS_H

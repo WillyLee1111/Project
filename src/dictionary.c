@@ -6,6 +6,8 @@
 #include "../include/validator.h"
 #include "../include/utils.h"
 
+#define WIDTH 50
+
 //cấp bộ nhớ cho struct HashTable, khởi tạo các bucket về NULL và BST root về NULL
 // khởi tạo để sẵn sàng lưu trữ
 HashTable* createHashTable() {
@@ -167,17 +169,30 @@ static void bstPrintInOrder(BSTNode *node, HashTable *ht, int *count) {
     bstPrintInOrder(node->left, ht, count);
     Word *w = searchWord(ht, node->word);
     if (w != NULL) {
-        (*count)++;
-        printf("=================================\n");
-        printf("%-14s: %s\n", "Word", w->word);
-        printf("%-14s:\n", "Meaning(s)");
-        printWordMeanings(w->meaning);
-        printf("%-14s: %s\n", "Pronunciation", w->pronunciation);
-        printf("%-14s: %s\n", "Type", w->type);
-        printf("%-14s: %s | Wrong: %d\n", "Status",
-               w->learned ? "Learned" : "Not learned", w->wrongCount);
-        printf("=================================\n");
-    }
+    (*count)++;
+
+    setColor(11);
+
+    char line1[100], line2[100], line3[100], line4[100], line5[100];
+
+    sprintf(line1, "Word: %s", w->word);
+    sprintf(line2, "Type: %s", w->type);
+    sprintf(line3, "Pronunciation: [%s]", w->pronunciation);
+    sprintf(line4, "Meaning: %s", w->meaning);
+    sprintf(line5, "Status: %s | Wrong: %d",
+            w->learned ? "Learned" : "Not learned",
+            w->wrongCount);
+
+    printf(" -------------------------------------------------------------\n");
+    printf("| %-59s |\n", line1);
+    printf("| %-59s |\n", line2);
+    printf("| %-59s |\n", line3);
+    printf("| %-59s |\n", line4);
+    printf("| %-59s |\n", line5);
+    printf(" -------------------------------------------------------------\n");
+
+    setColor(7);
+}
     bstPrintInOrder(node->right, ht, count);
 }
 //đếm tổng số từ trog bảng băm, nếu có từ gọi đệ quy bstPrintInOrder từ gốc để in
@@ -391,24 +406,30 @@ void showStats(HashTable* ht) {
 
 
     clearScreen();
-    printf("============== PLAYER STATISTICS ==============\n");
-    printf("========================================\n");
-    setColor(11); printf("LEVEL      "); setColor(7); printf(": %d\n", playStats.level);
-    setColor(11); printf("EXP        "); setColor(7); printf(": %d / %d (next level)\n",
+    setColor(11);
+    printf("╔════════════════════════════════════════════╗\n");
+    setColor(14);
+    printf("║         📊 PLAYER STATISTICS 📊           ║\n");
+    setColor(11);
+    printf("╚════════════════════════════════════════════╝\n");
+    setColor(7);
+    printf("\n");
+    setColor(11); printf("🎖️  LEVEL      "); setColor(7); printf(": %d\n", playStats.level);
+    setColor(11); printf("⭐ EXP        "); setColor(7); printf(": %d / %d (next level)\n",
         playStats.exp, (playStats.level) * 100);
-    setColor(11); printf("STREAK     "); setColor(7); printf(": %d days\n", studyStreak.streakDays);
-    printf("========================================\n\n");
+    setColor(11); printf("🔥 STREAK     "); setColor(7); printf(": %d days\n", studyStreak.streakDays);
+    printf("\n");
 
     // Dictionary progress
-    setColor(14); printf("DICTIONARY PROGRESS\n"); setColor(7);
-    printf("----------------------------------------\n");
+    setColor(14); printf("\n📚 DICTIONARY PROGRESS\n"); setColor(7);
+    printf("─────────────────────────────────────────────\n");
     printf("Total Words   : %d\n", totalWords);
     printf("Learned       : %d / %d\n", learnedWords, totalWords);
     printf("\n");
 
     // By word type breakdown
-    setColor(14); printf("WORDS BY TYPE (Learned / Total)\n"); setColor(7);
-    printf("----------------------------------------\n");
+    setColor(14); printf("\n📖 WORDS BY TYPE (Learned / Total)\n"); setColor(7);
+    printf("─────────────────────────────────────────────\n");
     
     printf("  %-10s: %3d / %-3d ", "Noun", learnedNoun, totalNoun);
     drawAsciiBar(learnedNoun, totalNoun);
@@ -434,8 +455,8 @@ void showStats(HashTable* ht) {
     printf("\n");
 
     // Daily mission
-    setColor(13); printf("DAILY MISSION\n"); setColor(7);
-    printf("----------------------------------------\n");
+    setColor(13); printf("\n📋 DAILY MISSION\n"); setColor(7);
+    printf("─────────────────────────────────────────────\n");
     printf("Words Learned : %d / %d\n", dailyMission.wordsLearnedToday,
            dailyMission.targetWords > 0 ? dailyMission.targetWords : 10);
     printf("Flashcards    : %d / %d\n", dailyMission.flashcardsReviewed,
@@ -445,8 +466,8 @@ void showStats(HashTable* ht) {
     printf("\n");
 
     // Top-5 hardest words sorted by wrongCount
-    setColor(12); printf("TOP 5 HARDEST WORDS (sorted by wrong count)\n"); setColor(7);
-    printf("----------------------------------------\n");
+    setColor(12); printf("\n⚠️  TOP 5 HARDEST WORDS (sorted by wrong count)\n"); setColor(7);
+    printf("─────────────────────────────────────────────\n");
     int anyHard = 0;
     for (int k = 0; k < 5; k++) {
         if (top5[k] != NULL && top5[k]->wrongCount > 0) {
@@ -457,7 +478,7 @@ void showStats(HashTable* ht) {
         }
     }
     if (!anyHard) { setColor(10); printf("  No wrong answers yet! Keep it up!\n"); setColor(7); }
-    printf("----------------------------------------\n");
+    printf("─────────────────────────────────────────────\n");
     pauseScreen();
 }
 //mở file progress.txt ghi lại thuộc tính learned và wrongCount

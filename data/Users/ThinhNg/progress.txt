@@ -1,3 +1,4 @@
+keen 0 0
 keep 0 0
 observe 0 0
 airline 0 0
@@ -331,6 +332,7 @@ obvious 0 0
 adequate 0 0
 gallery 0 0
 pass 0 0
+perspicacious 0 0
 lead 0 0
 uncle 0 0
 valuable 0 0
@@ -392,7 +394,6 @@ wall 0 0
 edition 0 0
 yes 0 0
 yet 0 0
-﻿keen 0 0
 want 0 0
 race 0 0
 warm 0 0

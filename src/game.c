@@ -35,12 +35,12 @@ void playMissingLetterGame(HashTable *ht){
 
     // Thiết kế nhãn menu độ khó kèm số lượng từ.
     char opt1[60], opt2[60], opt3[60];
-    snprintf(opt1, sizeof(opt1), "Standard  - 1 letter hidden (+20 EXP)  [%d words]", cnt2);
-    snprintf(opt2, sizeof(opt2), "Challenge - 2 letters hidden (+30 EXP)  [%d words]", cnt4);
-    snprintf(opt3, sizeof(opt3), "Expert    - 3 letters hidden (+40 EXP)  [%d words]", cnt6);
+    snprintf(opt1, sizeof(opt1), "🎯 Standard  - 1 letter hidden (+20 EXP)  [%d words]", cnt2);
+    snprintf(opt2, sizeof(opt2), "⚡ Challenge - 2 letters hidden (+30 EXP)  [%d words]", cnt4);
+    snprintf(opt3, sizeof(opt3), "💎 Expert    - 3 letters hidden (+40 EXP)  [%d words]", cnt6);
     char *diffOptions[] = { opt1, opt2, opt3, "Back" };
 
-    int diffChoice = selectMenu("MISSING LETTER - SELECT DIFFICULTY", diffOptions, 4, NULL);
+    int diffChoice = selectMenu("🔤 MISSING LETTER - SELECT DIFFICULTY", diffOptions, 4, NULL);
     if (diffChoice == 3) return; // Back
     difficulty = diffChoice + 1; // 1, 2, or 3
 
@@ -93,8 +93,13 @@ void playMissingLetterGame(HashTable *ht){
 
         sessionTotal++;
 
-        printf("====== MISSING LETTER | %s | Score: %d/%d ======\n",
-               diffLabel, sessionCorrect, sessionTotal - 1);
+        setColor(11);
+        printf("╔══════════════════════════════════════════════════╗\n");
+        setColor(14);
+        printf("║ 🔤 MISSING LETTER | %s | Score: %d/%d ║\n", diffLabel, sessionCorrect, sessionTotal - 1);
+        setColor(11);
+        printf("╚══════════════════════════════════════════════════╝\n");
+        setColor(7);
         printf("Type   : [%s]\n", word->type);
         printf("Word   : ");
         setColor(14);
@@ -202,22 +207,28 @@ void playMissingLetterGame(HashTable *ht){
         printf("\n");
         pauseScreen();
 
-        char *nextOpts[] = { "Play Again", "Exit Game" };
-        int nextChoice = selectMenu("MISSING LETTER", nextOpts, 2, NULL);
+        char *nextOpts[] = { "🔄 Play Again", "🚪 Exit Game" };
+        int nextChoice = selectMenu("🔤 MISSING LETTER", nextOpts, 2, NULL);
         if (nextChoice == 1) choice = 2; // Exit
     }
 
     // Final score screen
     clearScreen();
-    printf("====== GAME OVER ======\n");
+    setColor(11);
+    printf("╔════════════════════════════════════════╗\n");
+    setColor(14);
+    printf("║          🔤 GAME OVER 🔤              ║\n");
+    setColor(11);
+    printf("╚════════════════════════════════════════╝\n");
+    setColor(7);
     printf("Difficulty  : %s\n", diffLabel);
     printf("Final Score : %d / %d\n", sessionCorrect, sessionTotal);
     if (sessionTotal > 0) {
         float acc = (float)sessionCorrect / sessionTotal * 100.0f;
         printf("Accuracy    : %.0f%%\n\n", acc);
-        if (acc >= 80)      { setColor(10); printf("Rating: Excellent! Well done!\n"); }
-        else if (acc >= 50) { setColor(14); printf("Rating: Good job! Keep it up!\n"); }
-        else                { setColor(12); printf("Rating: Keep practicing!\n"); }
+        if (acc >= 80)      { setColor(10); printf("Rating: ⭐ Excellent! Well done!\n"); }
+        else if (acc >= 50) { setColor(14); printf("Rating: 👍 Good job! Keep it up!\n"); }
+        else                { setColor(12); printf("Rating: 💪 Keep practicing!\n"); }
         setColor(7);
     }
     pauseScreen();
@@ -240,8 +251,14 @@ void englishToVietnameseGame(HashTable *ht){
         return;
     }
     char answer[100];
-    printf("=========== ENGLISH -> VIETNAMESE ===========\n\n");
-    printf("Translate this word:\n");
+    setColor(11);
+    printf("╔════════════════════════════════════════════╗\n");
+    setColor(14);
+    printf("║    🇬🇧 ENGLISH -> VIETNAMESE 🇻🇳        ║\n");
+    setColor(11);
+    printf("╚════════════════════════════════════════════╝\n");
+    setColor(7);
+    printf("\nTranslate this word:\n");
     setColor(14);
     printf("  %s\n\n", word->word);
     setColor(7);
@@ -301,8 +318,14 @@ void vietnameseToEnglishGame(HashTable *ht){
         return;
     }
     char answer[100];
-    printf("=========== VIETNAMESE -> ENGLISH ===========\n\n");
-    printf("Translate this meaning:\n");
+    setColor(11);
+    printf("╔════════════════════════════════════════════╗\n");
+    setColor(14);
+    printf("║    🇻🇳 VIETNAMESE -> ENGLISH 🇬🇧        ║\n");
+    setColor(11);
+    printf("╚════════════════════════════════════════════╝\n");
+    setColor(7);
+    printf("\nTranslate this meaning:\n");
     setColor(14);
     printf("  %s\n\n", word->meaning);
     setColor(7);

@@ -25,7 +25,7 @@ ahead 0 0
 again 0 0
 illegal 1 1
 valley 0 1
-airport 0 0
+airport 1 0
 advance 0 0
 economy 0 0
 parent 0 0
@@ -67,7 +67,7 @@ all 0 0
 understand 1 0
 offer 0 0
 barely 0 0
-and 0 0
+and 1 0
 cabinet 1 0
 magazine 1 0
 vary 0 0
@@ -88,7 +88,7 @@ handle 1 0
 upon 1 0
 according 0 0
 offense 0 0
-wander 0 0
+wander 1 0
 before 0 0
 lack 0 0
 taste 0 0
@@ -167,7 +167,7 @@ adventure 0 0
 absence 0 0
 band 1 0
 bank 0 0
-table 0 0
+table 0 2
 can 0 0
 cap 1 0
 car 0 0
@@ -232,7 +232,7 @@ early 0 0
 amount 0 0
 score 1 0
 day 0 0
-academic 0 2
+academic 1 0
 health 0 0
 afraid 0 0
 negotiate 0 0
@@ -276,7 +276,7 @@ veteran 0 0
 familiar 0 0
 famous 1 0
 dare 0 0
-dark 0 0
+dark 1 0
 access 1 0
 obtain 0 0
 data 0 0
@@ -332,6 +332,7 @@ obvious 0 1
 gallery 0 0
 adequate 0 2
 pass 0 0
+perspicacious 0 0
 lead 1 0
 uncle 0 0
 valuable 0 0
@@ -470,7 +471,7 @@ dead 0 0
 deal 0 0
 dear 0 0
 advantage 0 0
-angry 0 0
+angry 1 0
 narrow 1 0
 debt 0 0
 cake 1 0
@@ -489,7 +490,7 @@ yield 0 2
 keyboard 1 1
 card 0 0
 impact 1 0
-variation 0 0
+variation 1 0
 yard 0 0
 ambition 0 0
 educate 0 0

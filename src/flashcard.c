@@ -13,16 +13,26 @@ static int currentReviewColor = 7;
 //in ra giao diện mặt sau của flashcard
 //bổ trợ vẽ mặt sau
 static void printFlashcardBack() {
-    printf("=============================================\n");
-    setColor(14); printf("               FLASHCARD (BACK)\n"); setColor(7);
-    printf("=============================================\n\n");
+    setColor(11);
+    printf("╔═════════════════════════════════════════════╗\n");
+    setColor(14);
+    printf("║          🎴 FLASHCARD (BACK) 🎴             ║\n");
+    setColor(11);
+    printf("╚═════════════════════════════════════════════╝\n\n");
+    setColor(7);
 
-    printf("Word    : "); setColor(11); printf("%s\n", currentFlashcard->word); setColor(7);
-    printf("Meaning :\n");
+    printf("Word    :  ");
+    setColor(11);
+    printf("%s\n", currentFlashcard->word);
+    setColor(7);
+    printf("Meaning :  \n");
     printWordMeanings(currentFlashcard->meaning);
-    printf("Type    : %s\n", currentFlashcard->type);
-    printf("Pronun  : %s\n", currentFlashcard->pronunciation);
-    printf("\n=============================================\n");
+    printf("Type    :  %s\n", currentFlashcard->type);
+    printf("Pronun  :  %s\n", currentFlashcard->pronunciation);
+    printf("\n");
+    setColor(11);
+    printf("─────────────────────────────────────────────\n");
+    setColor(7);
     printf("How well did you remember this word?\n");
 }
 // gọi printFlashCardBack và in thêm thông báo kết quả đánh giá
@@ -41,15 +51,15 @@ void flashcardMode(HashTable *ht) {
     do {
         int choice = 1;
         char *flashcardOptions[] = {
-            "Adaptive (Spaced Repetition)",
-            "Nouns Only",
-            "Verbs Only",
-            "Adjectives Only",
-            "Adverbs Only",
-            "Weak Words Only",
-            "Back to Main Menu"
+            "🎴 Adaptive (Spaced Repetition)",
+            "📝 Nouns Only",
+            "🔧 Verbs Only",
+            "✨ Adjectives Only",
+            "🌊 Adverbs Only",
+            "⚠️  Weak Words Only",
+            "🚪 Back to Main Menu"
         };
-        mode = selectMenu("FLASHCARD MODE", flashcardOptions, 7, NULL);
+        mode = selectMenu("🎴 FLASHCARD MODE", flashcardOptions, 7, NULL);
         if (mode == 6) mode = 0;
         else mode += 1;
 
@@ -80,16 +90,22 @@ void flashcardMode(HashTable *ht) {
 
             // --- FRONT OF FLASHCARD ---
             clearScreen();
-            printf("=============================================\n");
-            setColor(14); printf("              FLASHCARD (FRONT)\n"); setColor(7);
-            printf("=============================================\n\n");
-
             setColor(11);
-            printf("           >>> %s <<< \n\n", strupr(card->word));
+            printf("╔═════════════════════════════════════════════╗\n");
+            setColor(14);
+            printf("║          🎴 FLASHCARD (FRONT) 🎴            ║\n");
+            setColor(11);
+            printf("╚═════════════════════════════════════════════╝\n\n");
+            setColor(7);
+
+            setColor(14);
+            printf("              >>> %s <<<\n\n", strupr(card->word));
             setColor(7);
             _strlwr(card->word);
 
-            printf("=============================================\n");
+            setColor(11);
+            printf("─────────────────────────────────────────────\n");
+            setColor(7);
             printf("Press ENTER to flip...");
             getchar();
 
@@ -129,8 +145,8 @@ void flashcardMode(HashTable *ht) {
             }
 
             char *nextOptions[] = {
-                "Next Flashcard",
-                "Back to Flashcard Menu"
+                "▶️  Next Flashcard",
+                "🚪 Back to Flashcard Menu"
             };
             choice = selectMenu("", nextOptions, 2, printNextMenuHeader);
             choice += 1;

@@ -133,15 +133,29 @@ void loadUserData() {
 //Xác thực quyền đăng nhập của người dùng.
 int login() {
     clearScreen();
-    printf("=============================================\n");
-    setColor(11); printf("                  LOGIN\n"); setColor(7);
-    printf("=============================================\n\n");
+    setColor(11); 
+    printf("╔═══════════════════════════════════════════════╗\n");
+    setColor(14);
+    printf("║               🔐 LOGIN  🔐                    ║\n");
+    setColor(11);
+    printf("╚═══════════════════════════════════════════════╝\n");
+    setColor(7);
+    printf("\n");
+    
     char username[50];
     char password[50];
-    printf("  Username : ");
+    
+    setColor(14);
+    printf("  📝 Username : ");
+    setColor(7);
     scanf("%49s", username);
-    printf("  Password : ");
+    printf("\n");
+    
+    setColor(14);
+    printf("  🔑 Password : ");
+    setColor(7);
     scanf("%49s", password);
+    printf("\n");
 
     if(
         strcmp(username, "admin") == 0 && strcmp(password, "admin") == 0
@@ -150,12 +164,17 @@ int login() {
         strcpy(currentUser.password, "admin");
         ensureUserFolder(currentUser.username);
         loadUserData();
+        setColor(10);
+        printf("  ✓ Admin login successful!\n");
+        setColor(7);
         return 1; // Admin login successful
     }
 
     FILE *file = fopen("data/users.txt", "r");
     if (file == NULL) {
-        fprintf(stderr, "Could not open user file\n");
+        setColor(12);
+        fprintf(stderr, "  ✗ Could not open user file\n");
+        setColor(7);
         return 0;
     }
     char line[100];
@@ -169,6 +188,9 @@ int login() {
             ensureUserFolder(currentUser.username);
             loadUserData();
             fclose(file);
+            setColor(10);
+            printf("  ✓ Login successful!\n");
+            setColor(7);
             return 1; // Login successful
         }
     }
@@ -183,27 +205,44 @@ int registerUser() {
     char password[50];
     
     clearScreen();
-    printf("=============================================\n");
-    setColor(11); printf("                REGISTER\n"); setColor(7);
-    printf("=============================================\n\n");
+    setColor(11);
+    printf("╔═══════════════════════════════════════════════╗\n");
+    setColor(14);
+    printf("║              📝 REGISTER 📝                  ║\n");
+    setColor(11);
+    printf("╚═══════════════════════════════════════════════╝\n");
+    setColor(7);
+    printf("\n");
 
     while (!usernameValid) {
+        setColor(14);
         printf("  Enter new Username : ");
+        setColor(7);
         scanf("%49s", username);
+        printf("\n");
         if (strlen(username) < 3) {
-            setColor(12); printf("  -> Username must be at least 3 characters.\n\n"); setColor(7);
+            setColor(12);
+            printf("  ✗ Username must be at least 3 characters.\n\n");
+            setColor(7);
         } else if (usernameExists(username)) {
-            setColor(12); printf("  -> Username already exists. Please choose another.\n\n"); setColor(7);
+            setColor(12);
+            printf("  ✗ Username already exists. Please choose another.\n\n");
+            setColor(7);
         } else {
             usernameValid = 1;
         }
     }
 
     while (!passwordValid) {
+        setColor(14);
         printf("  Enter new Password : ");
+        setColor(7);
         scanf("%49s", password);
+        printf("\n");
         if (!isStrongPassword(password)) {
-            setColor(12); printf("  -> Password invalid. Must have 6+ chars, uppercase, lowercase, and a digit.\n\n"); setColor(7);
+            setColor(12);
+            printf("  ✗ Password invalid. Must have 6+ chars, uppercase, lowercase, and a digit.\n\n");
+            setColor(7);
         } else {
             passwordValid = 1;
         }
@@ -211,7 +250,9 @@ int registerUser() {
 
     FILE *file = fopen("data/users.txt", "a");
     if (file == NULL) {
-        fprintf(stderr, "Could not open user file\n");
+        setColor(12);
+        fprintf(stderr, "  ✗ Could not open user file\n");
+        setColor(7);
         return 0;
     }
     fprintf(file, "%s|%s\n", username, password);
@@ -242,6 +283,10 @@ int registerUser() {
     strcpy(currentUser.password, password);
     loadUserData();
     
+    printf("\n");
+    setColor(10);
+    printf("  ✓ Registration successful!\n");
+    setColor(7);
     return 1; 
 }
 // so sánh tiến độ, thỏa mãn thì sẽ tăng streak lên 1, cập nhật hc lần cuối và save

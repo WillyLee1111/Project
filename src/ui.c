@@ -18,8 +18,8 @@ void showIntroScreen(){
     printf("   De tai:        Hoc tu vung tieng Anh                    \n");
     printf("   Giao vien huong dan: Truong Ngoc Chau                   \n");
     setColor(11);
-    printf("   Sinh vien: Nguyen Hung Thinh - 25T_Nhat1               \n");
-    printf("              Huynh Thi Anh Ngoc - 25T_Nhat1              \n");
+    printf("   Sinh vien: Nguyen Hung Thinh - 25T_Nhat1                \n");
+    printf("              Huynh Thi Anh Ngoc - 25T_Nhat1               \n");
     setColor(7);
     printf("===========================================================\n");
     printf("\n");

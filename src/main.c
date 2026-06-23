@@ -54,13 +54,60 @@ static void showWordDetail(Word *w) {
   if (w == NULL)
     return;
   clearScreen();
-  printf("============= WORD DETAIL =============\n\n");
-  printf("Word          : %s\n", w->word);
-  printf("Pronunciation : %s\n", w->pronunciation);
-  printf("Type          : %s\n", w->type);
-  printf("Status        : %s | Wrong: %d\n\n",
-         w->learned ? "Learned" : "Not learned", w->wrongCount);
+  
+  setColor(11);
+  printf("═════════════════════════════════════════\n");
+  setColor(14);
+  printf("           📖 WORD DETAIL 📖              \n");
+  setColor(11);
+  printf("═════════════════════════════════════════\n");
+  setColor(7);
+  printf("\n");
+  
+  setColor(14);
+  printf("Word          : ");
+  setColor(240);
+  printf(" %s", w->word);
+  for (int i = getVisualWidth(w->word); i < 30; i++) printf(" ");
+  printf(" ");
+  setColor(7);
+  printf("\n\n");
+  
+  setColor(10);
+  printf("Pronunciation : ");
+  setColor(7);
+  printf("[%s]\n", w->pronunciation);
+  
+  setColor(10);
+  printf("Type          : ");
+  setColor(7);
+  printf("%s\n", w->type);
+  
+  setColor(13);
+  printf("Status        : ");
+  if (w->learned) {
+    setColor(10);
+    printf("✓ Learned");
+  } else {
+    setColor(12);
+    printf("✗ Not learned");
+  }
+  setColor(7);
+  printf(" | Wrong: ");
+  if (w->wrongCount >= 3) {
+    setColor(12);
+  } else if (w->wrongCount > 0) {
+    setColor(14);
+  } else {
+    setColor(10);
+  }
+  printf("%d\n", w->wrongCount);
+  setColor(7);
+  printf("\n");
+  
+  setColor(14);
   printf("Meaning(s):\n");
+  setColor(7);
   char copy[500];
   strncpy(copy, w->meaning, sizeof(copy) - 1);
   copy[sizeof(copy) - 1] = '\0';
@@ -77,14 +124,14 @@ void dictionaryMenu(HashTable *ht) {
   int choice;
   do {
     char *dictOptions[] = {
-        "Show & Search Dictionary",
-        "Random Word",
-        "Add Word",
-        "Edit Word",
-        "Delete Word",
+        "🔍 Show & Search Dictionary",
+        "🎲 Random Word",
+        "➕ Add Word",
+        "✏️  Edit Word",
+        "🗑️  Delete Word",
         "Back"
     };
-    choice = selectMenu("DICTIONARY MENU", dictOptions, 6, NULL);
+    choice = selectMenu("📚 DICTIONARY MENU 📚", dictOptions, 6, NULL);
     clearScreen();
     if (choice == 5) choice = 0;
     else choice += 1;
@@ -94,14 +141,24 @@ void dictionaryMenu(HashTable *ht) {
       int stayInSearch = 1;
       while (stayInSearch) {
         clearScreen();
-        printf("============= DICTIONARY =============\n");
-        displayDictionary(ht);
+        setColor(11);
+        printf("═════════════════════════════════════════════\n");
+        setColor(14);
+        printf("              📚 DICTIONARY 📚              \n");
+        setColor(11);
+        printf("═════════════════════════════════════════════\n");
+        setColor(7);
+        printf("\n");
+        displayDictionaryBoxed(ht);
         printf("\n");
         pauseScreen();
         clearScreen();
 
-        printf("\n=============================================\n");
+        printf("\n");
+        setColor(14);
+        printf("════════════════════════════════════════════\n");
         printf("  Type a prefix to search (Enter = go back): ");
+        setColor(7);
         char prefix[50];
         if (!fgets(prefix, sizeof(prefix), stdin)) break;
         prefix[strcspn(prefix, "\r\n")] = '\0';
@@ -114,26 +171,37 @@ void dictionaryMenu(HashTable *ht) {
         Word *suggestions[20];
         int count = suggestWords(ht, prefix, suggestions);
         clearScreen();
-        printf("============= SEARCH: \"%s\" =============\n\n", prefix);
+        
+        setColor(11);
+        printf("════════════════════════════════════════════\n");
+        setColor(14);
+        printf("  🔍 Search: \"%s\"  [Found: %d result(s)]\n", prefix, count);
+        setColor(11);
+        printf("════════════════════════════════════════════\n");
+        setColor(7);
+        printf("\n");
 
         if (count == 0) {
           setColor(12);
-          printf("  No words found with prefix \"%s\".\n", prefix);
+          printf("  ✗ No words found with prefix \"%s\".\n", prefix);
           setColor(7);
           pauseScreen();
         } else if (count == 1) {
           setColor(10);
-          printf("  Auto-showing the only match found.\n\n");
+          printf("  ✓ Auto-showing the only match found.\n\n");
           setColor(7);
-          showWordDetail(suggestions[0]);
+          showWordCardBoxed(suggestions[0]);
           pauseScreen();
         } else {
           // xây dựng và sd nút điều hướng
           char *searchOpts[21];
           char labels[20][80];
           for (int i = 0; i < count; i++) {
-            snprintf(labels[i], sizeof(labels[i]), "%-20s (%s)",
-                     suggestions[i]->word, suggestions[i]->type);
+            strcpy(labels[i], suggestions[i]->word);
+            for (int j = getVisualWidth(suggestions[i]->word); j < 20; j++) strcat(labels[i], " ");
+            strcat(labels[i], " (");
+            strcat(labels[i], suggestions[i]->type);
+            strcat(labels[i], ")");
             searchOpts[i] = labels[i];
           }
           searchOpts[count] = "Back";
@@ -144,7 +212,7 @@ void dictionaryMenu(HashTable *ht) {
 
           int chosen = selectMenu(searchTitle, searchOpts, count + 1, NULL);
           if (chosen < count) {
-            showWordDetail(suggestions[chosen]);
+            showWordCardBoxed(suggestions[chosen]);
             pauseScreen();
           }
         }
@@ -156,7 +224,9 @@ void dictionaryMenu(HashTable *ht) {
       if (randomWord != NULL) {
         showWordDetail(randomWord);
       } else {
+        setColor(12);
         printf("No words available.\n");
+        setColor(7);
       }
       pauseScreen();
       break;
@@ -184,23 +254,41 @@ void gameMenu(HashTable *ht) {
   int gameChoice;
   do {
     char *gameOptions[] = {
-        "English -> Vietnamese",
-        "Vietnamese -> English",
-        "Missing Letter",
+        "🇬🇧 English -> Vietnamese",
+        "🇻🇳 Vietnamese -> English",
+        "🔤 Missing Letter",
         "Back"
     };
-    gameChoice = selectMenu("GAME CENTER", gameOptions, 4, NULL);
+    gameChoice = selectMenu("🎮 GAME CENTER 🎮", gameOptions, 4, NULL);
     clearScreen();
     if (gameChoice == 3) gameChoice = 0;
     else gameChoice += 1;
     switch (gameChoice) {
     case 1:
+      setColor(14);
+      printf("╔════════════════════════════════════════════╗\n");
+      printf("║  🇬🇧 ENGLISH -> VIETNAMESE GAME 🇬🇧          ║\n");
+      printf("╚════════════════════════════════════════════╝\n");
+      setColor(7);
+      printf("\n");
       englishToVietnameseGame(ht);
       break;
     case 2:
+      setColor(14);
+      printf("╔════════════════════════════════════════════╗\n");
+      printf("║  🇻🇳 VIETNAMESE -> ENGLISH GAME 🇻🇳          ║\n");
+      printf("╚════════════════════════════════════════════╝\n");
+      setColor(7);
+      printf("\n");
       vietnameseToEnglishGame(ht);
       break;
     case 3:
+      setColor(14);
+      printf("╔════════════════════════════════════════════╗\n");
+      printf("║       🔤 MISSING LETTER GAME 🔤            ║\n");
+      printf("╚════════════════════════════════════════════╝\n");
+      setColor(7);
+      printf("\n");
       playMissingLetterGame(ht);
       break;
     case 0:
@@ -220,21 +308,39 @@ void printMainMenuHeader() {
   int tf = dailyMission.targetFlashcards;
   int tg = dailyMission.targetGames;
 
-  printf("=============== DAILY MISSION ===============\n");
-  printf("Words Learned  : %2d / %2d  ", dailyMission.wordsLearnedToday, tw);
+  setColor(13);
+  printf("╔═══════════════════════════════════════════╗\n");
+  printf("║        📋 DAILY MISSION STATUS 📋         ║\n");
+  printf("╚═══════════════════════════════════════════╝\n");
+  setColor(7);
+  
+  // Words Learned - Green
+  setColor(10);
+  printf("📚 Words Learned  : %2d / %2d  ", dailyMission.wordsLearnedToday, tw);
   drawBar(dailyMission.wordsLearnedToday, tw);
-  printf("%s\n", dailyMission.wordsLearnedToday >= tw ? " [DONE]" : "");
+  printf("%s\n", dailyMission.wordsLearnedToday >= tw ? " ✓ DONE" : "");
+  setColor(7);
 
-  printf("Flashcards     : %2d / %2d  ", dailyMission.flashcardsReviewed, tf);
+  // Flashcards - Cyan
+  setColor(11);
+  printf("🎴 Flashcards     : %2d / %2d  ", dailyMission.flashcardsReviewed, tf);
   drawBar(dailyMission.flashcardsReviewed, tf);
-  printf("%s\n", dailyMission.flashcardsReviewed >= tf ? " [DONE]" : "");
+  printf("%s\n", dailyMission.flashcardsReviewed >= tf ? " ✓ DONE" : "");
+  setColor(7);
 
-  printf("Games Played   : %2d / %2d  ", dailyMission.gamesPlayed, tg);
+  // Games Played - Yellow
+  setColor(14);
+  printf("🎮 Games Played   : %2d / %2d  ", dailyMission.gamesPlayed, tg);
   drawBar(dailyMission.gamesPlayed, tg);
-  printf("%s\n", dailyMission.gamesPlayed >= tg ? " [DONE]" : "");
+  printf("%s\n", dailyMission.gamesPlayed >= tg ? " ✓ DONE" : "");
+  setColor(7);
 
-  printf("Study Streak   : %d days\n", studyStreak.streakDays);
-  printf("=============================================\n");
+  // Study Streak - Magenta
+  setColor(13);
+  printf("🔥 Study Streak   : %d days\n", studyStreak.streakDays);
+  setColor(7);
+  
+  printf("═════════════════════════════════════════════\n");
 
   printHeader("ENGLISH DICTIONARY");
   showMiniPlayerCard();
@@ -251,18 +357,18 @@ int main() {
   int option;
   while (1) {
     char *introOptions[] = {
-        "Login",
-        "Register",
-        "Exit"
+        "🔓 Login",
+        "📝 Register",
+        "🚪 Exit"
     };
-    int rawChoice = selectMenu("ENGLISH DICTIONARY & VOCAB GAME", introOptions, 3, NULL);
+    int rawChoice = selectMenu("🌍 ENGLISH DICTIONARY & VOCAB GAME🌍", introOptions, 3, NULL);
     if (rawChoice == 0) option = 1;
     else if (rawChoice == 1) option = 2;
     else option = 0;
 
     if (option == 1) {
       if (login()) {
-        break; // Proceed to main c
+        break; // Proceed to main menu
       } else {
         setColor(12);
         printf("\nLogin failed. Incorrect username or password.\n");
@@ -309,11 +415,11 @@ int main() {
   int choice;
   while (running) {
     char *mainOptions[] = {
-        "Dictionary Menu",
-        "Flashcard Mode",
-        "Game Center",
-        "Show Stats",
-        "Exit"
+        "📚 Dictionary Menu",
+        "🎴 Flashcard Mode",
+        "🎮 Game Center",
+        "📊 Show Stats",
+        "🚪 Exit"
     };
     choice = selectMenu("", mainOptions, 5, printMainMenuHeader);
     choice += 1;
